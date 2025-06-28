@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [panel, setPanel] = useState(false);
+  const [myIdea, setMyIdea] = useState("");
   async function uploadIdea() {
     const idea = (document.getElementById("ideaForm") as HTMLTextAreaElement)?.value.trim();
     const daButton = document.getElementById("ideaSubmit") as HTMLButtonElement;
@@ -12,10 +13,11 @@ export default function Home() {
     daButton.disabled = true;
     await fetch(`https://madlog.vercel.app/api/log?channel=plzgiveideasss&text=${encodeURIComponent(idea)}&status=IDEA&country=idea`);
     setPanel(false);
+    setMyIdea(idea);
     daButton.disabled = false;
   }
   return (
-    
+
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start sm:text-left font-[family-name:var(--font-geist-mono)] text-center">
         <center>
@@ -23,11 +25,15 @@ export default function Home() {
             Hello, World!
           </p>
           <p className="m-10">
-            This is Alimad Co's website!
+            This is Alimad Co{"'"}s website!
           </p>
-          <p className="text-gray-500">
-            What should I add here...
-          </p></center>
+          {myIdea ? <p className="text-gray-500">
+            One "{myIdea}" coming up!
+          </p> :
+            <p className="text-gray-500">
+              What should I add here...
+            </p>
+          }</center>
         {panel && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 font-[family-name:var(--font-geist-sans)]">
             <div className="bg-white dark:bg-zinc-900 text-black dark:text-white rounded-xl shadow-xl p-8 max-w-md w-full relative">

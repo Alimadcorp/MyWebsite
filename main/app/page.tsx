@@ -1,4 +1,5 @@
 "use client";
+import LiveStatus from "@/components/live";
 import { Lightbulb, Send } from "lucide-react";
 import { useState } from "react";
 
@@ -17,8 +18,17 @@ export default function Home() {
     daButton.disabled = false;
   }
   return (
-
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="bg-gradient-to-tl from-black/90 to-white/20 grid p-0 m-0 grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" suppressHydrationWarning>
+      <header className="absolute top-0 w-full h-10 p-0 m-0 bg-gray-600/30 backdrop-blur-2xl text-center">
+        <nav className="flex gap-8 left-4 absolute">
+          <a href="https://alimad.itch.io" target="_blank" className="hover:bg-gray-400/80 transition-all p-1 mt-1 pl-2 pr-2 border-0 rounded-sm">Games</a>
+          <a href="https://somps.alimad.xyz" target="_blank" className="hover:bg-gray-400/80 transition-all p-1 mt-1 pl-2 pr-2 border-0 rounded-sm">Somps</a>
+          <a href="https://live.alimad.xyz" target="_blank" className="hover:bg-gray-400/80 transition-all p-1 mt-1 pl-2 pr-2 border-0 rounded-sm">Live</a>
+        </nav>
+        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+          <LiveStatus />
+        </div>
+      </header>
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start sm:text-left font-[family-name:var(--font-geist-mono)] text-center">
         <center>
           <p className="text-xl/6">
@@ -31,7 +41,7 @@ export default function Home() {
             One "{myIdea}" coming up!
           </p> :
             <p className="text-gray-500">
-              What should I add here...
+              What else should I add here...
             </p>
           }</center>
         {panel && (

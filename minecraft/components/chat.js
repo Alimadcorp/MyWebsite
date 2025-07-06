@@ -10,6 +10,7 @@ import {
   Info,
 } from "lucide-react";
 
+const _CHAT_WS_URL = "wss://6869eb3407fb21bb520d5500.manager.minehut.com/socket";
 const CHAT_WS_URL = "wss://68693aafaf750c7827eadad9.manager.minehut.com/socket";
 
 const SEC_PROTOCOL = [
@@ -17,8 +18,7 @@ const SEC_PROTOCOL = [
   "35f85402-ce0a-468c-9a30-4c8ddfc299ab",
   "645c4884-6a40-4e36-a7eb-a42c75d509f8",
 ];
-
-export default function ChatConsole() {
+export default function OldChatConsole() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const socketRef = useRef(null);

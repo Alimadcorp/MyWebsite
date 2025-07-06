@@ -104,7 +104,7 @@ export default function Page() {
       </div>
       <div
         className={
-          "relative z-10 grid grid-cols-1 gap-8 h-full items-center justify-center px-8 py-16" +
+          "relative z-10 grid grid-cols-2 gap-8 h-full items-center justify-center px-8 py-16" +
           (serverStatus == "Online" ? "md:grid-cols-2" : "md:grid-cols-1")
         }
       >

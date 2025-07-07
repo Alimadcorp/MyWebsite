@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 
-export default function LiveStatus({ app = 'alimadhomepage' }) {
+export default function LiveStatus({ app = 'wordle' }) {
   const [count, setCount] = useState('?')
   const [online, setOnline] = useState(false)
 
@@ -23,7 +23,7 @@ export default function LiveStatus({ app = 'alimadhomepage' }) {
       }
     }
     ping()
-    const id = setInterval(ping, 20000)
+    const id = setInterval(ping, 10000)
     return () => {
       mounted = false
       clearInterval(id)

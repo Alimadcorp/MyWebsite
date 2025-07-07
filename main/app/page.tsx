@@ -21,10 +21,10 @@ export default function Home() {
   }
   return (
     <div className="bg-black grid p-0 m-0 grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" suppressHydrationWarning>
-      <header className="absolute top-0 w-full h-10 p-0 m-0 bg-gray-600/30 backdrop-blur-2xl text-center">
-        <nav className="flex gap-8 left-4 absolute">
-          <button onClick={() => { Router.push("/subdomains") }} className="cursor-pointer hover:bg-gray-400/80 transition-all p-1 mt-1 pl-2 pr-2 border-0 rounded-sm">Subdomains</button>
-          <a href="https://alimad.itch.io" target="_blank" className="hover:bg-gray-400/80 transition-all p-1 mt-1 pl-2 pr-2 border-0 rounded-sm">Games</a>
+      <header className="absolute top-0 w-full h-11 p-0 m-0 bg-gray-600/30 backdrop-blur-2xl text-center">
+        <nav className="flex gap-3 left-4 absolute">
+          <button onClick={() => { Router.push("/subdomains") }} className="cursor-pointer hover:bg-gray-500 border-2 border-gray-500 transition-all p-1 mt-1 pl-2 pr-2 rounded-sm">Subdomains</button>
+          <a href="https://alimad.itch.io" target="_blank" className="hover:bg-gray-500 border-2 border-gray-500 transition-all p-1 mt-1 pl-2 pr-2 rounded-sm">Games</a>
         </nav>
         <div className="absolute right-4 top-1/2 -translate-y-1/2">
           <LiveStatus />

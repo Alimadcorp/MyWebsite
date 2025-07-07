@@ -2,6 +2,8 @@ export default function subdomains() {
   return {
     somps: { path: "/" },
     live: { path: "/" },
+    wordle: { path: "/" },
+    hunter: { path: "/" },
     minecraft: { path: "/" },
     hackclub: { path: "/" },
     chat: { path: "/" },

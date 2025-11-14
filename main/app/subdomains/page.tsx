@@ -1,51 +1,68 @@
-"use client"
-import LiveStatus from "@/components/live"
-import Subdomain from "@/components/subdomain"
-import subdomains from "@/data/subdomains"
-import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { useEffect, useState, useMemo } from "react"
+"use client";
+import LiveStatus from "@/components/live";
+import Subdomain from "@/components/subdomain";
+import subdomains from "@/data/subdomains";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { useEffect, useState, useMemo } from "react";
+import { Sun, Moon } from "lucide-react";
 
-type VisitedMap = Record<string, boolean>
-type LiveMap = Record<string, boolean>
+type VisitedMap = Record<string, boolean>;
+type LiveMap = Record<string, boolean>;
 
 export default function Subdomains() {
-    const Router = useRouter()
-    const subs = useMemo(() => subdomains(), [])
+    const Router = useRouter();
+    const subs = useMemo(() => subdomains(), []);
 
-    const [visitedMap, setVisitedMap] = useState<VisitedMap>({})
-    const [liveMap, setLiveMap] = useState<LiveMap>({})
+    const [visitedMap, setVisitedMap] = useState<VisitedMap>({});
+    const [liveMap, setLiveMap] = useState<LiveMap>({});
+    const [darkMode, setDarkMode] = useState(true);
 
     useEffect(() => {
-        let cancelled = false
-        const baseURL = "https://live.alimad.xyz/visited?app=" + Object.keys(subs).join(",")
+        const saved = localStorage.getItem("theme");
+        if (saved === "light") setDarkMode(false);
+        else setDarkMode(true);
+    }, []);
 
+    useEffect(() => {
+        document.documentElement.classList.toggle("dark", darkMode);
+        localStorage.setItem("theme", darkMode ? "dark" : "light");
+    }, [darkMode]);
+
+    useEffect(() => {
+        let cancelled = false;
+        const baseURL = "https://live.alimad.xyz/visited?app=" + Object.keys(subs).join(",");
         fetch(baseURL)
-            .then(res => res.json())
+            .then((res) => res.json())
             .then((remote: Record<string, number>) => {
-                if (cancelled) return
-                const result: VisitedMap = {}
-                const lives: LiveMap = {}
+                if (cancelled) return;
+                const result: VisitedMap = {};
+                const lives: LiveMap = {};
                 for (const name of Object.keys(subs)) {
-                    const fromStorage = localStorage.getItem("visited_" + name)
-                    if (remote?.[name] != 0 || fromStorage) result[name] = true
-                    if (remote?.[name] == 2) lives[name] = true
+                    const fromStorage = !!localStorage.getItem("visited_" + name);
+                    if (remote?.[name] === 2) {
+                        lives[name] = true;
+                        localStorage.setItem("visited_" + name, "true");
+                    }
+                    if (fromStorage || remote?.[name] !== 0) {
+                        result[name] = true;
+                    }
                 }
-                setVisitedMap(result)
-                setLiveMap(lives)
+                setVisitedMap(result);
+                setLiveMap(lives);
             })
             .catch(() => {
-                const fallback: VisitedMap = {}
+                const fallback: VisitedMap = {};
                 for (const name of Object.keys(subs)) {
-                    if (localStorage.getItem("visited_" + name)) fallback[name] = true
+                    if (localStorage.getItem("visited_" + name)) fallback[name] = true;
                 }
-                setVisitedMap(fallback)
-            })
+                setVisitedMap(fallback);
+            });
 
         return () => {
-            cancelled = true
-        }
-    }, [subs])
+            cancelled = true;
+        };
+    }, [subs]);
 
     function renderSubdomain(name: string, i: number) {
         return (
@@ -55,19 +72,30 @@ export default function Subdomains() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1, duration: 0.4, ease: "easeOut" }}
             >
-                <Subdomain domainName={name} visited={!!visitedMap[name]} live={!!liveMap[name]} data={(subs as Record<string, any>)[name] || { path: "/" }} />
+                <Subdomain
+                    domainName={name}
+                    suffix=".alimad.co"
+                    visited={!!visitedMap[name]}
+                    live={!!liveMap[name]}
+                    data={(subs as Record<string, any>)[name] || { path: "/" }}
+                />
             </motion.div>
-        )
+        );
     }
 
     return (
-        <div className="bg-black grid p-0 m-0 grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" suppressHydrationWarning>
-            <header className="absolute top-0 w-full h-11 p-0 m-0 bg-gray-600/30 backdrop-blur-2xl text-center">
+        <div className="bg-white dark:bg-black text-black dark:text-white grid p-0 m-0 grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" suppressHydrationWarning>
+            <header className="absolute top-0 w-full h-11 p-0 m-0 bg-gray-200/30 dark:bg-gray-600/30 backdrop-blur-2xl text-center">
                 <nav className="flex gap-8 left-4 absolute">
-                    <button onClick={() => Router.push("/")} className="cursor-pointer hover:bg-gray-500 border-2 border-gray-500 transition-all p-1 mt-1 pl-2 pr-2 rounded-sm">Home</button>
+                    <button
+                        onClick={() => Router.push("/")}
+                        className="cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-500 border-2 border-gray-400 dark:border-gray-500 transition-all p-1 mt-1 pl-2 pr-2 rounded-sm"
+                    >
+                        Home
+                    </button>
                 </nav>
                 <p className="p-1 mt-2 pl-2 pr-2">Subdomains</p>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     <LiveStatus />
                 </div>
             </header>
@@ -77,5 +105,5 @@ export default function Subdomains() {
                 </div>
             </main>
         </div>
-    )
+    );
 }

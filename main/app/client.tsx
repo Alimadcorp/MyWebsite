@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import LiveStatus from "@/components/live";
-import { SiDiscord, SiGithub, SiGmail, SiItchdotio, SiSlack, SiTwitch, SiYoutube } from "@icons-pack/react-simple-icons";
+import { SiDiscord, SiGithub, SiGmail, SiInstagram, SiItchdotio, SiSlack, SiTwitch, SiYoutube } from "@icons-pack/react-simple-icons";
 import { Lightbulb, Phone, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo, useRef } from "react";
@@ -15,6 +15,7 @@ function Socials() {
     <a href="https://twitch.tv/alimadco" target="_blank" className="border-2 border-purple-500 text-purple-500 hover:bg-purple-500/30 rounded-full p-1 px-2"><SiTwitch size={16} /></a>
     <a href="https://discord.gg/fY4Q8rKsz4" target="_blank" className="border-2 border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2]/30 rounded-full p-1 px-2"><SiDiscord size={16} /></a>
     <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-[#933294] text-[#933294] hover:bg-[#933294]/30 rounded-full p-1 px-2"><SiSlack size={16} /></a>
+    <a href="https://instagram.com/alimadco" target="_blank" className="border-2 border-[#ff41b3] text-[#ff41b3] hover:bg-[#ff41b3]/30 rounded-full p-1 px-2"><SiInstagram size={16} /></a>
     <a href="mailto:alimad.co.ltd@gmail.com" target="_blank" className="border-2 border-[#0022ff] text-[#0022ff] hover:bg-[#0022ff]/30 rounded-full p-1 px-2"><SiGmail size={16} /></a>
     <a href="tel:+923124503700" target="_blank" className="border-2 border-[#64dfd2] text-[#64dfd2] hover:bg-[#64dfd2]/30 rounded-full p-1 px-2"><Phone size={16} /></a>
   </>);

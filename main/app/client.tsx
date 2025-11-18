@@ -31,7 +31,7 @@ const WebButton: React.FC<WebButtonProps> = ({ src, title, href }) => {
   src = src?.startsWith("http") ? src : "https://bomberfish.ca"+src;
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className="my-1 mx-1 w-[88px] h-[31px]">
-      <img src={src} alt={title} title={title} />
+      <img src={src} alt={title} title={title} className="pixel" />
     </a>
   );
 };

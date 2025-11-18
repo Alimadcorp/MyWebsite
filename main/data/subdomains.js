@@ -1,6 +1,7 @@
 export default function subdomains() {
   return {
     blog: { path: "/" },
+    games: { path: "/" },
     cdn: { path: "/" },
     emoji: { path: "/" },
     life: { path: "/" },

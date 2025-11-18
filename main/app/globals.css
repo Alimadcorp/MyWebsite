@@ -48,6 +48,11 @@
   scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
 }
 
+.pixel {
+  image-rendering: pixelated;
+  -webkit-image-rendering: pixelated;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

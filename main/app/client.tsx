@@ -352,7 +352,7 @@ export default function Home() {
         <div className="max-w-4xl w-full">
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 text-cyan-400">Hello, World!</h1>
           <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
-          <a href="https://blog.alimad.co/e" className="text-cyan-500 underline text-sm sm:text-base mb-3 inline-block">I am currently unavailable</a>
+          <a href="https://blog.alimad.co/e" className="text-cyan-500 underline text-sm sm:text-base mb-3 hidden">I am currently unavailable</a>
           <p className="text-gray-600 dark:text-gray-400 text-sm">{myIdea ? `One "${myIdea}" coming up!` : 'Keep giving ideas...'}</p>
         </div>
         <nav className="grid sm:hidden items-center gap-2 mt-3">

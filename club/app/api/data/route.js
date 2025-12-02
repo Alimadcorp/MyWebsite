@@ -24,10 +24,10 @@ export async function GET(request) {
     path: "/api/student/getStudentInformation/"+u,
     method: "GET",
     headers: {
-        Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IlJPTEUiOiJTVERSIiwiWUVBUiI6MjAyNSwiQ19DT0RFIjoxMTEsIlJOIjozMTMzLCJEX0lEIjoxMDAsIk1BSl9JRCI6NjEsIlNFX0lEIjo4NTcsIlJPTE5PIjoiMzEzMy0xLTI1IiwiTk0iOiJTdWJoYW4gQWhtYWQiLCJERVMiOiJGLkEgLyBGLlNjIiwiSU5TVF9OTyI6MX0sImlhdCI6MTc2Mzk1OTczOH0.naRDqizlOADlif2NWlz6vo74juAMCqmFpTj5ZJthRms",
+        Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IlJPTEUiOiJTVERSIiwiWUVBUiI6MjAyMywiQ19DT0RFIjoxLCJSTiI6MTIyNCwiRF9JRCI6MTAwLCJNQUpfSUQiOjYzLCJTRV9JRCI6NzIwLCJST0xOTyI6IjEyMjQtMS0yMyIsIk5NIjoiQWJvdXphciIsIkRFUyI6IkYuQSAvIEYuU2MiLCJJTlNUX05PIjoyfSwiaWF0IjoxNzY0Mzg2NDYzfQ.J-agFqz0fPO1xAvrq9_ckvhZu6XC8DqHnhaXKsW8Wdc",
         'X-Client-Key': "vc4gmsFecSPqhm1mqzKCwBif1rBb4P0xNXgI",
         Referer: 'https://lms.gcu.edu.pk/student/studentInformation',
-        'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"
+        'User-Agent': "Mozilla/4.9 (Windows NT 11.0; Win64; x64) AppleWebKit (KHTML, like Gecko) Chrome/136.0.0.0 Safari/527.36"
     },
     agent
   };

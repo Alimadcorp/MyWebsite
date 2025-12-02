@@ -418,21 +418,6 @@ export default function Home() {
             href="https://bomberfish.ca/"
           />
           <WebButton
-            src="/buttons/invalidator.gif"
-            title="HTML parser devs hate this one easy trick!"
-            href="https://validator.w3.org/nu/?doc=http%3A%2F%2Fbomberfish.ca%2F"
-          />
-          <WebButton
-            src="/buttons/hg88x31.gif"
-            title="Mercury Workshop"
-            href="https://mercurywork.shop"
-          />
-          <WebButton
-            src="/buttons/omada.gif"
-            title="omada.cafe, an private and secure alternative provider."
-            href="https://omada.cafe"
-          />
-          <WebButton
             src="/buttons/ce88x31.gif"
             title="velzie.d"
             href="https://velzie.rip"
@@ -446,21 +431,6 @@ export default function Home() {
             src="/buttons/foxmossbutton.gif"
             title="FoxMoss"
             href="https://foxmoss.com"
-          />
-          <WebButton
-            src="/buttons/wearr.gif"
-            title="wearr"
-            href="https://wearr.dev"
-          />
-          <WebButton
-            src="/buttons/circular-88x31.gif"
-            title="circular"
-            href="https://circulars.dev"
-          />
-          <WebButton
-            src="/buttons/authenyo.gif"
-            title="authenyo"
-            href="https://authenyo.xyz"
           />
           <WebButton
             src="/buttons/k8.gif"
@@ -483,11 +453,6 @@ export default function Home() {
             href="https://melontini.me"
           />
           <WebButton
-            src="/buttons/ipg.png"
-            title="InvoxiPlayGames"
-            href="https://invoxiplaygames.uk"
-          />
-          <WebButton
             src="/buttons/aol-sucks.gif"
             title="Good riddance."
             href="https://help.aol.com/articles/dial-up-internet-to-be-discontinued"
@@ -495,10 +460,6 @@ export default function Home() {
           <WebButton
             src="/buttons/affection.gif"
             title="<3"
-          />
-          <WebButton
-            src="/buttons/cssdif.gif"
-            title="CSS overflow is my mortal enemy."
           />
           <WebButton
             src="/buttons/besteyes2.gif"
@@ -532,10 +493,6 @@ export default function Home() {
             src="/buttons/mariokart.gif"
             title="Play some Mario Kart!"
             href="https://bomberfish.ca/N64Wasm"
-          />
-          <WebButton
-            src="/buttons/vocaloid.gif"
-            title="Vocaloid NOW!!"
           />
           <WebButton
             src="/buttons/iframsuc.gif"

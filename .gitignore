@@ -8,10 +8,10 @@ lerna-debug.log*
 .pnpm-debug.log*
 *.env
 
-/main/app/api/lms
-/main/app/api/pull
-/main/app/api/sendup
-/club
+#/main/app/api/lms
+#/main/app/api/pull
+#/main/app/api/sendup
+#/club
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

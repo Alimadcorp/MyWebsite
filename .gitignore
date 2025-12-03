@@ -8,9 +8,12 @@ lerna-debug.log*
 .pnpm-debug.log*
 *.env
 
+*.vercel/
+
 #/main/app/api/lms
 #/main/app/api/pull
 #/main/app/api/sendup
+#/main/app/api/spotify
 #/club
 
 # Diagnostic reports (https://nodejs.org/api/report.html)

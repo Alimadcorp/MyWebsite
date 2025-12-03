@@ -12,7 +12,6 @@ function Socials() {
     <a href="https://alimad.itch.io" target="_blank" className="border-2 border-[#FA5C5C] text-[#FA5C5C] hover:bg-[#FA5C5C]/30 rounded-full p-1 px-2"><SiItchdotio size={16} /></a>
     <a href="https://youtube.com/@alimadco" target="_blank" className="border-2 border-red-500 text-red-500 hover:bg-red-500/30 rounded-full p-1 px-2"><SiYoutube size={16} /></a>
     <a href="https://github.com/Alimadcorp" target="_blank" className="border-2 border-gray-400 text-gray-400 hover:bg-gray-700/30 rounded-full p-1 px-2"><SiGithub size={16} /></a>
-    <a href="https://twitch.tv/alimadco" target="_blank" className="border-2 border-purple-500 text-purple-500 hover:bg-purple-500/30 rounded-full p-1 px-2"><SiTwitch size={16} /></a>
     <a href="https://discord.gg/fY4Q8rKsz4" target="_blank" className="border-2 border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2]/30 rounded-full p-1 px-2"><SiDiscord size={16} /></a>
     <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-[#933294] text-[#933294] hover:bg-[#933294]/30 rounded-full p-1 px-2"><SiSlack size={16} /></a>
     <a href="https://instagram.com/alimadco" target="_blank" className="border-2 border-[#ff41b3] text-[#ff41b3] hover:bg-[#ff41b3]/30 rounded-full p-1 px-2"><SiInstagram size={16} /></a>
@@ -21,14 +20,8 @@ function Socials() {
   </>);
 }
 
-interface WebButtonProps {
-  src: string;
-  title?: string;
-  href?: string;
-}
-
-const WebButton: React.FC<WebButtonProps> = ({ src, title, href }) => {
-  src = src?.startsWith("http") ? src : "https://bomberfish.ca"+src;
+const WebButton = ({ src, title, href }) => {
+  src = src?.startsWith("http") ? src : "https://bomberfish.ca" + src;
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className="my-1 mx-1 w-[88px] h-[31px]">
       <img src={src} alt={title} title={title} className="pixel" />
@@ -37,7 +30,7 @@ const WebButton: React.FC<WebButtonProps> = ({ src, title, href }) => {
 };
 
 function Webring() {
-  const [members, setMembers] = useState<{ member: string; url: string }[]>([]);
+  const [members, setMembers] = useState([]);
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -47,7 +40,7 @@ function Webring() {
         let data = await res.json();
         data.push({ member: "ErrorCode0", url: "https://errorcodezero.dev" });
         data.push({ member: "F1nn", url: "https://f1nn.me" });
-        setIndex(data.findIndex((m: any) => m.member === "ErrorCode0"));
+        setIndex(data.findIndex((m) => m.member === "ErrorCode0"));
         setMembers(data);
       } catch (err) {
         console.error("Failed to load webring:", err);
@@ -103,7 +96,7 @@ function Counters() {
   const [pageVisitors, setPageVisitors] = useState(0);
   const [ideasCount, setIdeasCount] = useState(0);
   useEffect(() => {
-    fetch("https://live.alimad.xyz/stats?app=alimadhomepage")
+    fetch("https://live.alimad.co/stats?app=alimadhomepage")
       .then(r => r.json())
       .then(d => {
         animateCount(d.uniqueIds, setPageViews);
@@ -115,7 +108,7 @@ function Counters() {
       .then(d => animateCount(Number(d), setIdeasCount));
   }, []);
 
-  function animateCount(target: number, setter: (v: number) => void) {
+  function animateCount(target, setter) {
     let current = 0;
     const step = Math.max(1, Math.floor(target / 100));
     const interval = setInterval(() => {
@@ -134,7 +127,7 @@ function Counters() {
     { label: "Page Views", value: pageVisitors },
     { label: "Total Ideas", value: ideasCount }
   ], [pageViews, pageVisitors, ideasCount]);
-  return (<div className="flex flex-wrap gap-4 justify-center sm:justify-start mt-6 w-full max-w-4xl">
+  return (<div className="flex flex-wrap gap-2 md:gap-4 justify-center sm:justify-start mt-6 w-full max-w-4xl">
     {counters.map((c, i) => (
       <div key={i} className="flex flex-col items-center justify-center p-1 sm:p-3 rounded-lg border-2 border-cyan-600 bg-white/20 dark:bg-black/20 hover:bg-cyan-900/20 w-24 h-18 sm:w-36 sm:h-24 transition-all">
         <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{c.label}</span>
@@ -145,7 +138,7 @@ function Counters() {
 }
 
 function QuoteOfTheDay() {
-  const [quote, setQuote] = useState<{ quote: string; writer: string; date: string } | null>(null);
+  const [quote, setQuote] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -181,15 +174,14 @@ function TheFooter() {
   ];
 
 
-  function log(t: any) {
+  function log(t) {
     t.clientId = localStorage.getItem("clientId");
     fetch(`/api/post?t=${encodeURIComponent(JSON.stringify(t))}`);
   }
 
   const [count, setCount] = useState(0);
-  const [revealed, setRevealed] = useState<Message[]>([]);
+  const [revealed, setRevealed] = useState([]);
   const clickLock = useRef(false);
-  type Message = { text: string; author?: string };
 
   function handleClick() {
     if (clickLock.current) return;
@@ -247,7 +239,7 @@ export default function Home() {
   const [myIdea, setMyIdea] = useState("");
   const [darkMode, setDarkMode] = useState(true);
   const Router = useRouter();
-  const [commits, setCommits] = useState<any[]>([]);
+  const [commits, setCommits] = useState([]);
 
   useEffect(() => {
     async function fetchGitHub() {
@@ -303,7 +295,7 @@ export default function Home() {
     iframe.style.display = "none"
     document.body.appendChild(iframe)
 
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = (event) => {
       try {
         const url = new URL(event.origin)
         const host = url.hostname
@@ -326,8 +318,8 @@ export default function Home() {
   }, [])
 
   async function uploadIdea() {
-    const idea = (document.getElementById("ideaForm") as HTMLTextAreaElement)?.value.trim();
-    const daButton = document.getElementById("ideaSubmit") as HTMLButtonElement;
+    const idea = (document.getElementById("ideaForm"))?.value.trim();
+    const daButton = document.getElementById("ideaSubmit");
     if (!idea) return;
     daButton.innerHTML = "Submitting...";
     daButton.disabled = true;
@@ -336,6 +328,22 @@ export default function Home() {
     setMyIdea(idea);
     daButton.disabled = false;
   }
+  const [songdata, setsongData] = useState(null);
+  const [songTop, setSongTop] = useState([]);
+
+  useEffect(() => {
+    async function load() {
+      const now = await fetch("/api/spotify").then(r => r.json());
+      setsongData(now);
+      if (!now.playing && songTop.length == 0) {
+        const t = await fetch("/api/spotify/top").then(r => r.json());
+        setSongTop(t.tracks.slice(0, 7));
+      }
+    }
+    load();
+    const i = setInterval(load, 15000);
+    return () => clearInterval(i);
+  }, [songTop]);
 
   return (
     <div className="text-black bg-gray-50 dark:bg-zinc-900 dark:text-white flex flex-col min-h-screen w-full font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
@@ -349,20 +357,78 @@ export default function Home() {
       </header>
 
       <main className="flex flex-col flex-grow mt-0 sm:mt-12 px-6 overflow-x-hidden sm:px-8 py-10 sm:py-14 items-center text-center sm:text-left bg-gradient-to-br from-zinc-200 via-gray-300 to-white border-gray-200 dark:from-zinc-900 dark:via-gray-900 dark:to-black border-t dark:border-gray-800 w-full">
-        <div className="max-w-4xl w-full">
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 text-cyan-400">Hello, World!</h1>
-          <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
-          <a href="https://blog.alimad.co/e" className="text-cyan-500 underline text-sm sm:text-base mb-3 hidden">I am currently unavailable</a>
-          <p className="text-gray-600 dark:text-gray-400 text-sm">{myIdea ? `One "${myIdea}" coming up!` : 'Keep giving ideas...'}</p>
+        <div className="max-w-4xl w-full flex">
+          <div className="max-w-4xl w-full">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 text-cyan-400">Hello, World!</h1>
+            <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
+            <a href="https://blog.alimad.co/e" className="text-cyan-500 underline text-sm sm:text-base mb-3 hidden">I am currently unavailable</a>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">{myIdea ? `One "${myIdea}" coming up!` : 'Keep giving ideas...'}</p>
+            <div className="grid sm:hidden items-center gap-2 mt-3 max-w-4xl">
+              <button onClick={() => Router.push('/subdomains')} className="border-2 border-gray-800 text-gray-700 dark:border-gray-200 dark:text-gray-300 hover:bg-indigo-600/20 px-2 py-2 rounded-sm text-sm transition cursor-pointer">Subdomains</button>
+              <div className="flex sm:hidden gap-1"><Socials /></div>
+            </div>
+            <Webring />
+            <div className="sm:hidden mt-3 flex items-center gap-2 w-full text-center"><LiveStatus /></div>
+            <Counters />
+            {(songdata && songdata.playing) && (
+              <div className="flex flex-col gap-3 mt-3 p-3 rounded-xl bg-black/20 border border-white/10 w-full max-w-sm">
+                <div className="font-semibold text-lg">Listening</div>
+                <a href={songdata.url} target="_blank" className="flex gap-3 items-center">
+                  <img src={songdata.cover} alt="" className="w-14 h-14 rounded-md" />
+                  <div className="flex flex-col">
+                    <div className="font-semibold text-cyan-500">{songdata.title}</div>
+                    <div className="text-sm opacity-70">{songdata.artist}</div>
+                  </div>
+                </a>
+              </div>
+            )}
+            {(songdata && !songdata.playing) && (
+              <div className="flex md:hidden flex-col gap-3 p-3 mt-3 rounded-xl bg-black/20 border border-white/10 w-full max-w-sm">
+                <div className="font-semibold text-lg">Top Tracks</div>
+                <div className="flex flex-col gap-2">
+                  {songTop.map((t, i) => (
+                    <a
+                      key={i}
+                      href={t.url}
+                      target="_blank"
+                      className="flex gap-3 items-center"
+                    >
+                      <div className="w-5 ml-1 text-3xl font-semibold text-cyan-400">{i + 1}</div>
+                      <img src={t.cover} alt="" className="w-10 h-10 rounded-md hidden" />
+                      <div className="flex flex-col">
+                        <div className="text-sm font-semibold text-cyan-400 text-left">{t.title}</div>
+                        <div className="text-xs text-white opacity-70 text-left">{t.artist}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {(songdata && !songdata.playing) && (
+            <div className="hidden md:flex flex-col gap-3 p-3 rounded-xl bg-black/20 border border-white/10 w-full max-w-sm">
+              <div className="font-semibold text-lg">Top Tracks</div>
+              <div className="flex flex-col gap-2">
+                {songTop.map((t, i) => (
+                  <a
+                    key={i}
+                    href={t.url}
+                    target="_blank"
+                    className="flex gap-3 items-center"
+                  >
+                    <div className="w-5 ml-1 text-3xl font-semibold text-cyan-400">{i + 1}</div>
+                    <img src={t.cover} alt="" className="w-10 h-10 rounded-md hidden" />
+                    <div className="flex flex-col">
+                      <div className="text-sm font-semibold text-cyan-400">{t.title}</div>
+                      <div className="text-xs text-white opacity-70">{t.artist}</div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        <nav className="grid sm:hidden items-center gap-2 mt-3">
-          <button onClick={() => Router.push('/domains')} className="hidden border-2 border-indigo-500 text-indigo-400 hover:bg-indigo-600/20 px-2 py-1 rounded-sm text-sm transition">Domains</button>
-          <button onClick={() => Router.push('/subdomains')} className="border-2 border-gray-800 text-gray-700 dark:border-gray-200 dark:text-gray-300 hover:bg-indigo-600/20 px-2 py-2 rounded-sm text-sm transition cursor-pointer">Subdomains</button>
-          <div className="flex sm:hidden gap-1"><Socials /></div>
-        </nav>
-        <Webring />
-        <div className="sm:hidden mt-3 flex items-center gap-2"><LiveStatus /></div>
-        <Counters />
         <QuoteOfTheDay />
 
         <div className="mt-8 w-full max-w-4xl hidden">
@@ -377,7 +443,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-
         <div className="flex justify-center items-center mt-8 w-full overflow-x-auto">
           <GitHubCalendar username="Alimadcorp" />
         </div>

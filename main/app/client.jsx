@@ -1,11 +1,13 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import LiveStatus from "@/components/live";
+import Spotify from '@/components/spotify'
 import { SiDiscord, SiGithub, SiGmail, SiInstagram, SiItchdotio, SiSlack, SiTwitch, SiYoutube } from "@icons-pack/react-simple-icons";
 import { Lightbulb, Phone, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo, useRef } from "react";
 import GitHubCalendar from "react-github-calendar";
+import Status from "@/components/status"
 
 function Socials() {
   return (<>
@@ -233,7 +235,6 @@ function TheFooter() {
   );
 }
 
-
 export default function Home() {
   const [panel, setPanel] = useState(false);
   const [myIdea, setMyIdea] = useState("");
@@ -328,22 +329,34 @@ export default function Home() {
     setMyIdea(idea);
     daButton.disabled = false;
   }
-  const [songdata, setsongData] = useState(null);
-  const [songTop, setSongTop] = useState([]);
+  const [songdata, setsongData] = useState(null)
+  const [songLoad, setSongLoad] = useState(true)
+  const [songTop, setSongTop] = useState([])
 
   useEffect(() => {
+    fetch("/api/spotify/top").then(r => r.json()).then((t) => { setSongTop(t.tracks.slice(0, 7)) });
+  }, []);
+  useEffect(() => {
+    let refreshing = false;
     async function load() {
-      const now = await fetch("/api/spotify").then(r => r.json());
-      setsongData(now);
-      if (!now.playing && songTop.length == 0) {
-        const t = await fetch("/api/spotify/top").then(r => r.json());
-        setSongTop(t.tracks.slice(0, 7));
-      }
+      try {
+        if (refreshing) return;
+        setSongLoad(true);
+        refreshing = true;
+        const now = await fetch("/api/spotify/me").then(r => r.json());
+        setsongData(now);
+      } catch (e) { setsongData({ ...songdata, playing: false }); }
+      setSongLoad(false);
+      refreshing = false;
     }
+
     load();
-    const i = setInterval(load, 15000);
-    return () => clearInterval(i);
-  }, [songTop]);
+    const syncInterval = setInterval(load, 10000);
+
+    return () => {
+      clearInterval(syncInterval);
+    };
+  }, []);
 
   return (
     <div className="text-black bg-gray-50 dark:bg-zinc-900 dark:text-white flex flex-col min-h-screen w-full font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
@@ -352,6 +365,7 @@ export default function Home() {
           <button onClick={() => Router.push('/domains')} className="hidden border-2 border-indigo-500 text-indigo-400 hover:bg-indigo-600/20 px-2 py-1 rounded-sm text-sm transition">Domains</button>
           <button onClick={() => Router.push('/subdomains')} className="border-2 border-indigo-500 text-indigo-400 hover:bg-indigo-600/20 px-2 py-1 rounded-sm text-sm transition cursor-pointer">Subdomains</button>
           <div className="hidden sm:flex gap-1"><Socials /></div>
+          <div className="hidden md:flex"><Status /></div>
         </nav>
         <div className="flex items-center gap-2"><LiveStatus /></div>
       </header>
@@ -367,20 +381,12 @@ export default function Home() {
               <button onClick={() => Router.push('/subdomains')} className="border-2 border-gray-800 text-gray-700 dark:border-gray-200 dark:text-gray-300 hover:bg-indigo-600/20 px-2 py-2 rounded-sm text-sm transition cursor-pointer">Subdomains</button>
               <div className="flex sm:hidden gap-1"><Socials /></div>
             </div>
+            <div className="md:hidden flex mt-2"><Status /></div>
             <Webring />
             <div className="sm:hidden mt-3 flex items-center gap-2 w-full text-center"><LiveStatus /></div>
             <Counters />
-            {(songdata && songdata.playing) && (
-              <div className="flex flex-col gap-3 mt-3 p-3 rounded-xl bg-black/20 border border-white/10 w-full max-w-sm">
-                <div className="font-semibold text-lg">Listening</div>
-                <a href={songdata.url} target="_blank" className="flex gap-3 items-center">
-                  <img src={songdata.cover} alt="" className="w-14 h-14 rounded-md" />
-                  <div className="flex flex-col">
-                    <div className="font-semibold text-cyan-500">{songdata.title}</div>
-                    <div className="text-sm opacity-70">{songdata.artist}</div>
-                  </div>
-                </a>
-              </div>
+            {songdata && songdata.playing && (
+              <Spotify songData={songdata} loading={songLoad} />
             )}
             {(songdata && !songdata.playing) && (
               <div className="flex md:hidden flex-col gap-3 p-3 mt-3 rounded-xl bg-black/20 border border-white/10 w-full max-w-sm">

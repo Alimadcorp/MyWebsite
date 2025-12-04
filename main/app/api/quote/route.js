@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const KVDB_BUCKET = "https://kvdb.io/GwCEXMSk3aark8ce5tYeK2/quote";
+const KVDB_BUCKET = process.env.KVDB_BUCKET;
 
 export async function GET() {
   try {

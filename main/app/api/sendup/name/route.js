@@ -24,7 +24,7 @@ export async function GET(request) {
     path: "/api/student/getStudentInformation/"+u,
     method: "GET",
     headers: {
-        Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IlJPTEUiOiJTVERSIiwiWUVBUiI6MjAyMywiQ19DT0RFIjoxLCJSTiI6MTIyNCwiRF9JRCI6MTAwLCJNQUpfSUQiOjYzLCJTRV9JRCI6NzIwLCJST0xOTyI6IjEyMjQtMS0yMyIsIk5NIjoiQWJvdXphciIsIkRFUyI6IkYuQSAvIEYuU2MiLCJJTlNUX05PIjoyfSwiaWF0IjoxNzY0Mzg2NDYzfQ.J-agFqz0fPO1xAvrq9_ckvhZu6XC8DqHnhaXKsW8Wdc",
+        Authorization: "Bearer "+process.env.LMS_KEY,
         'X-Client-Key': "vc4gmsFecSPqhm1mqzKCwBif1rBb4P0xNXgI",
         Referer: 'https://lms.gcu.edu.pk/student/studentInformation',
         'User-Agent': "Mozilla/4.9 (Windows NT 11.0; Win64; x64) AppleWebKit (KHTML, like Gecko) Chrome/136.0.0.0 Safari/527.36"
@@ -42,7 +42,7 @@ export async function GET(request) {
     req.end();
   });
   let b = JSON.parse(body);
-  let r = { name: b.NM, father: b.F_NM };
+  let r = { name: b.NM };
 
   return new Response(JSON.stringify(r), { headers: CORS });
 }

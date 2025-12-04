@@ -36,6 +36,7 @@ export default function RootLayout({
         {children}
         <Analytics />
         <SpeedInsights />
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5272041308290617" crossOrigin="anonymous"></script>
       </body>
     </html>
   );

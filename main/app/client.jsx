@@ -8,17 +8,19 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo, useRef } from "react";
 import GitHubCalendar from "react-github-calendar";
 import Status from "@/components/status"
+import GithubStats from "@/components/github";
+import Presence from "@/components/presence";
 
-function Socials() {
+function Socials({sizer=24}) {
   return (<>
-    <a href="https://alimad.itch.io" target="_blank" className="border-2 border-[#FA5C5C] text-[#FA5C5C] hover:bg-[#FA5C5C]/30 rounded-full p-1 px-2"><SiItchdotio size={16} /></a>
-    <a href="https://youtube.com/@alimadco" target="_blank" className="border-2 border-red-500 text-red-500 hover:bg-red-500/30 rounded-full p-1 px-2"><SiYoutube size={16} /></a>
-    <a href="https://github.com/Alimadcorp" target="_blank" className="border-2 border-gray-400 text-gray-400 hover:bg-gray-700/30 rounded-full p-1 px-2"><SiGithub size={16} /></a>
-    <a href="https://discord.gg/fY4Q8rKsz4" target="_blank" className="border-2 border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2]/30 rounded-full p-1 px-2"><SiDiscord size={16} /></a>
-    <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-[#933294] text-[#933294] hover:bg-[#933294]/30 rounded-full p-1 px-2"><SiSlack size={16} /></a>
-    <a href="https://instagram.com/alimadco" target="_blank" className="border-2 border-[#ff41b3] text-[#ff41b3] hover:bg-[#ff41b3]/30 rounded-full p-1 px-2"><SiInstagram size={16} /></a>
-    <a href="mailto:alimad.co.ltd@gmail.com" target="_blank" className="border-2 border-[#0022ff] text-[#0022ff] hover:bg-[#0022ff]/30 rounded-full p-1 px-2"><SiGmail size={16} /></a>
-    <a href="tel:+923124503700" target="_blank" className="border-2 border-[#64dfd2] text-[#64dfd2] hover:bg-[#64dfd2]/30 rounded-full p-1 px-2"><Phone size={16} /></a>
+    <a href="https://alimad.itch.io" target="_blank" className="border-2 border-[#FA5C5C] text-[#FA5C5C] hover:bg-[#FA5C5C]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiItchdotio                  size={sizer} /></a>
+    <a href="https://youtube.com/@alimadco" target="_blank" className="border-2 border-red-500 text-red-500 hover:bg-red-500/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiYoutube                   size={sizer} /></a>
+    <a href="https://github.com/Alimadcorp" target="_blank" className="border-2 border-gray-400 text-gray-400 hover:bg-gray-700/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGithub                 size={sizer} /></a>
+    <a href="https://discord.gg/fY4Q8rKsz4" target="_blank" className="border-2 border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiDiscord             size={sizer} /></a>
+    <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-[#933294] text-[#933294] hover:bg-[#933294]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiSlack size={sizer} /></a>
+    <a href="https://instagram.com/alimadco" target="_blank" className="border-2 border-[#ff41b3] text-[#ff41b3] hover:bg-[#ff41b3]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiInstagram          size={sizer} /></a>
+  <a href="mailto:alimad.co.ltd@gmail.com" target="_blank" className="border-2 border-[#0022ff] text-[#0022ff] hover:bg-[#0022ff]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGmail                size={sizer} /></a>
+    <a href="tel:+923124503700" target="_blank" className="border-2 border-[#64dfd2] text-[#64dfd2] hover:bg-[#64dfd2]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><Phone                             size={sizer} /></a>
   </>);
 }
 
@@ -65,7 +67,7 @@ function Webring() {
   const current = members[index];
 
   return (
-    <div className="mt-6 text-left w-full max-w-4xl">
+    <div className="mt-6 text-left w-full max-w-5xl">
       <p>Check out my friends' cool websites:</p>
       <div className="flex justify-left items-start gap-3 mt-2 w-full">
         <button
@@ -129,7 +131,7 @@ function Counters() {
     { label: "Page Views", value: pageVisitors },
     { label: "Total Ideas", value: ideasCount }
   ], [pageViews, pageVisitors, ideasCount]);
-  return (<div className="flex flex-wrap gap-2 md:gap-4 justify-center sm:justify-start mt-6 w-full max-w-4xl">
+  return (<div className="flex flex-wrap gap-2 md:gap-4 justify-center sm:justify-start mt-6 w-full max-w-5xl">
     {counters.map((c, i) => (
       <div key={i} className="flex flex-col items-center justify-center p-1 sm:p-3 rounded-lg border-2 border-cyan-600 bg-white/20 dark:bg-black/20 hover:bg-cyan-900/20 w-24 h-18 sm:w-36 sm:h-24 transition-all">
         <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{c.label}</span>
@@ -154,7 +156,7 @@ function QuoteOfTheDay() {
   if (!quote) return <div className="text-gray-500 mt-8 text-left">Loading quote...</div>;
 
   return (
-    <div className="mt-8 p-4 text-justify w-full max-w-4xl mx-auto border-l-4 border-gray-600">
+    <div className="mt-8 p-4 text-justify w-full max-w-5xl mx-auto border-l-4 border-gray-600 translate-x-1">
       <p className="text-lg sm:text-xl text-gray-900 dark:text-gray-100 italic">“{quote.quote}”</p>
       {quote.writer !== "Unknown" && <p className="text-sm text-gray-400 mt-2">- {quote.writer}</p>}
       <p className="text-xs text-gray-500 mt-1">
@@ -359,29 +361,36 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="text-black bg-gray-50 dark:bg-zinc-900 dark:text-white flex flex-col min-h-screen w-full font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
+    <div className="text-black bg-gray-50 dark:bg-zinc-950 dark:text-white flex flex-col min-h-screen w-full font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
       <header className="fixed top-0 w-full h-12 bg-black/90 dark:bg-black/50 backdrop-blur-sm border-b border-gray-800 hidden sm:flex items-center justify-between px-3 sm:px-6 z-50">
         <nav className="flex items-center gap-2">
-          <button onClick={() => Router.push('/domains')} className="hidden border-2 border-indigo-500 text-indigo-400 hover:bg-indigo-600/20 px-2 py-1 rounded-sm text-sm transition">Domains</button>
           <button onClick={() => Router.push('/subdomains')} className="border-2 border-indigo-500 text-indigo-400 hover:bg-indigo-600/20 px-2 py-1 rounded-sm text-sm transition cursor-pointer">Subdomains</button>
-          <div className="hidden sm:flex gap-1"><Socials /></div>
-          <div className="hidden md:flex"><Status /></div>
+          <div className="hidden sm:flex gap-1"><Socials sizer={20} /></div>
         </nav>
         <div className="flex items-center gap-2"><LiveStatus /></div>
       </header>
 
-      <main className="flex flex-col flex-grow mt-0 sm:mt-12 px-6 overflow-x-hidden sm:px-8 py-10 sm:py-14 items-center text-center sm:text-left bg-gradient-to-br from-zinc-200 via-gray-300 to-white border-gray-200 dark:from-zinc-900 dark:via-gray-900 dark:to-black border-t dark:border-gray-800 w-full">
-        <div className="max-w-4xl w-full flex">
-          <div className="max-w-4xl w-full">
+      <main className="flex flex-col flex-grow mt-0 sm:mt-12 px-6 overflow-x-hidden sm:px-8 py-10 sm:py-14 items-center text-center sm:text-left bg-gradient-to-br from-zinc-200 via-gray-300 to-white border-gray-200 dark:from-zinc-950 dark:via-gray-950 dark:to-black border-t dark:border-gray-800 w-full">
+        <div className="max-w-5xl w-full flex">
+          <div className="max-w-5xl w-full">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 text-cyan-400">Hello, World!</h1>
             <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
             <a href="https://blog.alimad.co/e" className="text-cyan-500 underline text-sm sm:text-base mb-3 hidden">I am currently unavailable</a>
             <p className="text-gray-600 dark:text-gray-400 text-sm">{myIdea ? `One "${myIdea}" coming up!` : 'Keep giving ideas...'}</p>
-            <div className="grid sm:hidden items-center gap-2 mt-3 max-w-4xl">
-              <button onClick={() => Router.push('/subdomains')} className="border-2 border-gray-800 text-gray-700 dark:border-gray-200 dark:text-gray-300 hover:bg-indigo-600/20 px-2 py-2 rounded-sm text-sm transition cursor-pointer">Subdomains</button>
-              <div className="flex sm:hidden gap-1"><Socials /></div>
+            <div className="grid sm:hidden grid-cols-1 gap-2 mt-3 max-w-5xl w-full px-2">
+              <button
+                onClick={() => Router.push('/subdomains')}
+                className="border-2 min-w-0 w-full border-gray-800 text-gray-700 
+               dark:border-gray-200 dark:text-gray-300 
+               hover:bg-indigo-600/20 px-3 py-2 rounded-sm text-sm 
+               transition cursor-pointer"
+              >
+                Subdomains
+              </button>
+              <div className="grid grid-cols-4 gap-2 min-w-0 w-full">
+                <Socials sizer={25} />
+              </div>
             </div>
-            <div className="md:hidden flex mt-2"><Status /></div>
             <Webring />
             <div className="sm:hidden mt-3 flex items-center gap-2 w-full text-center"><LiveStatus /></div>
             <Counters />
@@ -390,7 +399,7 @@ export default function Home() {
             )}
             {(songdata && !songdata.playing) && (
               <div className="flex md:hidden flex-col gap-3 p-3 mt-3 rounded-xl bg-black/20 border border-white/10 w-full max-w-sm">
-                <div className="font-semibold text-lg">Top Tracks</div>
+                <div className="font-semibold text-lg">Favourite Tracks</div>
                 <div className="flex flex-col gap-2">
                   {songTop.map((t, i) => (
                     <a
@@ -414,7 +423,7 @@ export default function Home() {
 
           {(songdata && !songdata.playing) && (
             <div className="hidden md:flex flex-col gap-3 p-3 rounded-xl bg-black/20 border border-white/10 w-full max-w-sm">
-              <div className="font-semibold text-lg">Top Tracks</div>
+              <div className="font-semibold text-lg">Favourite Tracks</div>
               <div className="flex flex-col gap-2">
                 {songTop.map((t, i) => (
                   <a
@@ -435,43 +444,15 @@ export default function Home() {
             </div>
           )}
         </div>
+        <Presence />
         <QuoteOfTheDay />
-
-        <div className="mt-8 w-full max-w-4xl hidden">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-cyan-400">Recent GitHub Commits</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 overflow-y-auto max-h-[40vh] sm:max-h-[80vh] pb-4 px-2">
-            {commits.map((c, i) => (
-              <a key={i} href={c.url} target="_blank" className="bg-gray-200 dark:bg-gray-800 p-3 rounded-md shadow-lg hover:shadow-cyan-500/50 transition flex flex-col border-2 border-transparent hover:border-cyan-400/50">
-                <p className="font-mono text-xs sm:text-sm truncate text-gray-800 dark:text-gray-200">{c.message}</p>
-                <p className="text-xs text-gray-500 mt-1">{c.repo}</p>
-                <p className="text-xs text-gray-500">{new Date(c.date).toLocaleDateString()}</p>
-              </a>
-            ))}
-          </div>
+        <GithubStats />
+        <div className="flex justify-center items-center mt-8 w-full overflow-x-auto mb-8">
+          <GitHubCalendar username="Alimadcorp" theme={{
+            light: ['#bbb', 'rgb(18, 186, 255)'],
+            dark: ['#222', 'rgb(18, 186, 255)'],
+          }} />
         </div>
-        <div className="flex justify-center items-center mt-8 w-full overflow-x-auto">
-          <GitHubCalendar username="Alimadcorp" />
-        </div>
-
-        <div className="grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl mt-6 dark:grid hidden">
-          {[
-            "https://stats.github.alimad.co/api?username=alimadcorp&show_icons=true&theme=dark&count_private=true",
-            "https://stats.github.alimad.co/api/top-langs/?username=alimadcorp&layout=compact&theme=dark",
-            "https://lanyard-profile-readme.vercel.app/api/888954248199549030?idleMessage=Not%20Active%20Rn&showDisplayName=true&theme=dark"
-          ].map((src, i) => (
-            <img key={i} src={src} alt="Stat" className="w-full h-60 object-contain rounded-lg" />
-          ))}
-        </div>
-        <div className="grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl mt-6 dark:hidden grid">
-          {[
-            "https://stats.github.alimad.co/api?username=alimadcorp&show_icons=true&theme=light&count_private=true",
-            "https://stats.github.alimad.co/api/top-langs/?username=alimadcorp&layout=compact&theme=light",
-            "https://lanyard-profile-readme.vercel.app/api/888954248199549030?idleMessage=Not%20Active%20Rn&showDisplayName=true&theme=light"
-          ].map((src, i) => (
-            <img key={i} src={src} alt="Stat" className="w-full h-60 object-contain rounded-lg" />
-          ))}
-        </div>
-
         <span className="flex flex-wrap gap-0  max-w-4xl">
           <WebButton
             src="https://cdn.alimad.co/f/static/ecz.png"
@@ -509,9 +490,9 @@ export default function Home() {
             href="https://thememesniper.dev"
           />
           <WebButton
-            src="/buttons/cvfd.gif"
-            title="notfire"
-            href="https://notfire.cc"
+            src="https://authenyo.xyz/images/button.gif"
+            title="authenyo"
+            href="https://authenyo.xyz"
           />
           <WebButton
             src="/buttons/kopper.png"

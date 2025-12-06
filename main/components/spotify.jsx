@@ -32,53 +32,80 @@ function getActiveLineIndex(parsedLyrics, progressMs) {
 
 function convertPlainToSynced(lines, durationMs) {
   if (!lines?.length || !durationMs) return [];
-  const step = durationMs / lines.length;
-  return lines.map((text, i) => ({
-    time: Math.floor(i * step),
-    text: text.trim()
-  }));
+  const totalPadding = 6000;
+  const availableDuration = Math.max(durationMs - totalPadding, 0);
+  const lengths = lines.map(l => l.length || 1);
+  const totalLength = lengths.reduce((a, b) => a + b, 0);
+  let cumulativeTime = 3000;
+  return lines.map((text, i) => {
+    const lineDuration = totalLength
+      ? (lengths[i] / totalLength) * availableDuration
+      : availableDuration / lines.length;
+    const obj = { time: Math.floor(cumulativeTime), text: text.trim() };
+    cumulativeTime += lineDuration;
+    return obj;
+  });
 }
 
-export default function Spotify({ songData: songDataFromParent, loading: loadingFromParent }) {
+function getScriptFont(text) {
+  return `Geist`;
+  if (/[\u0600-\u06FF]/.test(text)) return "Jameel";
+  if (/[\u4E00-\u9FFF]/.test(text)) return "NotoSansSC";
+  if (/[\u3040-\u30FF]/.test(text)) return "NotoSansJP";
+  if (/[\u0590-\u05FF]/.test(text)) return "HebrewFont";
+}
+
+export default function Spotify({ songData: songDataFromParent, loading: loadingFromParent, onEnd }) {
   const [localSongData, setLocalSongData] = useState(songDataFromParent);
   const [parsedLyrics, setParsedLyrics] = useState([]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef(null);
+  const [unsynced, setUnsynced] = useState(false);
   const perfStartRef = useRef(performance.now());
+  const darkMode = document.documentElement.classList.contains("dark");
   const baseProgressRef = useRef(songDataFromParent?.progressMs || 0);
   const lastFetchedRef = useRef(null);
+  const onEndCalledRef = useRef(false);
   const lyricsContainerRef = useRef(null);
+  useEffect(() => {
+    if (!localSongData || localSongData.percentage == null) return;
 
+    if (localSongData.percentage >= 99.99 && !onEndCalledRef.current) {
+      onEnd?.();
+      onEndCalledRef.current = true;
+    }
+  }, [localSongData?.percentage, onEnd]);
   useEffect(() => {
     if (!localSongData) return;
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith("lyrics_")) localStorage.removeItem(key);
-    });
+    setParsedLyrics([]);
+    setUnsynced(false);
+    onEndCalledRef.current = false;
 
     const id = `${localSongData.title}_${localSongData.artist}`;
     if (lastFetchedRef.current === id) return;
     lastFetchedRef.current = id;
 
-    const key = `lyrics_${id}`.replaceAll(/\s+/g, "_").toLowerCase();
+    const key = `lyric_${id}`.replaceAll(/\s+/g, "_").toLowerCase();
     const cached = localStorage.getItem(key);
-    if (cached) {
-      const obj = JSON.parse(cached);
-      setParsedLyrics(obj.synced ? parseLRC(obj.synced) : obj.plainLines || []);
-      return;
-    }
-
     (async () => {
       try {
-        const r = await fetch(`/api/spotify/lyrics?title=${encodeURIComponent(localSongData.title)}&artist=${encodeURIComponent(localSongData.artist)}`);
-        const j = await r.json();
-        if (!j.synced && !j.plain) return;
+        let j;
+        if (cached && false) {
+          j = JSON.parse(cached);
+        } else {
+          const r = await fetch(`/api/spotify/lyrics?title=${encodeURIComponent(localSongData.title)}&artist=${encodeURIComponent(localSongData.artist)}`);
+          if (!r.ok) return;
+          j = await r.json();
+          localStorage.setItem(key, JSON.stringify(j));
+        }
+        if (!j.synced && !j.plainLines) return;
+        if (!j.synced && j.plainLines) setUnsynced(true);
         const payload = j.synced
           ? { synced: j.synced }
-          : { plainLines: j.plain.split("\n").map(l => l.trim() || "♪") }; // add music note for empty lines
-        localStorage.setItem(key, JSON.stringify(payload));
+          : { plainLines: j.plainLines.split("\n").map(l => l.trim() || "♪") };
         const next = payload.synced
           ? parseLRC(payload.synced)
-          : convertPlainToSynced(payload.plainLines || [], localSongData.durationMs || 0);
+          : (localSongData.durationMs
+            ? convertPlainToSynced(payload.plainLines || [], localSongData.durationMs)
+            : (payload.plainLines || []).map(text => ({ time: 0, text })));
         setParsedLyrics(next);
       } catch (e) {
         console.error("Failed fetching lyrics", e);
@@ -113,7 +140,7 @@ export default function Spotify({ songData: songDataFromParent, loading: loading
       && getActiveLineIndex(parsedLyrics, localSongData.progressMs);
 
     const lineHeight = container.scrollHeight / parsedLyrics.length;
-    const targetScroll = Math.max(0, lineHeight * (activeIndex - 2)); // center 5 lines
+    const targetScroll = Math.max(0, lineHeight * (activeIndex - 2));
 
     container.scrollTo({ top: targetScroll, behavior: "smooth" });
   }, [localSongData?.progressMs, parsedLyrics]);
@@ -122,22 +149,21 @@ export default function Spotify({ songData: songDataFromParent, loading: loading
   if (!localSongData) return null;
 
   return (
-    <div className="flex flex-col gap-3 mt-3 p-4 rounded-xl bg-black/20 border border-white/10 w-full text-left">
-      <div className="font-semibold text-lg tracking-tight">Listening</div>
+    <div className={"flex flex-col gap-3 mt-3 p-4 rounded-xl dark:bg-black/20 border-2 dark:border-white/10 w-full text-left " + (localSongData.playing ? "" : "grayscale-100")}>
+      <div className="font-semibold text-lg tracking-tight">{localSongData.playing ? "Listening" : "Paused"}</div>
 
-      <a href={localSongData.url || "#"} target="_blank" className="flex items-center gap-3 w-full truncate overflow-ellipsis">
+      <a href={localSongData.url || "#"} target="_blank" className="flex items-center gap-3 w-full truncate overflow-ellipsis dark:grayscale-0 grayscale-100">
         {localSongData.cover && <img src={localSongData.cover} alt="" className="w-16 h-16 rounded-md shadow-sm" />}
         <div className="flex flex-col leading-tight w-full">
-          <div className="font-semibold text-cyan-400 truncate">{localSongData.title || "Unknown Title"}</div>
+          <div className="font-semibold dark:text-cyan-400 truncate">{localSongData.title || "Unknown Title"}</div>
           <div className="text-sm opacity-70 truncate">{localSongData.artist || "Unknown Artist"}</div>
           {localSongData.album && <div className="text-xs opacity-50 truncate">{localSongData.album}</div>}
         </div>
       </a>
-
       {localSongData.progressMs != null && localSongData.durationMs != null && (
         <div className="w-full grid grid-cols-1 gap-2">
-          <div className="w-full h-1 bg-white/10 rounded-md overflow-hidden">
-            <div className="h-full transition-all" style={{ width: `${localSongData.percentage || 0}%`, backgroundColor: !loadingFromParent ? "#06b6d4" : "#10b981" }} />
+          <div className="w-full h-1 dark:bg-white/10 bg-black/10 rounded-md overflow-hidden">
+            <div className="h-full transition-all" style={{ width: `${localSongData.percentage || 0}%`, backgroundColor: darkMode ? (!loadingFromParent ? "#06b6d4" : "#10b981") : (!loadingFromParent ? "#000" : "#333") }} />
           </div>
           <div className="w-full flex justify-between">
             <div className="text-xs opacity-70 text-left font-mono">{(localSongData.progressMs / localSongData.durationMs * 100).toFixed(2)}%</div>
@@ -145,18 +171,29 @@ export default function Spotify({ songData: songDataFromParent, loading: loading
           </div>
         </div>
       )}
-
       {parsedLyrics.length > 0 && (
-        <div
-          ref={lyricsContainerRef}
-          className="mt-2 flex flex-col gap-1 max-h-40 text-md text-wrap wrap-break-word"
-          style={{ overflow: "hidden", pointerEvents: "none" }}
-        >
-          {parsedLyrics.map((line, i) => (
-            <div key={i} className={i === getActiveLineIndex(parsedLyrics, localSongData.progressMs) ? "text-cyan-400 font-semibold" : "opacity-50"}>
-              {typeof line === "object" ? (line.text || "♪") : (line || "♪")}
-            </div>
-          ))}
+        <div className="flex flex-col">
+          <div
+            ref={lyricsContainerRef}
+            className="mt-2 flex flex-col gap-1 max-h-40 text-md text-wrap wrap-break-word"
+            style={{ overflow: "hidden", pointerEvents: "none" }}
+          >
+            {parsedLyrics.map((line, i) => {
+              const text = typeof line === "object" ? line.text || "♪" : line || "♪";
+              const font = getScriptFont(text);
+              return (
+                <div
+                  key={i}
+                  className={i === getActiveLineIndex(parsedLyrics, localSongData.progressMs)
+                    ? "dark:text-cyan-400 font-semibold"
+                    : "opacity-50 "}
+                >
+                  {text}
+                </div>
+              );
+            })}
+          </div>
+          {unsynced && <div className="text-xs opacity-50 mt-2 text-right">Unsynced</div>}
         </div>
       )}
     </div>

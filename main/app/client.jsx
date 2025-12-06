@@ -16,12 +16,12 @@ import Spotify from '@/components/spotify'
 function Socials({ sizer = 24 }) {
   return (<>
     <a href="https://alimad.itch.io" target="_blank" className="border-2 border-[#FA5C5C] text-[#FA5C5C] hover:bg-[#FA5C5C]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiItchdotio size={sizer} /></a>
-    <a href="https://youtube.com/@alimadco" target="_blank" className="border-2 border-red-500 text-red-500 hover:bg-red-500/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiYoutube size={sizer} /></a>
+    <a href="https://youtube.com/@alimadco" target="_blank" className="border-2 border-red-400 text-red-400 hover:bg-red-400/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiYoutube size={sizer} /></a>
     <a href="https://github.com/Alimadcorp" target="_blank" className="border-2 border-gray-400 text-gray-400 hover:bg-gray-700/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGithub size={sizer} /></a>
     <a href="https://discord.gg/fY4Q8rKsz4" target="_blank" className="border-2 border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiDiscord size={sizer} /></a>
-    <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-[#933294] text-[#933294] hover:bg-[#933294]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiSlack size={sizer} /></a>
-    <a href="https://instagram.com/alimadco" target="_blank" className="border-2 border-[#ff41b3] text-[#ff41b3] hover:bg-[#ff41b3]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiInstagram size={sizer} /></a>
-    <a href="mailto:alimad.co.ltd@gmail.com" target="_blank" className="border-2 border-[#0022ff] text-[#0022ff] hover:bg-[#0022ff]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGmail size={sizer} /></a>
+    <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-[#a248a3] text-[#a248a3] hover:bg-[#a248a3]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiSlack size={sizer} /></a>
+    <a href="https://instagram.com/alimadco" target="_blank" className="border-2 border-[#ff62c0] text-[#ff62c0] hover:bg-[#ff62c0]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiInstagram size={sizer} /></a>
+    <a href="mailto:alimad.co.ltd@gmail.com" target="_blank" className="border-2 border-[#4b63ff] text-[#4b63ff] hover:bg-[#4b63ff]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGmail size={sizer} /></a>
     <a href="tel:+923124503700" target="_blank" className="border-2 border-[#64dfd2] text-[#64dfd2] hover:bg-[#64dfd2]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><Phone size={sizer} /></a>
   </>);
 }
@@ -325,7 +325,7 @@ function TheFooter() {
       Made with{" "}
       <span
         onClick={handleClick}
-        className="animate-pulse text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-pink-500 to-rose-500 cursor-pointer transition-transform active:scale-125"
+        className="animate-pulse text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-pink-500 to-rose-500 cursor-pointer transition-transform"
         title={
           count < 315
             ? `${315 - count} clicks left...`
@@ -335,7 +335,7 @@ function TheFooter() {
         ❤️
       </span>{" "}
       by
-      <span className="ml-1 font-semibold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-cyan-300">
+      <span className="ml-1 font-semibold text-transparent bg-clip-text dark:bg-gradient-to-r dark:from-cyan-500 dark:to-cyan-300 bg-black">
         Muhammad Ali
       </span>
       {revealed.map((msg, i) => (
@@ -351,25 +351,19 @@ function TheFooter() {
 export default function Home() {
   const [panel, setPanel] = useState(false);
   const [myIdea, setMyIdea] = useState("");
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [wakatimeActivity, setWakatimeActivity] = useState([]);
   const themer = { light: ['#222', 'rgb(18,186,255)'], dark: ['#222', 'rgb(18,186,255)'] };
   const themer2 = { light: ['#ddd', '#000'], dark: ['#ddd', '#000'] };
   const Router = useRouter();
   useEffect(() => {
-    fetch("/api/status/wakatime").then(r => r.json()).then(d => setWakatimeActivity(d));
+    const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setDarkMode(isDark);
+    document.documentElement.classList.toggle("dark", isDark);
   }, []);
   useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    setDarkMode(saved !== "light");
+    fetch("/api/status/wakatime").then(r => r.json()).catch(e => { }).then(d => setWakatimeActivity(d)).catch(e => { });
   }, []);
-  function toggleDarkMode() {
-    document.documentElement.classList.toggle("dark", darkMode);
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }
-  useEffect(() => {
-    toggleDarkMode();
-  }, [darkMode]);
   useEffect(() => {
     const userAgent = navigator.userAgent;
     const host = location.host;
@@ -418,14 +412,19 @@ export default function Home() {
   const [songdata, setsongData] = useState(null)
   const [songLoad, setSongLoad] = useState(true)
   const [songTop, setSongTop] = useState([])
+  const [reloadRequired, setReloadRequired] = useState(false);
   useEffect(() => {
     fetch("/api/spotify/top").then(r => r.json()).then((t) => { setSongTop(t.tracks.slice(0, 7)) });
   }, []);
+  const reloadSpotify = () => {
+    setReloadRequired(true);
+  };
   useEffect(() => {
     let refreshing = false;
     async function load() {
       try {
         if (refreshing) return;
+        setReloadRequired(false);
         setSongLoad(true);
         refreshing = true;
         const now = await fetch("/api/spotify/me").then(r => r.json());
@@ -436,31 +435,31 @@ export default function Home() {
     }
     load();
     const syncInterval = setInterval(load, 10000);
+    setInterval(() => {
+      if (reloadRequired) {
+        load();
+      }
+    }, 500);
     return () => {
       clearInterval(syncInterval);
     };
   }, []);
   return (
     <div className="text-black bg-gray-50 dark:bg-zinc-950 dark:text-white flex flex-col min-h-screen w-full font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
-      <header className="fixed top-0 w-full h-12 bg-black/90 dark:bg-black/50 backdrop-blur-sm border-b border-gray-800 hidden sm:flex items-center justify-between px-3 sm:px-6 z-50">
+      <header className="fixed top-0 w-full h-12 dark:grayscale-0 dark:brightness-100 grayscale-100 brightness-200 bg-black/90 dark:bg-black/50 backdrop-blur-sm border-b border-gray-800 hidden sm:flex items-center justify-between px-3 sm:px-6 z-50">
         <nav className="flex items-center gap-2">
           <button onClick={() => Router.push('/subdomains')} className="border-2 border-indigo-500 text-indigo-400 hover:bg-indigo-600/20 px-2 py-1 rounded-sm text-sm transition cursor-pointer">Subdomains</button>
           <div className="hidden sm:flex gap-1"><Socials sizer={20} />
           </div>
         </nav>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="border-2 border-gray-500 text-gray-400 hover:bg-gray-500/20 px-2 py-1 rounded-sm text-sm transition cursor-pointer"
-          >
-            <LiveStatus />
-          </button>
+          <LiveStatus />
         </div>
       </header>
       <main className="flex flex-col flex-grow mt-0 sm:mt-12 px-6 overflow-x-hidden sm:px-8 py-10 sm:py-14 items-center text-center sm:text-left bg-transparent w-full">
         <div className="max-w-5xl w-full flex">
           <div className="max-w-5xl w-full">
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 text-cyan-400">Hello, World!</h1>
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 dark:text-cyan-400">Hello, World!</h1>
             <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
             {myIdea && <p className="text-gray-600 dark:text-gray-400 text-sm">{`One "${myIdea}" coming up!`}</p>}
             <div className="grid sm:hidden grid-cols-1 gap-2 mt-3 max-w-5xl w-full px-2">
@@ -480,10 +479,10 @@ export default function Home() {
             <Webring />
             <div className="sm:hidden mt-3 flex items-center gap-2 w-full text-center"><LiveStatus /></div>
             <Counters />
-            {songdata && songdata.playing && (
-              <Spotify songData={songdata} loading={songLoad} />
+            {songdata && songdata.title && (
+              <Spotify songData={songdata} loading={songLoad} onEnd={reloadSpotify} />
             )}
-            {(songdata && !songdata.playing) && (
+            {(songdata && !songdata.title) && (
               <div className="flex md:hidden flex-col gap-3 p-3 mt-3 rounded-xl dark:bg-black/20 border border-white/10 w-full">
                 <div className="font-semibold text-lg">Favourite Tracks</div>
                 <div className="flex flex-col gap-2">
@@ -506,7 +505,7 @@ export default function Home() {
               </div>
             )}
           </div>
-          {(songdata && !songdata.playing) && (
+          {(songdata && !songdata.title) && (
             <div className="hidden md:flex flex-col gap-3 p-3 rounded-xl dark:bg-black/20 border border-white/10 w-full max-w-sm">
               <div className="font-semibold text-lg">Favourite Tracks</div>
               <div className="flex flex-col gap-2">

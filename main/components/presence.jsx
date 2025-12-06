@@ -60,7 +60,7 @@ export default function StatusViewer() {
           url="https://hackclub.enterprise.slack.com/team/U08LQFRBL6S"
         />
         {meta.slack.status_text && (
-          <div className="flex items-center gap-1 p-3 mt-3 rounded-xl dark:bg-white/5 bg-black/5">
+          <div className="flex items-center gap-1 p-3 mt-3 rounded-xl dark:bg-white/5 bg-black/5 dark:grayscale-0 grayscale-100">
             <span
               className="leading-none flex items-center justify-center"
               dangerouslySetInnerHTML={{ __html: renderEmoji(meta.slack.status_emoji) }}
@@ -116,7 +116,7 @@ function UserRow({ user, avatar, status, tag, platform, url }) {
   return (
     <div className="flex items-center gap-3">
       <div className="relative">
-        {avatar && <img src={avatar} className="w-12 h-12 rounded-full" />}
+        {avatar && <img src={avatar} className="w-12 h-12 rounded-full dark:grayscale-0 grayscale-100" />}
         <div className={`w-3 h-3 rounded-full absolute bottom-0 right-0 border-2 border-white dark:border-black ${statusColor(status)}`} />
       </div>
       <div className="text-sm text-left">
@@ -131,7 +131,7 @@ function UserRow({ user, avatar, status, tag, platform, url }) {
 function Activity({ a }) {
   if (a.type === 4) {
     return (
-      <div className="flex gap-2 items-center p-2 rounded-lg dark:bg-white/5 bg-black/5">
+      <div className="flex gap-2 items-center p-2 rounded-lg dark:bg-white/5 bg-black/5 dark:grayscale-0 grayscale-100">
         {a.emoji && <span className="text-lg">{a.emoji}</span>}
         <div className="text-xs font-medium">{a.state}</div>
       </div>

@@ -60,7 +60,7 @@ export default function Loading() {
       </h1>
 
       <p className="mt-4 text-gray-400 text-sm z-10">
-        <span className="text-gray-200">{(seconds/1009).toPrecision(7)} Go Brrrr</span>
+        <span className="text-gray-200">{/*(seconds/1009).toPrecision(7)*/}Go Brrrr</span>
       </p>
 
       <style jsx>{`

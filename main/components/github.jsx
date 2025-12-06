@@ -215,7 +215,7 @@ export default function GithubStats() {
               </div>
             </div>
             <h2 className="text-xl font-bold my-4">Top Languages this Week</h2>
-            <div className="grid grid-cols-2 gap-3 max-h-80 overflow-auto [&::-webkit-scrollbar]:hidden scrollbar-none">
+            <div className="grid grid-cols-2 gap-3 max-h-90 overflow-hidden">
               {data.wakatime.languages.slice(0, 12).map((lang, i) => (
                 <div key={lang.name} className="flex items-center gap-3 p-0 rounded-lg">
                   <div className="w-8 h-8 rounded-lg dark:bg-white/10 bg-black/10 flex items-center justify-center">

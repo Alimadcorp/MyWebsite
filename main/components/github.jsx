@@ -92,7 +92,6 @@ export default function GithubStats() {
 
   useEffect(() => {
     let r = () => fetch("/api/status/github").then((res) => res.json()).then((jsonData) => { setData(jsonData) });
-    setInterval(r, 60 * 1000);
     r();
   }, [])
 

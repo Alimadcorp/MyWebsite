@@ -46,6 +46,8 @@
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pixel {

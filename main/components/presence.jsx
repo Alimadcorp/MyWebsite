@@ -15,15 +15,18 @@ const titleCase = (str) => str ? str[0].toUpperCase() + str.slice(1).toLowerCase
 export default function StatusViewer() {
   const [data, setData] = useState(null)
 
-  const fetchData = async () => {
-    const res = await fetch("/api/status?meta=true")
+  const fetchData = async (uh) => {
+    const res = await fetch("/api/status" + (uh ? "?meta=true" : ""))
     const json = await res.json()
-    setData(json)
+    setData(prev => ({
+      ...prev,
+      ...json
+    }))
   }
 
   useEffect(() => {
-    fetchData()
-    const t = setInterval(fetchData, 60_000)
+    fetchData(true)
+    const t = setInterval(() => fetchData(false), 60_000)
     return () => clearInterval(t)
   }, [])
 

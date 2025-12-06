@@ -11,11 +11,11 @@ export default function Subdomain({ domainName = "domain", suffix = "", visited 
       target="_blank"
       onClick={handleClick}
       className={`cursor-pointer text-left text-sm transition-all
-        hover:text-cyan-600 dark:hover:text-cyan-400
+        hover:text-gray-600 dark:hover:text-cyan-400
         ${live
-          ? "text-lime-600 dark:text-lime-400 font-bold"
+          ? "text-gray-600 dark:text-lime-400 font-bold"
           : visited
-            ? "text-green-700 dark:text-green-400"
+            ? "text-gray-700 dark:text-green-400"
             : "text-black dark:text-white/80"
         }`}
     >

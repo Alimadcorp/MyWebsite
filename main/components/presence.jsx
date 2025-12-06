@@ -4,10 +4,10 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 
 const statusColor = (s) => ({
-  online: "bg-green-500",
-  idle: "bg-yellow-500",
-  dnd: "bg-red-500",
-  offline: "bg-gray-500"
+  online: "dark:bg-green-500 bg-green-500",
+  idle: "dark:bg-yellow-500 bg-yellow-500",
+  dnd: "dark:bg-red-500 bg-red-500",
+  offline: "dark:bg-gray-500 bg-gray-800"
 }[s] || "bg-gray-500")
 
 const titleCase = (str) => str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : ""
@@ -60,13 +60,13 @@ export default function StatusViewer() {
           url="https://hackclub.enterprise.slack.com/team/U08LQFRBL6S"
         />
         {meta.slack.status_text && (
-          <div className="flex items-center gap-1 p-3 mt-3 rounded-xl bg-white/5">
+          <div className="flex items-center gap-1 p-3 mt-3 rounded-xl dark:bg-white/5 bg-black/5">
             <span
               className="leading-none flex items-center justify-center"
               dangerouslySetInnerHTML={{ __html: renderEmoji(meta.slack.status_emoji) }}
               aria-hidden="true"
             />
-            <span className="text-sm text-white/80">
+            <span className="text-sm">
               {meta.slack.status_text}
             </span>
           </div>
@@ -90,7 +90,7 @@ const renderEmoji = (text) => {
 
 function Badge({ children }) {
   return (
-    <span className="inline-flex px-1.5 py-0 rounded-md bg-white/10 border border-white/10 text-xs">
+    <span className="inline-flex px-1.5 py-0 rounded-md dark:bg-white/10 bg-black/10 border dark:border-white/10 border-black/10 text-xs">
       {children}
     </span>
   )
@@ -101,7 +101,7 @@ function Card({ title, status, children, url = "#" }) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full p-4 rounded-xl border border-white/10 bg-transparent shadow"
+      className="w-full p-4 rounded-xl border dark:border-white/10 border-black/10 bg-transparent shadow"
     >
       <div className="flex items-center gap-2 mb-3">
         <div className={`w-3 h-3 rounded-full ${statusColor(status)}`} />
@@ -117,7 +117,7 @@ function UserRow({ user, avatar, status, tag, platform, url }) {
     <div className="flex items-center gap-3">
       <div className="relative">
         {avatar && <img src={avatar} className="w-12 h-12 rounded-full" />}
-        <div className={`w-3 h-3 rounded-full absolute bottom-0 right-0 border-2 border-black ${statusColor(status)}`} />
+        <div className={`w-3 h-3 rounded-full absolute bottom-0 right-0 border-2 border-white dark:border-black ${statusColor(status)}`} />
       </div>
       <div className="text-sm text-left">
         <div className="flex gap-1"><a href={url} className="hover:underline"><div className="font-medium">{user}</div></a>
@@ -131,7 +131,7 @@ function UserRow({ user, avatar, status, tag, platform, url }) {
 function Activity({ a }) {
   if (a.type === 4) {
     return (
-      <div className="flex gap-2 items-center p-2 rounded-lg bg-white/5">
+      <div className="flex gap-2 items-center p-2 rounded-lg dark:bg-white/5 bg-black/5">
         {a.emoji && <span className="text-lg">{a.emoji}</span>}
         <div className="text-xs font-medium">{a.state}</div>
       </div>

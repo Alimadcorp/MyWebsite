@@ -67,7 +67,7 @@ function Webring() {
       <div className="flex justify-left items-start gap-3 mt-2 w-full">
         <button
           onClick={prev}
-          className="text-4xl font-bold text-cyan-500 hover:text-cyan-300 transition cursor-pointer"
+          className="text-4xl font-bold dark:text-cyan-500 dark:hover:text-cyan-300 transition cursor-pointer"
         >
           ‹
         </button>
@@ -75,13 +75,13 @@ function Webring() {
           href={current.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-cyan-500 border border-cyan-600 px-4 py-2 rounded-md hover:bg-cyan-600/20 transition text-base sm:text-lg w-full max-w-xs"
+          className="dark:text-cyan-500 border dark:border-cyan-600 px-4 py-2 rounded-md dark:hover:bg-cyan-600/20 transition text-base sm:text-lg w-full max-w-xs"
         >
           {current.member}
         </a>
         <button
           onClick={next}
-          className="text-4xl font-bold text-cyan-500 hover:text-cyan-300 transition cursor-pointer"
+          className="text-4xl font-bold dark:text-cyan-500 dark:hover:text-cyan-300 transition cursor-pointer"
         >
           ›
         </button>
@@ -124,7 +124,7 @@ function Counters() {
   ], [pageViews, pageVisitors, ideasCount]);
   return (<div className="flex flex-wrap gap-2 md:gap-4 justify-center sm:justify-start mt-6 w-full max-w-5xl">
     {counters.map((c, i) => (
-      <div key={i} className="flex flex-col items-center justify-center p-1 sm:p-3 rounded-lg border-2 border-cyan-600 bg-white/20 dark:bg-black/20 hover:bg-cyan-900/20 w-24 h-18 sm:w-36 sm:h-24 transition-all">
+      <div key={i} className="flex flex-col items-center justify-center p-1 sm:p-3 rounded-lg border-2 dark:border-cyan-600 bg-white/20 dark:bg-black/20 dark:hover:bg-cyan-900/20 w-full h-18 sm:w-36 sm:h-24 transition-all">
         <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{c.label}</span>
         <span className="text-md sm:text-3xl font-bold text-black dark:text-white">{c.value}</span>
       </div>
@@ -151,6 +151,140 @@ function QuoteOfTheDay() {
       </p>
     </div>
   );
+}
+function WebButtons() {
+  return (<span className="flex flex-wrap gap-0 max-w-4xl justify-center items-center">
+    <WebButton
+      src="https://cdn.alimad.co/f/static/ecz.png"
+      title="ErrorCode0"
+      href="https://errorcodezero.dev"
+    />
+    <WebButton
+      src="/buttons/hackclub.gif"
+      title="Hack Club"
+      href="https://hack.club"
+    />
+    <WebButton
+      src="/button.gif"
+      title="BomberFish"
+      href="https://bomberfish.ca/"
+    />
+    <WebButton
+      src="/buttons/ce88x31.gif"
+      title="velzie.d"
+      href="https://velzie.rip"
+    />
+    <WebButton
+      src="/buttons/thinlqd.gif"
+      title="ThinLiquid"
+      href="https://thinliquid.dev"
+    />
+    <WebButton
+      src="/buttons/foxmossbutton.gif"
+      title="FoxMoss"
+      href="https://foxmoss.com"
+    />
+    <WebButton
+      src="/buttons/k8.gif"
+      title="thememesniper"
+      href="https://thememesniper.dev"
+    />
+    <WebButton
+      src="https://authenyo.xyz/images/button.gif"
+      title="authenyo"
+      href="https://authenyo.xyz"
+    />
+    <WebButton
+      src="/buttons/kopper.png"
+      title="kopper"
+      href="https://w.on-t.work"
+    />
+    <WebButton
+      src="/buttons/melon.gif"
+      title="melontini"
+      href="https://melontini.me"
+    />
+    <WebButton
+      src="/buttons/aol-sucks.gif"
+      title="Good riddance."
+      href="https://help.aol.com/articles/dial-up-internet-to-be-discontinued"
+    />
+    <WebButton
+      src="/buttons/affection.gif"
+      title="<3"
+    />
+    <WebButton
+      src="/buttons/besteyes2.gif"
+      title="How else?"
+    />
+    <WebButton
+      src="/buttons/sun.gif"
+      title="Godspeed, Sun."
+    />
+    <WebButton
+      src="/buttons/firefox.gif"
+      title="Firefox is EVIL!"
+      href="https://lunduke.locals.com/post/5871895/mozilla-firefox-goes-anti-privacy-pro-advertising"
+    />
+    <WebButton
+      src="/buttons/smoke.gif"
+      title="Smokepowered"
+      href="https://smokepowered.com"
+    />
+    <WebButton
+      src="/buttons/blazed.png"
+      title="Epic MegaBlazed"
+      href="https://epicblazed.com"
+    />
+    <WebButton
+      src="/buttons/beos_now_anim.gif"
+      title="Download Haiku!"
+      href="https://haiku-os.org"
+    />
+    <WebButton
+      src="/buttons/mariokart.gif"
+      title="Play some Mario Kart!"
+      href="https://bomberfish.ca/N64Wasm"
+    />
+    <WebButton
+      src="/buttons/iframsuc.gif"
+      title="Iframes SUCK!"
+    />
+    <WebButton
+      src="/buttons/eightyeightthirtyone.gif"
+      title="88x31"
+      href="https://eightyeightthirty.one"
+    />
+    <WebButton
+      src="/buttons/melankorin.gif"
+      title="melankorin"
+      href="https://melankorin.net"
+    />
+    <WebButton
+      src="/buttons/lucida-2.gif"
+      title="Lucida: Free Music. No BS."
+      href="https://lucida.to"
+    />
+    <WebButton
+      src="/buttons/newgrounds.gif"
+      href="https://newgrounds.com"
+      title="Newgrounds!"
+    />
+    <WebButton
+      src="/buttons/modarchive.gif"
+      href="https://modarchive.org"
+      title="The Mod Archive"
+    />
+    <WebButton
+      src="/buttons/github.gif"
+      href="https://github.com/Alimadcorp"
+      title="Social Coding!"
+    />
+    <WebButton
+      src="/buttons/javanow.gif"
+      title="Java is underrated"
+    />
+  </span>);
 }
 function TheFooter() {
   const secrets = [
@@ -187,7 +321,7 @@ function TheFooter() {
     setTimeout(() => (clickLock.current = false), 30);
   }
   return (
-    <div className="mt-6 text-sm text-center text-gray-500 select-none">
+    <div className="mt-10 text-sm text-center text-gray-500 select-none">
       Made with{" "}
       <span
         onClick={handleClick}
@@ -219,6 +353,8 @@ export default function Home() {
   const [myIdea, setMyIdea] = useState("");
   const [darkMode, setDarkMode] = useState(true);
   const [wakatimeActivity, setWakatimeActivity] = useState([]);
+  const themer = { light: ['#222', 'rgb(18,186,255)'], dark: ['#222', 'rgb(18,186,255)'] };
+  const themer2 = { light: ['#ddd', '#000'], dark: ['#ddd', '#000'] };
   const Router = useRouter();
   useEffect(() => {
     fetch("/api/status/wakatime").then(r => r.json()).then(d => setWakatimeActivity(d));
@@ -321,13 +457,12 @@ export default function Home() {
           </button>
         </div>
       </header>
-      <main className="flex flex-col flex-grow mt-0 sm:mt-12 px-6 overflow-x-hidden sm:px-8 py-10 sm:py-14 items-center text-center sm:text-left bg-gradient-to-br from-zinc-200 via-gray-300 to-white border-gray-200 dark:from-zinc-950 dark:via-gray-950 dark:to-black border-t dark:border-gray-800 w-full">
+      <main className="flex flex-col flex-grow mt-0 sm:mt-12 px-6 overflow-x-hidden sm:px-8 py-10 sm:py-14 items-center text-center sm:text-left bg-transparent w-full">
         <div className="max-w-5xl w-full flex">
           <div className="max-w-5xl w-full">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 text-cyan-400">Hello, World!</h1>
             <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
-            <a href="https://blog.alimad.co/e" className="text-cyan-500 underline text-sm sm:text-base mb-3 hidden">I am currently unavailable</a>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">{myIdea ? `One "${myIdea}" coming up!` : 'Keep giving ideas...'}</p>
+            {myIdea && <p className="text-gray-600 dark:text-gray-400 text-sm">{`One "${myIdea}" coming up!`}</p>}
             <div className="grid sm:hidden grid-cols-1 gap-2 mt-3 max-w-5xl w-full px-2">
               <button
                 onClick={() => Router.push('/subdomains')}
@@ -349,7 +484,7 @@ export default function Home() {
               <Spotify songData={songdata} loading={songLoad} />
             )}
             {(songdata && !songdata.playing) && (
-              <div className="flex md:hidden flex-col gap-3 p-3 mt-3 rounded-xl bg-black/20 border border-white/10 w-full max-w-sm">
+              <div className="flex md:hidden flex-col gap-3 p-3 mt-3 rounded-xl dark:bg-black/20 border border-white/10 w-full">
                 <div className="font-semibold text-lg">Favourite Tracks</div>
                 <div className="flex flex-col gap-2">
                   {songTop.map((t, i) => (
@@ -359,11 +494,11 @@ export default function Home() {
                       target="_blank"
                       className="flex gap-3 items-center"
                     >
-                      <div className="w-5 ml-1 text-3xl font-semibold text-cyan-400">{i + 1}</div>
+                      <div className="w-5 ml-1 text-3xl font-semibold dark:text-cyan-400">{i + 1}</div>
                       <img src={t.cover} alt="" className="w-10 h-10 rounded-md hidden" />
                       <div className="flex flex-col">
-                        <div className="text-sm font-semibold text-cyan-400 text-left">{t.title}</div>
-                        <div className="text-xs text-white opacity-70 text-left">{t.artist}</div>
+                        <div className="text-sm font-semibold dark:text-cyan-400">{t.title}</div>
+                        <div className="text-xs dark:text-white opacity-70">{t.artist}</div>
                       </div>
                     </a>
                   ))}
@@ -372,7 +507,7 @@ export default function Home() {
             )}
           </div>
           {(songdata && !songdata.playing) && (
-            <div className="hidden md:flex flex-col gap-3 p-3 rounded-xl bg-black/20 border border-white/10 w-full max-w-sm">
+            <div className="hidden md:flex flex-col gap-3 p-3 rounded-xl dark:bg-black/20 border border-white/10 w-full max-w-sm">
               <div className="font-semibold text-lg">Favourite Tracks</div>
               <div className="flex flex-col gap-2">
                 {songTop.map((t, i) => (
@@ -382,11 +517,11 @@ export default function Home() {
                     target="_blank"
                     className="flex gap-3 items-center"
                   >
-                    <div className="w-5 ml-1 text-3xl font-semibold text-cyan-400">{i + 1}</div>
+                    <div className="w-5 ml-1 text-3xl font-semibold dark:text-cyan-400">{i + 1}</div>
                     <img src={t.cover} alt="" className="w-10 h-10 rounded-md hidden" />
                     <div className="flex flex-col">
-                      <div className="text-sm font-semibold text-cyan-400">{t.title}</div>
-                      <div className="text-xs text-white opacity-70">{t.artist}</div>
+                      <div className="text-sm font-semibold dark:text-cyan-400">{t.title}</div>
+                      <div className="text-xs dark:text-white opacity-70">{t.artist}</div>
                     </div>
                   </a>
                 ))}
@@ -398,161 +533,25 @@ export default function Home() {
         <QuoteOfTheDay />
         <GithubStats />
         <div className="flex justify-center items-center mt-8 w-full overflow-x-auto mb-8">
-          <GitHubCalendar username="Alimadcorp" theme={{
-            light: ['#bbb', 'rgb(18, 186, 255)'],
-            dark: ['#222', 'rgb(18, 186, 255)'],
-          }} />
+          <GitHubCalendar username="Alimadcorp" theme={darkMode ? themer : themer2} />
         </div>
         {(Array.isArray(wakatimeActivity) && wakatimeActivity.length > 0) ?
           (<div className="flex justify-center items-center mt-0 w-full overflow-x-auto mb-8">
-            <ActivityCalendar data={wakatimeActivity} theme={{
-              light: ['#bbb', 'rgb(18, 186, 255)'],
-              dark: ['#222', 'rgb(18, 186, 255)'],
-            }} labels={{
+            <ActivityCalendar data={wakatimeActivity} theme={darkMode ? themer : themer2} labels={{
               totalCount: `${Math.floor(wakatimeActivity.reduce((s, d) => s + d.count, 0) / 60)} hours ${Math.floor(wakatimeActivity.reduce((s, d) => s + d.count, 0) % 60)} minutes spent coding this year`
             }} />
           </div>)
           : (
             <div className="flex justify-center items-center mt-0 w-full overflow-x-auto mb-8">
-              <ActivityCalendar loading={true} />
+              <ActivityCalendar loading={true} theme={darkMode ? themer : themer2} />
             </div>)
         }
-        <span className="flex flex-wrap gap-0  max-w-4xl">
-          <WebButton
-            src="https://cdn.alimad.co/f/static/ecz.png"
-            title="ErrorCode0"
-            href="https://errorcodezero.dev"
-          />
-          <WebButton
-            src="/buttons/hackclub.gif"
-            title="Hack Club"
-            href="https://hack.club"
-          />
-          <WebButton
-            src="/button.gif"
-            title="BomberFish"
-            href="https://bomberfish.ca/"
-          />
-          <WebButton
-            src="/buttons/ce88x31.gif"
-            title="velzie.d"
-            href="https://velzie.rip"
-          />
-          <WebButton
-            src="/buttons/thinlqd.gif"
-            title="ThinLiquid"
-            href="https://thinliquid.dev"
-          />
-          <WebButton
-            src="/buttons/foxmossbutton.gif"
-            title="FoxMoss"
-            href="https://foxmoss.com"
-          />
-          <WebButton
-            src="/buttons/k8.gif"
-            title="thememesniper"
-            href="https://thememesniper.dev"
-          />
-          <WebButton
-            src="https://authenyo.xyz/images/button.gif"
-            title="authenyo"
-            href="https://authenyo.xyz"
-          />
-          <WebButton
-            src="/buttons/kopper.png"
-            title="kopper"
-            href="https://w.on-t.work"
-          />
-          <WebButton
-            src="/buttons/melon.gif"
-            title="melontini"
-            href="https://melontini.me"
-          />
-          <WebButton
-            src="/buttons/aol-sucks.gif"
-            title="Good riddance."
-            href="https://help.aol.com/articles/dial-up-internet-to-be-discontinued"
-          />
-          <WebButton
-            src="/buttons/affection.gif"
-            title="<3"
-          />
-          <WebButton
-            src="/buttons/besteyes2.gif"
-            title="How else?"
-          />
-          <WebButton
-            src="/buttons/sun.gif"
-            title="Godspeed, Sun."
-          />
-          <WebButton
-            src="/buttons/firefox.gif"
-            title="Firefox is EVIL!"
-            href="https://lunduke.locals.com/post/5871895/mozilla-firefox-goes-anti-privacy-pro-advertising"
-          />
-          <WebButton
-            src="/buttons/smoke.gif"
-            title="Smokepowered"
-            href="https://smokepowered.com"
-          />
-          <WebButton
-            src="/buttons/blazed.png"
-            title="Epic MegaBlazed"
-            href="https://epicblazed.com"
-          />
-          <WebButton
-            src="/buttons/beos_now_anim.gif"
-            title="Download Haiku!"
-            href="https://haiku-os.org"
-          />
-          <WebButton
-            src="/buttons/mariokart.gif"
-            title="Play some Mario Kart!"
-            href="https://bomberfish.ca/N64Wasm"
-          />
-          <WebButton
-            src="/buttons/iframsuc.gif"
-            title="Iframes SUCK!"
-          />
-          <WebButton
-            src="/buttons/eightyeightthirtyone.gif"
-            title="88x31"
-            href="https://eightyeightthirty.one"
-          />
-          <WebButton
-            src="/buttons/melankorin.gif"
-            title="melankorin"
-            href="https://melankorin.net"
-          />
-          <WebButton
-            src="/buttons/lucida-2.gif"
-            title="Lucida: Free Music. No BS."
-            href="https://lucida.to"
-          />
-          <WebButton
-            src="/buttons/newgrounds.gif"
-            href="https://newgrounds.com"
-            title="Newgrounds!"
-          />
-          <WebButton
-            src="/buttons/modarchive.gif"
-            href="https://modarchive.org"
-            title="The Mod Archive"
-          />
-          <WebButton
-            src="/buttons/github.gif"
-            href="https://github.com/Alimadcorp"
-            title="Social Coding!"
-          />
-          <WebButton
-            src="/buttons/javanow.gif"
-            title="Java is underrated"
-          />
-        </span>
+        <WebButtons />
         <button onClick={() => setPanel(true)} className="flex items-center gap-2 hover:underline text-sm sm:text-base cursor-pointer mt-4">
           <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
           Give an idea
         </button>
+        <TheFooter />
       </main>
       {panel && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -567,9 +566,6 @@ export default function Home() {
           </div>
         </div>
       )}
-      <footer className="flex gap-4 flex-wrap items-center justify-center py-6 text-cyan-400 border-t border-gray-800 mt-auto">
-        <TheFooter />
-      </footer>
     </div>
   );
 }

@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import GithubStats from "@/components/github";
 import LiveStatus from "@/components/live";
 import Presence from "@/components/presence";
-import Spotify from '@/components/spotify'
+import Spotify from '@/components/spotify';
 
 function Socials({ sizer = 24 }) {
   return (<>

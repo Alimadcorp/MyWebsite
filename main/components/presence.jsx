@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import DeviceMonitor from "@/components/pc";
 
 const statusColor = (s) => ({
   online: "dark:bg-green-500 bg-green-500",
@@ -35,7 +36,7 @@ export default function StatusViewer() {
   const { discord, slack, meta } = data
 
   return (
-    <div className="w-full grid md:grid-cols-2 gap-4 max-w-5xl mx-auto mt-8">
+    <div className="w-full grid md:grid-cols-3 gap-4 max-w-5xl mx-auto mt-8">
       <Card title={`Discord`} status={discord}>
         <UserRow
           user={meta.discord.name}
@@ -72,6 +73,7 @@ export default function StatusViewer() {
           </div>
         )}
       </Card>
+      <DeviceMonitor/>
     </div>
   )
 }

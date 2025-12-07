@@ -55,12 +55,15 @@ export default function DeviceMonitorCard() {
   const [deviceData, setDeviceData] = useState(null)
   const [disconnected, setDisconnected] = useState(false)
   const wsRef = useRef(null)
+  const timeoutRef = useRef(null)
 
   useEffect(() => {
     const ws = new WebSocket("wss://ws.alimad.co/socket")
     wsRef.current = ws
     ws.onopen = () => setDisconnected(false)
     ws.onmessage = (msg) => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      timeoutRef.current = setTimeout(() => setDeviceData(null), 10000)
       try {
         const data = JSON.parse(msg.data)
         if (data.type === "sample" || data.type === "aggregate") {
@@ -70,9 +73,21 @@ export default function DeviceMonitorCard() {
         console.error(err)
       }
     }
-    ws.onclose = () => setDisconnected(true)
-    ws.onerror = () => setDisconnected(true)
-    return () => ws.close()
+    ws.onclose = () => {
+      setDisconnected(true); if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      setDeviceData(null)
+    }
+    ws.onerror = () => {
+      setDisconnected(true); if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+      setDeviceData(null)
+    }
+    return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); ws.close() }
   }, [])
 
   return (

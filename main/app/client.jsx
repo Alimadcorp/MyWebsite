@@ -12,6 +12,7 @@ import GithubStats from "@/components/github";
 import LiveStatus from "@/components/live";
 import Presence from "@/components/presence";
 import Spotify from '@/components/spotify';
+import Clock from '@/components/clock'
 
 function Socials({ sizer = 24 }) {
   return (<>
@@ -460,7 +461,8 @@ export default function Home() {
         <div className="max-w-5xl w-full flex">
           <div className="max-w-5xl w-full">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 dark:text-cyan-400">Hello, World!</h1>
-            <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
+            <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-5">This is Muhammad Ali's website!</p>
+            <Clock/>
             {myIdea && <p className="text-gray-600 dark:text-gray-400 text-sm">{`One "${myIdea}" coming up!`}</p>}
             <div className="grid sm:hidden grid-cols-1 gap-2 mt-3 max-w-5xl w-full px-2">
               <button

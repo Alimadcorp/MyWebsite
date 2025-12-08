@@ -107,7 +107,7 @@ function Card({ title, status, children, url = "#" }) {
     >
       <div className="flex items-center gap-2 mb-3">
         <div className={`w-3 h-3 rounded-full ${statusColor(status)}`} />
-        <div className="font-semibold hover:underline">{title}</div>
+        <div className="font-semibold">{title}</div>
       </div>
       {children}
     </motion.div>

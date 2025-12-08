@@ -10,16 +10,18 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace LogWays;
 
 public class Worker : BackgroundService
 {
     const string WS_URI = "wss://ws.alimad.co/socket";
-    const string WS_PASSWORD = "Password here :3";
+    const string WS_PASSWORD = "AlimadCo(10)";
     const string API_POST_URL = "https://activity.alimad.co/endpoint";
     const double TOTAL_RAM = 8L * 1024 * 1024 * 1024;
     const int CPU_CORES = 8;
+    uint last_process = 0;
 
     readonly HttpClient http = new();
     readonly Dictionary<int, double> lastCpu = new();
@@ -40,6 +42,8 @@ public class Worker : BackgroundService
 
     public Worker()
     {
+        KeyCounter.Start();
+        MouseCounter.Start();
         Task.Run(() => WsConnectLoopAsync(wsCts.Token));
     }
 
@@ -59,6 +63,19 @@ public class Worker : BackgroundService
                 {
                     GetWindowThreadProcessId(hwnd, out uint pid);
                     var p = Process.GetProcessById((int)pid);
+                    string iconBase64 = "";
+                    var ico = GetAppIcon(p);
+                    if (last_process != pid){ 
+                        if(ico != null){
+                            iconBase64 = IconToBase64(ico);
+                        } else
+                        {
+                            iconBase64 = "none";
+                        }
+                    }
+                    sample["icon"] = iconBase64;
+                    last_process = pid;
+
 
                     string name = CsvSafe(p.ProcessName);
                     string title = CsvSafe(p.MainWindowTitle);
@@ -88,6 +105,8 @@ public class Worker : BackgroundService
                     sample["cpuPercent"] = Math.Round(cpuPercent, 2);
                     try { sample["wifi"] = WifiHelper.GetWifiName(); } catch { sample["wifi"] = ""; }
                     sample["isIdle"] = IsIdle();
+                    sample["keysPressed"] = KeyCounter.ResetCount();
+                    sample["mouseClicks"] = MouseCounter.ResetClicks();
                     sample["isSleeping"] = hwnd == IntPtr.Zero;
                 }
                 else
@@ -98,7 +117,7 @@ public class Worker : BackgroundService
                     sample["isSleeping"] = true;
                 }
 
-                sample["ip"] = GetLocalIPAddress();
+                sample["localIp"] = GetLocalIPAddress();
             }
             catch (Exception ex)
             {
@@ -246,5 +265,22 @@ public class Worker : BackgroundService
         if (s.Contains(',') || s.Contains('"') || s.Contains('\n'))
             return $"\"{s}\"";
         return s;
+    }
+
+    static Icon? GetAppIcon(Process p)
+    {
+        try
+        {
+            return Icon.ExtractAssociatedIcon(p.MainModule!.FileName!);
+        }
+        catch { return null; }
+    }
+
+    static string IconToBase64(Icon icon)
+    {
+        using var bmp = icon.ToBitmap();
+        using var ms = new MemoryStream();
+        bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+        return Convert.ToBase64String(ms.ToArray());
     }
 }

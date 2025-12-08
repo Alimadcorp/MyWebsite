@@ -1,46 +1,36 @@
-import { get } from "@vercel/edge-config";
-
 export async function GET() {
+  const KVDB_BUCKET = process.env.KVDB_BUCKET;
+
   async function set(key, value) {
-    console.log("Setting edge config:", key, value);
-    const EDGE_CONFIG_ID = process.env.EDGE_CONFIG_ID;
-    const VERCEL_TOKEN = process.env.VERCEL_TOKEN;
-    const TEAM_ID = process.env.TEAM_ID;
-
-    const url = TEAM_ID
-      ? `https://api.vercel.com/v1/edge-config/${EDGE_CONFIG_ID}/items?teamId=${TEAM_ID}`
-      : `https://api.vercel.com/v1/edge-config/${EDGE_CONFIG_ID}/items`;
-
-    const res = await fetch(url, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${VERCEL_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        items: [
-          {
-            operation: "upsert",
-            key,
-            value,
-          },
-        ],
-      }),
-    });
-
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(`EdgeConfig write fail: ${err}`);
-    }
+    if (value === undefined || value === null) value = "";
+    const res = await fetch(
+      `${KVDB_BUCKET}/${encodeURIComponent(key)}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "text/plain" },
+        body: String(value),
+      }
+    );
+    if (!res.ok) throw new Error(`KVDB write fail: ${await res.text()}`);
     return true;
   }
+
+  async function get(key) {
+    const res = await fetch(
+      `${KVDB_BUCKET}/${encodeURIComponent(key)}`
+    );
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`KVDB read fail: ${await res.text()}`);
+    return await res.text();
+  }
+
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
   const basic = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
-  let refreshToken = await get("spotify_refresh_token");
+  let refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
   let accessToken = await get("spotify_access_token");
-  let expiresAt = await get("spotify_access_expires");
+  let expiresAt = parseInt((await get("spotify_access_expires")) || "0");
 
   const now = Date.now();
 
@@ -59,6 +49,8 @@ export async function GET() {
       body: params,
     });
 
+    console.log(tokenRes.status);
+
     if (!tokenRes.ok)
       return new Response("token refresh fail", { status: 500 });
 
@@ -69,8 +61,7 @@ export async function GET() {
     expiresAt = now + expiresIn;
 
     await set("spotify_access_token", accessToken);
-    await set("spotify_access_expires", expiresAt);
-    if (j.refresh_token) await set("spotify_refresh_token", refreshToken);
+    await set("spotify_access_expires", String(expiresAt));
   }
 
   const r = await fetch(
@@ -80,33 +71,42 @@ export async function GET() {
     }
   );
 
-  if (r.status === 204) return Response.json({ playing: false });
-
-  if (!r.ok) return Response.json({ error: "fail" }, { status: 500 });
+  if (r.status === 204)
+    return new Response(JSON.stringify({ playing: false }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  if (!r.ok)
+    return new Response(JSON.stringify({ error: "fail" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
 
   const data = await r.json();
   const i = data.item;
   const progress = data.progress_ms;
   const duration = i.duration_ms;
 
-  return Response.json({
-    playing: data.is_playing,
-    title: i.name,
-    album: i.album.name,
-    artist: i.artists.map((a) => a.name).join(", "),
-    cover: i.album.images?.[0]?.url,
-    url: i.external_urls.spotify,
-    embed: `https://open.spotify.com/embed/track/${i.id}`,
-    progressMs: progress,
-    durationMs: duration,
-    percentage: duration ? (progress / duration) * 100 : 0,
-    startedAt: data.timestamp - progress,
-    device: data.device
-      ? {
-          name: data.device.name,
-          type: data.device.type,
-          volume: data.device.volume_percent,
-        }
-      : null,
-  });
+  return new Response(
+    JSON.stringify({
+      playing: data.is_playing,
+      title: i.name,
+      album: i.album.name,
+      artist: i.artists.map((a) => a.name).join(", "),
+      cover: i.album.images?.[0]?.url,
+      url: i.external_urls.spotify,
+      embed: `https://open.spotify.com/embed/track/${i.id}`,
+      progressMs: progress,
+      durationMs: duration,
+      percentage: duration ? (progress / duration) * 100 : 0,
+      startedAt: data.timestamp - progress,
+      device: data.device
+        ? {
+            name: data.device.name,
+            type: data.device.type,
+            volume: data.device.volume_percent,
+          }
+        : null,
+    }),
+    { headers: { "Content-Type": "application/json" } }
+  );
 }

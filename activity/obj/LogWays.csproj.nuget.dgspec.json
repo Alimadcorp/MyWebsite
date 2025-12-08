@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "F:\\Projects\\LogWays\\LogWays\\LogWays.csproj": {}
+    "F:\\Projects\\MyWebsite\\activity\\LogWays.csproj": {}
   },
   "projects": {
-    "F:\\Projects\\LogWays\\LogWays\\LogWays.csproj": {
+    "F:\\Projects\\MyWebsite\\activity\\LogWays.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\Projects\\LogWays\\LogWays\\LogWays.csproj",
+        "projectUniqueName": "F:\\Projects\\MyWebsite\\activity\\LogWays.csproj",
         "projectName": "LogWays",
-        "projectPath": "F:\\Projects\\LogWays\\LogWays\\LogWays.csproj",
+        "projectPath": "F:\\Projects\\MyWebsite\\activity\\LogWays.csproj",
         "packagesPath": "C:\\Users\\acer\\.nuget\\packages\\",
-        "outputPath": "F:\\Projects\\LogWays\\LogWays\\obj\\",
+        "outputPath": "F:\\Projects\\MyWebsite\\activity\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\acer\\AppData\\Roaming\\NuGet\\NuGet.Config"

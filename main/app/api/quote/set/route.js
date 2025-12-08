@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { notFound } from "next/navigation";
 
 const PASSWORD = "PASSWORDISBANANA";
-const KVDB_BUCKET = process.env.KVDB_BUCKET;
+const KVDB_BUCKET = process.env.KVDB_BUCKET+"/quote";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);

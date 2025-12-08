@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "MQ1COF08p0c=",
+  "dgSpecHash": "3XETkf+pWFQ=",
   "success": true,
-  "projectFilePath": "F:\\Projects\\LogWays\\LogWays\\LogWays.csproj",
+  "projectFilePath": "F:\\Projects\\MyWebsite\\activity\\LogWays.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\acer\\.nuget\\packages\\microsoft.extensions.configuration\\9.0.0\\microsoft.extensions.configuration.9.0.0.nupkg.sha512",
     "C:\\Users\\acer\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.0\\microsoft.extensions.configuration.abstractions.9.0.0.nupkg.sha512",

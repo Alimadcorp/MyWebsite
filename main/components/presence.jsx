@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 import DeviceMonitor from "@/components/pc";
+import StatusDot from "@/components/statusdot"
 
 const statusColor = (s) => ({
   online: "dark:bg-green-500 bg-green-500",
@@ -11,10 +12,68 @@ const statusColor = (s) => ({
   offline: "dark:bg-gray-500 bg-gray-800"
 }[s] || "bg-gray-500")
 
-const titleCase = (str) => str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : ""
+const titleCase = (str) => str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : "";
+
+function Emojix({ text, emoji }) {
+  <div className="flex items-center gap-1 p-3 mt-3 rounded-xl dark:bg-white/5 bg-black/5">
+    <span
+      className="leading-none flex items-center justify-center"
+      dangerouslySetInnerHTML={{ __html: renderEmoji(emoji) }}
+      aria-hidden="true"
+    />
+    <span className="text-sm">
+      {text}
+    </span>
+  </div>
+}
 
 export default function StatusViewer() {
   const [data, setData] = useState(null)
+  const [deviceData, setDeviceData] = useState(null)
+  const [disconnected, setDisconnected] = useState(false)
+  const [appIcon, setAppIcon] = useState("");
+  const wsRef = useRef(null)
+  const timeoutRef = useRef(null)
+
+  const connectWS = () => {
+    if (wsRef.current) wsRef.current.close()
+    const ws = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || "wss://ws.alimad.co/socket")
+    wsRef.current = ws
+
+    ws.onopen = () => setDisconnected(false)
+
+    ws.onmessage = (msg) => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      timeoutRef.current = setTimeout(() => setDeviceData(null), 10000)
+      try {
+        const data = JSON.parse(msg.data)
+        if (data.type === "sample" || data.type === "aggregate") {
+          data.data.ip = data.data.ip.replaceAll("\"", "").trim();
+          setDeviceData(data.data)
+          if (data.data.icon && data.data.icon.trim() && data.data.icon !== "none") setAppIcon(data.data.icon)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    const handleDisconnect = () => {
+      setDisconnected(true)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      setDeviceData(null)
+    }
+
+    ws.onclose = handleDisconnect
+    ws.onerror = handleDisconnect
+  }
+
+  useEffect(() => {
+    connectWS()
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      wsRef.current?.close()
+    }
+  }, [])
 
   const fetchData = async (uh) => {
     const res = await fetch("/api/status" + (uh ? "?meta=true" : ""))
@@ -27,7 +86,7 @@ export default function StatusViewer() {
 
   useEffect(() => {
     fetchData(true)
-    const t = setInterval(() => fetchData(false), 60_000)
+    const t = setInterval(() => fetchData(false), 60000)
     return () => clearInterval(t)
   }, [])
 
@@ -61,19 +120,10 @@ export default function StatusViewer() {
           url="https://hackclub.enterprise.slack.com/team/U08LQFRBL6S"
         />
         {meta.slack.status_text && (
-          <div className="flex items-center gap-1 p-3 mt-3 rounded-xl dark:bg-white/5 bg-black/5 dark:grayscale-0 grayscale-100">
-            <span
-              className="leading-none flex items-center justify-center"
-              dangerouslySetInnerHTML={{ __html: renderEmoji(meta.slack.status_emoji) }}
-              aria-hidden="true"
-            />
-            <span className="text-sm">
-              {meta.slack.status_text}
-            </span>
-          </div>
+          <Emojix text={meta.slack.status_text} emoji={meta.slack.status_emoji} />
         )}
       </Card>
-      <DeviceMonitor/>
+      <DeviceMonitor deviceData={deviceData} disconnected={disconnected} appIcon={appIcon} connectWS={connectWS}/>
     </div>
   )
 }
@@ -118,8 +168,7 @@ function UserRow({ user, avatar, status, tag, platform, url }) {
   return (
     <div className="flex items-center gap-3">
       <div className="relative">
-        {avatar && <img src={avatar} className="w-12 h-12 rounded-full dark:grayscale-0 grayscale-100" />}
-        <div className={`w-3 h-3 rounded-full absolute bottom-0 right-0 border-2 border-white dark:border-black ${statusColor(status)}`} />
+        {avatar && <img src={avatar} className="w-12 h-12 rounded-full" />}
       </div>
       <div className="text-sm text-left">
         <div className="flex gap-1"><a href={url} className="hover:underline"><div className="font-medium">{user}</div></a>
@@ -133,7 +182,7 @@ function UserRow({ user, avatar, status, tag, platform, url }) {
 function Activity({ a }) {
   if (a.type === 4) {
     return (
-      <div className="flex gap-2 items-center p-2 rounded-lg dark:bg-white/5 bg-black/5 dark:grayscale-0 grayscale-100">
+      <div className="flex gap-2 items-center p-2 rounded-lg dark:bg-white/5 bg-black/5">
         {a.emoji && <span className="text-lg">{a.emoji}</span>}
         <div className="text-xs font-medium">{a.state}</div>
       </div>

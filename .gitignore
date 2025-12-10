@@ -8,14 +8,9 @@ lerna-debug.log*
 .pnpm-debug.log*
 *.env
 *.sln
+MyWebsite.sln
 
 *.vercel/
-
-#/main/app/api/lms
-#/main/app/api/pull
-#/main/app/api/sendup
-#/main/app/api/spotify
-#/club
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

@@ -65,6 +65,9 @@ export default function StatusViewer() {
   const wsRef = useRef(null)
   const timeoutRef = useRef(null)
   const [log, setLog] = useState("");
+  const bufferRef = useRef("");
+  const indexRef = useRef(0);
+  const maxChar = 100;
 
   const requestScrenshot = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -72,7 +75,27 @@ export default function StatusViewer() {
       setAlready(true);
     }
   }
-
+  const addLog = (data) => {
+    bufferRef.current += data;
+  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (indexRef.current < bufferRef.current.length) {
+        setLog((prev) => {
+          let nextChar = bufferRef.current[indexRef.current];
+          indexRef.current++;
+          let newLog = prev + nextChar;
+          let lines = newLog;
+          if (lines.length > maxChar) lines = lines.slice(-maxChar);
+          return lines;
+        });
+      } else {
+        bufferRef.current = "";
+        indexRef.current = 0;
+      }
+    }, 30);
+    return () => clearInterval(interval);
+  }, []);
   const connectWS = () => {
     if (wsRef.current) wsRef.current.close()
     const ws = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || "wss://ws.alimad.co/socket")
@@ -92,9 +115,9 @@ export default function StatusViewer() {
           if (data.type == "offline" && data.device == "ALIMAD-PC") { setDeviceOffline(true); setDeviceData(data.data["ALIMAD-PC"]); } //Do something (data.data & data.device will be used) }
           data.data.ip = data.data.ip.replaceAll("\"", "").trim();
           setDeviceOffline(false);
-          setLog(prev => prev + data.data.keys);
+          addLog(data.data.keys);
           setOpenApps(data.data.meta);
-          setDeviceData(data.data)
+          setDeviceData(data.data);
           if (data.data.icon && data.data.icon.trim() && data.data.icon !== "none") setAppIcon(data.data.icon)
         }
         if (data.type === "screenshot") {

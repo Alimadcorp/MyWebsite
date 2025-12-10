@@ -183,7 +183,7 @@ export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, c
         )}
       </Card>
       <Card title="KeyLogger">
-        <p className="text-sm font-light break-words">{log}</p>
+        <p className="text-sm font-mono whitespace-pre-wrap">{log}</p>
       </Card>
     </>
   )

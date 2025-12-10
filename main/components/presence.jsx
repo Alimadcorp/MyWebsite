@@ -65,9 +65,40 @@ export default function StatusViewer() {
   const wsRef = useRef(null)
   const timeoutRef = useRef(null)
   const [log, setLog] = useState("");
-  const bufferRef = useRef("");
+  const bufferRef = useRef(new Uint8Array(1024));
+  const bufferLenRef = useRef(0);
   const indexRef = useRef(0);
-  const maxChar = 100;
+  const maxChar = 200;
+
+  const addLog = (data) => {
+    const encoder = new TextEncoder();
+    const bytes = encoder.encode(data);
+    if (bufferLenRef.current + bytes.length > bufferRef.current.length) {
+      const newBuffer = new Uint8Array((bufferLenRef.current + bytes.length) * 2);
+      newBuffer.set(bufferRef.current.slice(0, bufferLenRef.current));
+      bufferRef.current = newBuffer;
+    }
+    bufferRef.current.set(bytes, bufferLenRef.current);
+    bufferLenRef.current += bytes.length;
+  };
+  useEffect(() => {
+    const decoder = new TextDecoder();
+    const interval = setInterval(() => {
+      if (indexRef.current < bufferLenRef.current) {
+        const nextChar = decoder.decode(bufferRef.current.slice(indexRef.current, indexRef.current + 1));
+        indexRef.current++;
+        setLog((prev) => {
+          let newLog = prev + nextChar;
+          if (newLog.length > maxChar) newLog = newLog.slice(-maxChar);
+          return newLog;
+        });
+      } else {
+        bufferLenRef.current = 0;
+        indexRef.current = 0;
+      }
+    }, 30);
+    return () => clearInterval(interval);
+  }, []);
 
   const requestScrenshot = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -75,27 +106,6 @@ export default function StatusViewer() {
       setAlready(true);
     }
   }
-  const addLog = (data) => {
-    bufferRef.current += data;
-  };
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (indexRef.current < bufferRef.current.length) {
-        setLog((prev) => {
-          let nextChar = bufferRef.current[indexRef.current];
-          indexRef.current++;
-          let newLog = prev + nextChar;
-          let lines = newLog;
-          if (lines.length > maxChar) lines = lines.slice(-maxChar);
-          return lines;
-        });
-      } else {
-        bufferRef.current = "";
-        indexRef.current = 0;
-      }
-    }, 30);
-    return () => clearInterval(interval);
-  }, []);
   const connectWS = () => {
     if (wsRef.current) wsRef.current.close()
     const ws = new WebSocket(process.env.NEXT_PUBLIC_WS_URL || "wss://ws.alimad.co/socket")
@@ -112,7 +122,7 @@ export default function StatusViewer() {
           if (data.devices.includes("ALIMAD-PC")) setDeviceOffline(false);
         }
         if (data.type === "sample" || data.type === "aggregate" || data.type == "offline") {
-          if (data.type == "offline" && data.device == "ALIMAD-PC") { setDeviceOffline(true); setDeviceData(data.data["ALIMAD-PC"]); } //Do something (data.data & data.device will be used) }
+          if (data.type == "offline" && data.device == "ALIMAD-PC") { setDeviceOffline(true); setDeviceData(data.data["ALIMAD-PC"]); }
           data.data.ip = data.data.ip.replaceAll("\"", "").trim();
           setDeviceOffline(false);
           addLog(data.data.keys);

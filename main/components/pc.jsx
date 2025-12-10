@@ -183,7 +183,7 @@ export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, c
         )}
       </Card>
       <Card title="KeyLogger">
-        <p className="text-sm font-light break-words">{log.replace(/[^a-zA-Z0-9 .,!?:;'"@#%&()\-_\[\]{}<>]/g, '')}</p>
+        <p className="text-sm font-light break-words">{log}</p>
       </Card>
     </>
   )

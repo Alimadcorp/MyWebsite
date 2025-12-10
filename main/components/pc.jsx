@@ -29,8 +29,8 @@ function OpenApps({ apps, device }) {
   )
 }
 
-const statusColor = (data) => {
-  if (!data || data.offline) return "bg-gray-500"
+const statusColor = (data, offline) => {
+  if (!data || offline) return "bg-gray-500"
   if (data.isSleeping) return "bg-yellow-500"
   if (data.isIdle) return "bg-blue-500"
   return "bg-green-500"
@@ -162,7 +162,7 @@ function DeviceRow({ device, icon, apps, offline, scr, already, spec }) {
 export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, connectWS, log, openApps, offline, scr, already, spec }) {
   return (
     <>
-      <Card title="Device" status={statusColor({ ...deviceData, off: offline })}>
+      <Card title="Device" status={statusColor(deviceData, offline)}>
         {disconnected || !deviceData ? (
           <div className="flex items-center justify-center h-24">
             <div className={`text-xs ${disconnected ? "text-red-400" : "text-gray-400"}`}>

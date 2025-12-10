@@ -4,7 +4,7 @@ project.lock.json
 .DS_Store
 *.pyc
 nupkg/
-
+Passwords.cs
 # Visual Studio Code
 .vscode/*
 !.vscode/settings.json

@@ -1,3 +1,16 @@
+# Welcome to the repository of my homepage!
+Theres a lot going on in here
+
+If you wanna check how the spotify thing works, /app/api/spotify/me.jsx
+
+If you wanna copy it's client component, /components/spotify.jsx
+
+If you wanna see how the activity thingy works, /components/pc.jsx and /components/presence.jsx
+
+Theres a lot more of silly stuff you wanna check out
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

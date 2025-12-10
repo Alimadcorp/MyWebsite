@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -19,7 +18,6 @@ public static class TaskbarApps
     private static extern uint GetWindowLong(IntPtr hWnd, int nIndex);
 
     const int GWL_EXSTYLE = -20;
-    const uint WS_EX_APPWINDOW = 0x00040000;
     const uint WS_EX_TOOLWINDOW = 0x00000080;
 
     public static int CountTaskbarWindows()

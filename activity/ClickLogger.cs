@@ -1,6 +1,4 @@
-using System;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 public static class MouseCounter
 {
@@ -15,11 +13,11 @@ public static class MouseCounter
 
     public static void Start()
     {
-        Thread t = new Thread(() =>
+        Thread t = new(() =>
         {
             while (true)
             {
-                for (int button = 0; button < 5; button++) // left/middle/right/etc
+                for (int button = 0; button < 5; button++)
                 {
                     bool down = GetAsyncKeyState(0x01 + button * 0x01) < 0; 
                     if (down)

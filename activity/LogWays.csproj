@@ -11,6 +11,8 @@
     <SelfContained>false</SelfContained>
     <UseWindowsAPIs>true</UseWindowsAPIs>
     <UseWindowsService>true</UseWindowsService>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

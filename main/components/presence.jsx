@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef, useMemo } from "react"
 import { motion } from "framer-motion"
 import DeviceMonitor from "@/components/pc";
 import StatusDot from "@/components/statusdot"
@@ -15,25 +15,63 @@ const statusColor = (s) => ({
 const titleCase = (str) => str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : "";
 
 function Emojix({ text, emoji }) {
-  <div className="flex items-center gap-1 p-3 mt-3 rounded-xl dark:bg-white/5 bg-black/5">
-    <span
-      className="leading-none flex items-center justify-center"
-      dangerouslySetInnerHTML={{ __html: renderEmoji(emoji) }}
-      aria-hidden="true"
-    />
-    <span className="text-sm">
-      {text}
-    </span>
-  </div>
+  if (!text && !emoji) return null
+
+  const renderEmojiJSX = (text) => {
+    if (!text) return null
+    const parts = text.split(/(:[a-zA-Z0-9_+-]+:)/g)
+    return parts.map((part, i) => {
+      const match = part.match(/^:([a-zA-Z0-9_+-]+):$/)
+      if (match) {
+        return (
+          <img
+            key={i}
+            src={`https://e.alimad.co/${match[1]}`}
+            className="w-5 h-5 inline-block object-contain align-middle"
+            alt={match[1]}
+          />
+        )
+      }
+      return part
+    })
+  }
+
+  return (
+    <div className="flex items-center gap-2 p-3 mt-3 rounded-xl dark:bg-white/5 bg-black/5">
+      {emoji && <span className="leading-none flex items-center justify-center">{renderEmojiJSX(emoji)}</span>}
+      {text && <span className="text-sm">{text}</span>}
+    </div>
+  )
 }
 
 export default function StatusViewer() {
   const [data, setData] = useState(null)
   const [deviceData, setDeviceData] = useState(null)
   const [disconnected, setDisconnected] = useState(false)
+  const [deviceOffline, setDeviceOffline] = useState(true)
+  const [screenshot, setScreenshot] = useState(null);
+  const [scrMax, setScrMax] = useState(false);
+  const [already, setAlready] = useState(false);
+  const [spec, setSpec] = useState(0);
+  const [openApps, setOpenApps] = useState({
+    "slack": false,
+    "discord": false,
+    "whatsapp.root": false,
+    "code": false,
+    "chrome": false,
+    "windowsterminal": false
+  })
   const [appIcon, setAppIcon] = useState("");
   const wsRef = useRef(null)
   const timeoutRef = useRef(null)
+  const [log, setLog] = useState("");
+
+  const requestScrenshot = () => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ type: "request", device: "ALIMAD-PC" }));
+      setAlready(true);
+    }
+  }
 
   const connectWS = () => {
     if (wsRef.current) wsRef.current.close()
@@ -41,20 +79,32 @@ export default function StatusViewer() {
     wsRef.current = ws
 
     ws.onopen = () => setDisconnected(false)
-
     ws.onmessage = (msg) => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-      timeoutRef.current = setTimeout(() => setDeviceData(null), 10000)
       try {
         const data = JSON.parse(msg.data)
-        if (data.type === "sample" || data.type === "aggregate") {
+        if (data.type == "init") {
+          let lastActivity = data.data["ALIMAD-PC"];
+          setDeviceData(lastActivity);
+          if (data.devices.includes("ALIMAD-PC")) setDeviceOffline(false);
+        }
+        if (data.type === "sample" || data.type === "aggregate" || data.type == "offline") {
+          if (data.type == "offline" && data.device == "ALIMAD-PC") { setDeviceOffline(true); setDeviceData(data.data["ALIMAD-PC"]); } //Do something (data.data & data.device will be used) }
           data.data.ip = data.data.ip.replaceAll("\"", "").trim();
+          setDeviceOffline(false);
+          setLog(prev => prev + data.data.keys);
+          setOpenApps(data.data.meta);
           setDeviceData(data.data)
           if (data.data.icon && data.data.icon.trim() && data.data.icon !== "none") setAppIcon(data.data.icon)
         }
-      } catch (err) {
-        console.error(err)
-      }
+        if (data.type === "screenshot") {
+          setAlready(true); setScrMax(true);
+          setTimeout(() => { setAlready(false) }, 10000);
+          setScreenshot({ time: data.time, data: data.data });
+        }
+        if (data.type === "new") {
+          setSpec(data.clients);
+        }
+      } catch (err) { console.error(err) }
     }
 
     const handleDisconnect = () => {
@@ -78,10 +128,7 @@ export default function StatusViewer() {
   const fetchData = async (uh) => {
     const res = await fetch("/api/status" + (uh ? "?meta=true" : ""))
     const json = await res.json()
-    setData(prev => ({
-      ...prev,
-      ...json
-    }))
+    setData(prev => ({ ...prev, ...json }))
   }
 
   useEffect(() => {
@@ -90,13 +137,13 @@ export default function StatusViewer() {
     return () => clearInterval(t)
   }, [])
 
-  if (!data) return <div className="text-sm mt-4">Loading…</div>
+  if (!data) return <div className="text-sm mt-4 font-mono">Loading…</div>
 
   const { discord, slack, meta } = data
 
   return (
-    <div className="w-full grid md:grid-cols-3 gap-4 max-w-5xl mx-auto mt-8">
-      <Card title={`Discord`} status={discord}>
+    <div className="w-full grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mt-8">
+      <Card title="Discord" status={discord}>
         <UserRow
           user={meta.discord.name}
           avatar={meta.discord.avatar}
@@ -110,7 +157,7 @@ export default function StatusViewer() {
         </div>
       </Card>
 
-      <Card title={`Slack`} status={slack}>
+      <Card title="Slack" status={slack}>
         <UserRow
           user={meta.slack.name}
           avatar={meta.slack.avatar}
@@ -119,26 +166,24 @@ export default function StatusViewer() {
           platform={meta.slack.pronouns}
           url="https://hackclub.enterprise.slack.com/team/U08LQFRBL6S"
         />
-        {meta.slack.status_text && (
-          <Emojix text={meta.slack.status_text} emoji={meta.slack.status_emoji} />
-        )}
+        {meta.slack.status_text && <Emojix text={meta.slack.status_text} emoji={meta.slack.status_emoji} />}
       </Card>
-      <DeviceMonitor deviceData={deviceData} disconnected={disconnected} appIcon={appIcon} connectWS={connectWS}/>
+
+      {screenshot && scrMax && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setScrMax(false)}></div>
+          <div className="relative pointer-events-auto w-[80vw] max-h-[80vh] rounded-xl overflow-hidden">
+            <img
+              src={screenshot.data}
+              className="w-full h-full max-h-[80vh] object-contain rounded-xl block"
+            />
+          </div>
+        </div>
+      )}
+      <DeviceMonitor deviceData={deviceData} disconnected={disconnected} appIcon={appIcon} connectWS={connectWS} log={log} openApps={openApps} offline={deviceOffline} scr={requestScrenshot} already={already} spec={spec} />
     </div>
   )
 }
-
-const renderEmoji = (text) => {
-  if (!text) return "";
-  return text.replace(
-    /:([a-zA-Z0-9_+-]+):/g,
-    (_, name) =>
-      `<img 
-        src="https://e.alimad.co/${name}" 
-        class="w-5 h-5 inline-block object-contain align-middle" 
-      />`
-  );
-};
 
 function Badge({ children }) {
   return (
@@ -148,7 +193,7 @@ function Badge({ children }) {
   )
 }
 
-function Card({ title, status, children, url = "#" }) {
+function Card({ title, status, children }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -167,50 +212,31 @@ function Card({ title, status, children, url = "#" }) {
 function UserRow({ user, avatar, status, tag, platform, url }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="relative">
-        {avatar && <img src={avatar} className="w-12 h-12 rounded-full" />}
-      </div>
+      {avatar && <img src={avatar} className="w-12 h-12 rounded-full" />}
       <div className="text-sm text-left">
-        <div className="flex gap-1"><a href={url} className="hover:underline"><div className="font-medium">{user}</div></a>
-          <Badge>{tag}</Badge></div>
+        <div className="flex gap-1">
+          <a href={url} className="hover:underline"><div className="font-medium">{user}</div></a>
+          <Badge>{tag}</Badge>
+        </div>
         <div className="opacity-50 text-xs">{titleCase(platform)}</div>
       </div>
-    </div >
+    </div>
   )
 }
 
 function Activity({ a }) {
-  if (a.type === 4) {
-    return (
-      <div className="flex gap-2 items-center p-2 rounded-lg dark:bg-white/5 bg-black/5">
-        {a.emoji && <span className="text-lg">{a.emoji}</span>}
-        <div className="text-xs font-medium">{a.state}</div>
-      </div>
-    )
-  }
-
-  let showImage = false
   const large = a.assets?.large_image
-
-  if (large) {
-    const endsWithExt = /\.[a-zA-Z0-9]+$/.test(large)
-    if (endsWithExt) showImage = true
-  }
-
-  let img = null
-  if (showImage && large) {
-    img = large.startsWith("mp:")
-      ? `https://media.discordapp.net/${large.replace("mp:", "")}`
-      : a.application_id
-        ? `https://cdn.discordapp.com/app-assets/${a.application_id}/${large}`
-        : null
-  }
+  const showImage = large && /\.[a-zA-Z0-9]+$/.test(large)
+  const img = showImage
+    ? large.startsWith("mp:") ? `https://media.discordapp.net/${large.replace("mp:", "")}` : a.application_id ? `https://cdn.discordapp.com/app-assets/${a.application_id}/${large}` : null
+    : null
 
   return (
-    <div className="flex gap-2 items-center p-2 rounded-lg bg-white/5">
+    <div className="flex gap-2 items-center p-2 rounded-lg dark:bg-white/5 bg-black/5">
+      {a.emoji && <span className="text-lg">{a.emoji}</span>}
       {img && <img src={img} className="w-10 h-10 rounded" />}
       <div className="text-xs">
-        <div className="font-medium">{a.name}</div>
+        <div className="font-medium">{a.name || a.state}</div>
         {a.details && <div className="opacity-70">{a.details}</div>}
       </div>
     </div>

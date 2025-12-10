@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import {
-  GitMerge, Clock, Monitor, Cpu, FolderGit2
+  GitMerge, Clock, Monitor, Cpu, FolderGit2,
+  LucideFlame
 } from "lucide-react"
 import { SiGithub, SiWakatime } from "@icons-pack/react-simple-icons"
 
@@ -173,7 +174,15 @@ export default function GithubStats() {
           <div className="p-6 rounded-2xl border border-white/10 h-fit">
             <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
               <SiWakatime size={24} />
-              AlimadCo
+              <span className="flex items-center gap-2">
+                AlimadCo
+                {data.wakatime.streak && data.wakatime.streak.trim() !== "" &&
+                  <div className="flex items-center gap-1 bg-orange-500 text-white px-2 py-0.5 rounded-full shadow-md text-sm">
+                    <LucideFlame className="w-4 h-4 text-white" />
+                    <span className="font-semibold">{data.wakatime.streak}</span>
+                  </div>
+                }
+              </span>
             </h2>
             <div className="space-y-4">
               <div className="text-center p-4 rounded-xl dark:bg-white/5 bg-black/5">

@@ -85,6 +85,7 @@ export default function StatusViewer() {
         if (data.type == "init") {
           let lastActivity = data.data["ALIMAD-PC"];
           setDeviceData(lastActivity);
+          setOpenApps(lastActivity.meta);
           if (data.devices.includes("ALIMAD-PC")) setDeviceOffline(false);
         }
         if (data.type === "sample" || data.type === "aggregate" || data.type == "offline") {

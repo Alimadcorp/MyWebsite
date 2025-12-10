@@ -36,6 +36,30 @@ const statusColor = (data) => {
   return "bg-green-500"
 }
 
+const formatLastActive = (ts) => {
+  const d = new Date(ts)
+  const now = new Date()
+  const pad = (n) => n.toString().padStart(2, "0")
+  const time = `${pad(d.getHours())}:${pad(d.getMinutes())}`
+
+  const sameDay = d.toDateString() === now.toDateString()
+  const yesterday = new Date(now)
+  yesterday.setDate(now.getDate() - 1)
+  const isYesterday = d.toDateString() === yesterday.toDateString()
+
+  if (sameDay) return `Today at ${time}`
+  if (isYesterday) return `Yesterday at ${time}`
+
+  const diff = now - d
+  const days = diff / 86400000
+  if (days < 7) {
+    return `${d.toLocaleDateString(undefined, { weekday: "long" })} at ${time}`
+  }
+
+  const date = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`
+  return `${date} at ${time}`
+}
+
 function Card({ title, status, children }) {
   return (
     <motion.div
@@ -98,7 +122,7 @@ function DeviceRow({ device, icon, apps, offline, scr, already, spec }) {
           <div className="truncate text-sm dark:text-gray-300 text-gray-700">{device.app}</div>
           <div className="truncate text-xs text-gray-500">{device.device}</div>
           {lastActive && (
-            <div className="text-xs text-gray-400">Last active: {new Date(lastActive).toLocaleString()}</div>
+            <div className="text-xs text-gray-400">Last active: {formatLastActive(lastActive)}</div>
           )}
           {(device.ip || device.localIp || device.wifi) && (
             <div className="truncate text-xs text-gray-500 flex items-center gap-1 font-mono">

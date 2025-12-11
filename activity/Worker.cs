@@ -22,6 +22,20 @@ public class Worker : BackgroundService
     readonly Dictionary<int, DateTime> lastTime = [];
     readonly string deviceName = Environment.MachineName;
 
+    readonly string slackToken = Passwords.SLACK_TOKEN;
+
+    readonly Dictionary<string, string> slackMap = new()
+    {
+        ["chrome"] = ":chrome:",
+        ["code"] = ":vsc:",
+        ["discord"] = ":discord:",
+        ["whatsapp.root"] = ":whatsapp:",
+        ["slack"] = ":slack:",
+        ["windowsterminal"] = ":terminal:"
+    };
+
+    DateTime lastSlackUpdate = DateTime.MinValue;
+
     ClientWebSocket ws = null!;
     private readonly CancellationTokenSource wsCts = new();
 
@@ -59,6 +73,7 @@ public class Worker : BackgroundService
         while (!token.IsCancellationRequested)
         {
             var sample = new Dictionary<string, object>();
+            string currentWindowName = ""; string currentTitle = "";
             try
             {
                 var hwnd = GetForegroundWindow();
@@ -66,6 +81,7 @@ public class Worker : BackgroundService
                 {
                     _ = GetWindowThreadProcessId(hwnd, out uint pid);
                     var p = Process.GetProcessById((int)pid);
+                    currentWindowName = p.ProcessName;
 
                     string iconBase64 = "";
                     if (last_process != pid)
@@ -77,6 +93,7 @@ public class Worker : BackgroundService
 
                     string name = p.ProcessName;
                     string title = p.MainWindowTitle;
+                    currentTitle = title;
                     long ramBytes = p.WorkingSet64;
                     double ramPercent = (ramBytes / TOTAL_RAM) * 100.0;
 
@@ -117,6 +134,7 @@ public class Worker : BackgroundService
                     sample["keysPressed"] = keys.Length;
                     sample["mouseClicks"] = MouseCounter.ResetClicks();
                     sample["isSleeping"] = hwnd == IntPtr.Zero;
+                    sample["ipa"] = ipa;
                 }
                 else
                 {
@@ -132,8 +150,14 @@ public class Worker : BackgroundService
                 sample["error"] = ex.Message;
             }
 
-            SessionLogger.LogSample(sample);
             _ = SendWebSocketSampleAsync(sample);
+            sample["time"] = DateTime.UtcNow;
+            SessionLogger.LogSample(sample);
+            if ((DateTime.UtcNow - lastSlackUpdate).TotalSeconds >= 5)
+            {
+                lastSlackUpdate = DateTime.UtcNow;
+                _ = UpdateSlackStatusAsync(currentWindowName, currentTitle);
+            }
 
             await Task.Delay(sampleInterval, token);
         }
@@ -210,7 +234,8 @@ public class Worker : BackgroundService
                         if (result.MessageType == WebSocketMessageType.Close) break;
 
                         using var doc = JsonDocument.Parse(Encoding.UTF8.GetString(buffer, 0, result.Count));
-                        SessionLogger.LogWebSocketMessage("received", doc.RootElement.ToString());
+                        var obj = JsonSerializer.Deserialize<Dictionary<string, object>>(doc.RootElement.GetRawText());
+                        SessionLogger.LogWebSocketMessage("received", obj);
 
                         if (doc.RootElement.TryGetProperty("type", out var t) && t.GetString() == "request")
                         {
@@ -336,4 +361,27 @@ public class Worker : BackgroundService
     static string CsvSafe(string s) => string.IsNullOrEmpty(s) ? "" : s.Contains(',') || s.Contains('"') || s.Contains('\n') ? $"\"{s.Replace("\"", "\"\"")}\"" : s;
     static Icon? GetAppIcon(Process p) { try { return Icon.ExtractAssociatedIcon(p.MainModule!.FileName!); } catch { return null; } }
     static string IconToBase64(Icon icon) { using var bmp = icon.ToBitmap(); using var ms = new MemoryStream(); bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png); return Convert.ToBase64String(ms.ToArray()); }
+    async Task UpdateSlackStatusAsync(string window, string status)
+    {
+        var emoji = slackMap.TryGetValue(window.ToLower(), out var e) ? e : ":discord_online:";
+
+        var body = new
+        {
+            profile = new
+            {
+                status_text = status,
+                status_emoji = emoji,
+                status_expiration = DateTimeOffset.UtcNow.ToUnixTimeSeconds() + 55
+            }
+        };
+
+        var req = new HttpRequestMessage(HttpMethod.Post, "https://slack.com/api/users.profile.set");
+        req.Headers.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", slackToken);
+        req.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
+
+        try { await httpClient.SendAsync(req); }
+        catch { }
+    }
+
 }

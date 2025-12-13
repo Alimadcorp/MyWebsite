@@ -2,7 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import * as cheerio from "cheerio";
 export async function GET() {
   const username = "Alimadcorp";
-  const base = `https://stats.github.alimad.co/api`;
+  const base = `https://github-readme-stats.vercel.app/api`;
   const url = `https://hackatime.hackclub.com/api/v1/users/U08LQFRBL6S/projects/details`;
   const url2 = `https://hackatime.hackclub.com/api/hackatime/v1/users/current/stats/last_7_days`;
 

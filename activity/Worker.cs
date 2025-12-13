@@ -13,6 +13,7 @@ public class Worker : BackgroundService
 {
     const string WS_URI = false ? "ws://localhost:8392/socket" : "wss://ws.alimad.co/socket";
     static string ipa = "0.0.0.0";
+    private static readonly bool SlackMode = false;
     private System.Threading.Timer? _flushTimer;
     const double TOTAL_RAM = 8L * 1024 * 1024 * 1024;
     const int CPU_CORES = 8;
@@ -35,7 +36,6 @@ public class Worker : BackgroundService
     };
 
     DateTime lastSlackUpdate = DateTime.MinValue;
-
     ClientWebSocket ws = null!;
     private readonly CancellationTokenSource wsCts = new();
 
@@ -60,7 +60,6 @@ public class Worker : BackgroundService
         MouseCounter.Start();
         Task.Run(GetPublicIpAsync);
         Task.Run(() => WsConnectLoopAsync(wsCts.Token));
-
         SessionLogger.StartSession();
         _flushTimer = new System.Threading.Timer(_ => SessionLogger.Flush(), null, 10_000, 10_000);
         AppDomain.CurrentDomain.ProcessExit += (_, __) => SessionLogger.Flush();
@@ -153,10 +152,13 @@ public class Worker : BackgroundService
             _ = SendWebSocketSampleAsync(sample);
             sample["time"] = DateTime.UtcNow;
             SessionLogger.LogSample(sample);
-            if ((DateTime.UtcNow - lastSlackUpdate).TotalSeconds >= 5)
+            if (SlackMode)
             {
-                lastSlackUpdate = DateTime.UtcNow;
-                _ = UpdateSlackStatusAsync(currentWindowName, currentTitle);
+                if ((DateTime.UtcNow - lastSlackUpdate).TotalSeconds >= 5)
+                {
+                    lastSlackUpdate = DateTime.UtcNow;
+                    _ = _UpdateSlackStatusAsync(currentWindowName, currentTitle);
+                }
             }
 
             await Task.Delay(sampleInterval, token);
@@ -361,7 +363,7 @@ public class Worker : BackgroundService
     static string CsvSafe(string s) => string.IsNullOrEmpty(s) ? "" : s.Contains(',') || s.Contains('"') || s.Contains('\n') ? $"\"{s.Replace("\"", "\"\"")}\"" : s;
     static Icon? GetAppIcon(Process p) { try { return Icon.ExtractAssociatedIcon(p.MainModule!.FileName!); } catch { return null; } }
     static string IconToBase64(Icon icon) { using var bmp = icon.ToBitmap(); using var ms = new MemoryStream(); bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png); return Convert.ToBase64String(ms.ToArray()); }
-    async Task UpdateSlackStatusAsync(string window, string status)
+    async Task _UpdateSlackStatusAsync(string window, string status)
     {
         var emoji = slackMap.TryGetValue(window.ToLower(), out var e) ? e : ":discord_online:";
 

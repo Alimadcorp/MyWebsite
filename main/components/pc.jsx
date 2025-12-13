@@ -31,8 +31,8 @@ function OpenApps({ apps, device }) {
 
 const statusColor = (data, offline) => {
   if (!data || offline) return "bg-gray-500"
-  if (data.isSleeping) return "bg-yellow-500"
-  if (data.isIdle) return "bg-blue-500"
+  if (data.isIdle) return "bg-yellow-500"
+  if (data.isSleeping) return "bg-blue-500"
   return "bg-green-500"
 }
 

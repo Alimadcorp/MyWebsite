@@ -195,7 +195,7 @@ export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, c
           <DeviceRow device={deviceData} icon={appIcon} apps={openApps} offline={offline} scr={scr} already={already} spec={spec} />
         )}
       </Card>
-      <Card title="KeyLogger">
+      <Card title="KeyLogger" status={status=="typing"?"typing":(offline?"offline":"online")}>
         <p className="text-sm font-mono break-word">{log}</p>
       </Card>
     </>

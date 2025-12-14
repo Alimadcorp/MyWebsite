@@ -230,7 +230,7 @@ function Card({ title, status, children, open, active, typing }) {
     stat = "background";
     if (active) stat = "online";
   }
-  if (typing) stat = "typing";
+  if (typing && active) stat = "typing";
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

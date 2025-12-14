@@ -26,6 +26,7 @@
     "lucide-react": "^0.525.0",
     "next": "^15.5.7",
     "nextjs": "^0.0.3",
+    "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-activity-calendar": "^3.0.1",
     "react-calendar-heatmap": "^1.10.0",

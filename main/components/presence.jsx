@@ -5,13 +5,6 @@ import { motion } from "framer-motion"
 import DeviceMonitor from "@/components/pc";
 import StatusDot from "@/components/statusdot"
 
-const statusColor = (s) => ({
-  online: "dark:bg-green-500 bg-green-500",
-  idle: "dark:bg-yellow-500 bg-yellow-500",
-  dnd: "dark:bg-red-500 bg-red-500",
-  offline: "dark:bg-gray-500 bg-gray-800"
-}[s] || "bg-gray-500")
-
 const titleCase = (str) => str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : "";
 
 function Emojix({ text, emoji }) {
@@ -177,11 +170,13 @@ export default function StatusViewer() {
 
   return (
     <div className="w-full grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mt-8">
-      <Card title="Discord" status={discord}>
+      <Card title="Discord" status={discord}
+        open={openApps["discord"]}
+        active={deviceData && deviceData.app && deviceData.app.toLowerCase() == "discord"}
+        typing={deviceData && (deviceData.keysPressed > 0 || deviceData.keysPressed != "0")}>
         <UserRow
           user={meta.discord.name}
           avatar={meta.discord.avatar}
-          status={discord}
           tag={meta.discord.tag}
           platform={meta.discord.platform}
           url="https://discord.com/users/888954248199549030"
@@ -191,11 +186,13 @@ export default function StatusViewer() {
         </div>
       </Card>
 
-      <Card title="Slack" status={slack}>
+      <Card title="Slack" status={slack}
+        open={openApps["slack"]}
+        active={deviceData && deviceData.app && deviceData.app.toLowerCase() == "slack"}
+        typing={deviceData && (deviceData.keysPressed > 0 || deviceData.keysPressed != "0")}>
         <UserRow
           user={meta.slack.name}
           avatar={meta.slack.avatar}
-          status={slack}
           tag={meta.slack.title}
           platform={meta.slack.pronouns}
           url="https://hackclub.enterprise.slack.com/team/U08LQFRBL6S"
@@ -227,7 +224,13 @@ function Badge({ children }) {
   )
 }
 
-function Card({ title, status, children }) {
+function Card({ title, status, children, open, active, typing }) {
+  let stat = status;
+  if (open) {
+    stat = "background";
+    if (active) stat = "online";
+  }
+  if (typing) stat = "typing";
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -235,7 +238,7 @@ function Card({ title, status, children }) {
       className="w-full p-4 rounded-xl border dark:border-white/10 border-black/10 bg-transparent shadow"
     >
       <div className="flex items-center gap-2 mb-3">
-        <div className={`w-3 h-3 rounded-full ${statusColor(status)}`} />
+        <StatusDot status={stat} />
         <div className="font-semibold">{title}</div>
       </div>
       {children}
@@ -243,7 +246,7 @@ function Card({ title, status, children }) {
   )
 }
 
-function UserRow({ user, avatar, status, tag, platform, url }) {
+function UserRow({ user, avatar, tag, platform, url }) {
   return (
     <div className="flex items-center gap-3">
       {avatar && <img src={avatar} className="w-12 h-12 rounded-full" />}

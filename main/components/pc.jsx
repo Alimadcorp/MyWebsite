@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { Battery, BatteryCharging, BatteryLow, BatteryMedium, BatteryFull, Cpu, EthernetPort, Globe, Keyboard, MemoryStick, Mouse, Wifi, Code, Camera, Expand, PanelLeft, PanelRight, Eye } from "lucide-react"
 import { SiSlack, SiDiscord, SiWhatsapp, SiGooglechrome, SiGnometerminal } from "@icons-pack/react-simple-icons"
+import StatusDot from "./statusdot"
 
 const appIconsMap = {
   slack: SiSlack,
@@ -56,7 +57,7 @@ const formatLastActive = (ts) => {
     return `${d.toLocaleDateString(undefined, { weekday: "long" })} at ${time}`
   }
 
-  const date = `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`
+  const date = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`
   return `${date} at ${time}`
 }
 
@@ -68,7 +69,7 @@ function Card({ title, status, children }) {
       className="w-full p-4 rounded-xl border dark:border-white/10 border-black/10 bg-transparent shadow"
     >
       <div className="flex items-center gap-2 mb-3">
-        <div className={`w-3 h-3 rounded-full ${status}`} />
+        <StatusDot status={status}/>
         <div className="font-semibold">{title}</div>
       </div>
       {children}
@@ -160,9 +161,21 @@ function DeviceRow({ device, icon, apps, offline, scr, already, spec }) {
 }
 
 export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, connectWS, log, openApps, offline, scr, already, spec }) {
+  let device = deviceData;
+  let status = offline ? "offline" : "online";
+  if (!offline) {
+    let ap = device.app.toLowerCase();
+    if (device.isIdle) status = "idle";
+    if (device.fullscreen) status = "fullscreen";
+    if (device.splitLeft) status = "left";
+    if (device.splitRight) status = "right";
+    if (ap == "chrome") status = "browsing";
+    if (ap == "explorer") status = "nodisplay";
+    if (device.keysPressed > 0 || device.keysPressed != "0") status = ap == "code" ? "coding" : ((ap == "discord" || ap == "slack") ? "chatting" : "typing");
+  }
   return (
     <>
-      <Card title="Device" status={statusColor(deviceData, offline)}>
+      <Card title="Device" status={status}>
         {disconnected || !deviceData ? (
           <div className="flex items-center justify-center h-24">
             <div className={`text-xs ${disconnected ? "text-red-400" : "text-gray-400"}`}>

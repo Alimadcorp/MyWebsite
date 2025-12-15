@@ -171,7 +171,7 @@ export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, c
     if (device.splitRight) status = "right";
     if (ap == "chrome") status = "browsing";
     if (ap == "explorer") status = "nodisplay";
-    if (device.keysPressed > 0 || device.keysPressed != "0") status = ap == "code" ? "coding" : ((ap == "discord" || ap == "slack") ? "chatting" : "typing");
+    if (device.keysPressed > 1) status = ap == "code" ? "coding" : ((ap == "discord" || ap == "slack") ? "chatting" : "typing");
   }
   return (
     <>

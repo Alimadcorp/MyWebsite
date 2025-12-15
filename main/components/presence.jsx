@@ -173,7 +173,7 @@ export default function StatusViewer() {
       <Card title="Discord" status={discord}
         open={openApps["discord"]}
         active={deviceData && deviceData.app && deviceData.app.toLowerCase() == "discord"}
-        typing={deviceData && (deviceData.keysPressed > 0 || deviceData.keysPressed != "0")}>
+        typing={deviceData && (deviceData.keysPressed > 1)}>
         <UserRow
           user={meta.discord.name}
           avatar={meta.discord.avatar}
@@ -189,7 +189,7 @@ export default function StatusViewer() {
       <Card title="Slack" status={slack}
         open={openApps["slack"]}
         active={deviceData && deviceData.app && deviceData.app.toLowerCase() == "slack"}
-        typing={deviceData && (deviceData.keysPressed > 0 || deviceData.keysPressed != "0")}>
+        typing={deviceData && (deviceData.keysPressed > 1)}>
         <UserRow
           user={meta.slack.name}
           avatar={meta.slack.avatar}

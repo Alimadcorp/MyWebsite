@@ -1,3 +1,5 @@
+import Skin3D from "./SkinViewer";
+
 async function getData(id) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/mc/${id}`, {
     cache: "force-cache",
@@ -12,38 +14,21 @@ export default async function Page({ params }) {
   const tex = data.textures?.textures || {};
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 font-mono">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <h1 className="text-4xl font-bold">{data.name}</h1>
-        <p className="text-white/60 break-all">UUID: {data.id}</p>
-
-        <div className="grid sm:grid-cols-2 gap-6">
-          {tex.SKIN && (
-            <div className="bg-zinc-900 p-4 rounded-xl">
-              <h2 className="text-xl mb-2">Skin</h2>
-              <img src={tex.SKIN.url} width={256} height={256} alt="Skin"  style={{ imageRendering: "pixelated" }}/>
-              <p className="text-sm mt-2">
-                Model: {tex.SKIN.metadata?.model || "classic"}
-              </p>
-            </div>
-          )}
-
-          {tex.CAPE && (
-            <div className="bg-zinc-900 p-4 rounded-xl">
-              <h2 className="text-xl mb-2">Cape</h2>
-              <img src={tex.CAPE.url} width={256} height={256} alt="Cape"  style={{ imageRendering: "pixelated" }}/>
-            </div>
-          )}
+    <div className="h-screen bg-black text-white font-mono flex items-center">
+      <div className="w-full max-w-5xl mx-auto px-4 space-y-2">
+        <div className="text-center max-h-[vh-20]">
+          <h1 className="text-4xl font-bold">{data.name}</h1>
+          <p className="text-white/50 text-sm truncate">{data.id}</p>
         </div>
 
-        <div className="bg-zinc-900 p-4 rounded-xl">
-          <h2 className="text-xl mb-2">Raw Texture Data</h2>
-          <pre className="text-xs overflow-x-auto">
-            {JSON.stringify(data.textures, null, 2)}
-          </pre>
-        </div>
+        {tex.SKIN && (
+          <Skin3D
+            skinUrl={tex.SKIN.url}
+            capeUrl={tex.CAPE?.url}
+            timestamp={data.textures?.timestamp}
+          />
+        )}
       </div>
     </div>
   );
 }
-{/* -41 36 */}

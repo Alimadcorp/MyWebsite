@@ -29,14 +29,6 @@ export default async function Page({ params }) {
           <p className="text-white/40 text-sm">
             We couldn't find the player or there was an issue with the Mojang API.
           </p>
-          <div className="pt-4">
-            <Link
-              href="/mc"
-              className="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors"
-            >
-              Go Back
-            </Link>
-          </div>
         </div>
       </div>
     );

@@ -1,7 +1,7 @@
 import Skin3D from "./SkinViewer";
 
 async function getData(id) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/mc/${id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/mc/${id}`, {
     cache: "force-cache",
   });
   if (!res.ok) return { error: "404 Not found" };

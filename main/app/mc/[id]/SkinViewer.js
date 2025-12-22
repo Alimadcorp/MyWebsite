@@ -86,7 +86,7 @@ export default function Skin3D({ skinUrl, capeUrl, timestamp }) {
     >
       <canvas ref={canvasRef} className="block w-full" />
 
-      {timestamp && (
+      {(false && timestamp) && (
         <div className="absolute top-3 left-3 text-xs bg-black/40 backdrop-blur px-3 py-1 rounded-full">
           {new Date(timestamp).toDateString().replace(" ", ", ")}
         </div>

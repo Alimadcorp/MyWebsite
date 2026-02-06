@@ -20,7 +20,7 @@ type Props = {
 
 export default async function AdminPage({ searchParams }: Props) {
   searchParams = await searchParams;
-  const password = searchParams.password;
+  const password = searchParams.pwd;
   if (password !== 'PASSWORDISBANANA') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black text-gray-900 dark:text-white font-sans">

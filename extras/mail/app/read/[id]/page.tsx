@@ -32,7 +32,7 @@ export default function ReadForm() {
       return;
     }
 
-    const status = (id as string).length / 8 !== pCount ? 'Tampered' : 'Read';
+    const status = ((id as string).length / 8 - 1) !== pCount ? 'Tampered' : 'Read';
 
     const payload = {
       id,

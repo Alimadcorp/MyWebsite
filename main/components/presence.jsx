@@ -175,14 +175,14 @@ export default function StatusViewer() {
         active={deviceData && deviceData.app && deviceData.app.toLowerCase() == "discord"}
         typing={deviceData && (deviceData.keysPressed > 1)}>
         <UserRow
-          user={meta.discord.name}
-          avatar={meta.discord.avatar}
-          tag={meta.discord.tag}
-          platform={meta.discord.platform}
+          user={meta?.discord?.name}
+          avatar={meta?.discord?.avatar}
+          tag={meta?.discord?.tag}
+          platform={meta?.discord?.platform}
           url="https://discord.com/users/888954248199549030"
         />
         <div className="space-y-2 mt-2">
-          {meta.discord.activities?.map((a, i) => <Activity key={i} a={a} />)}
+          {meta?.discord?.activities?.map((a, i) => <Activity key={i} a={a} />)}
         </div>
       </Card>
 
@@ -191,13 +191,13 @@ export default function StatusViewer() {
         active={deviceData && deviceData.app && deviceData.app.toLowerCase() == "slack"}
         typing={deviceData && (deviceData.keysPressed > 1)}>
         <UserRow
-          user={meta.slack.name}
-          avatar={meta.slack.avatar}
-          tag={meta.slack.title}
-          platform={meta.slack.pronouns}
+          user={meta?.slack?.name}
+          avatar={meta?.slack?.avatar}
+          tag={meta?.slack?.title}
+          platform={meta?.slack?.pronouns}
           url="https://hackclub.enterprise.slack.com/team/U08LQFRBL6S"
         />
-        {meta.slack.status_text && <Emojix text={meta.slack.status_text} emoji={meta.slack.status_emoji} />}
+        {meta?.slack?.status_text && <Emojix text={meta?.slack?.status_text} emoji={meta?.slack?.status_emoji} />}
       </Card>
 
       {screenshot && scrMax && (

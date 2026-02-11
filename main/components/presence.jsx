@@ -171,7 +171,7 @@ export default function StatusViewer() {
   return (
     <div className="w-full grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mt-8">
       <Card title="Discord" status={discord}
-        open={openApps["discord"]}
+        open={openApps?.discord || false}
         active={deviceData && deviceData.app && deviceData.app.toLowerCase() == "discord"}
         typing={deviceData && (deviceData.keysPressed > 1)}>
         <UserRow
@@ -187,7 +187,7 @@ export default function StatusViewer() {
       </Card>
 
       <Card title="Slack" status={slack}
-        open={openApps["slack"]}
+        open={openApps?.slack || false}
         active={deviceData && deviceData.app && deviceData.app.toLowerCase() == "slack"}
         typing={deviceData && (deviceData.keysPressed > 1)}>
         <UserRow

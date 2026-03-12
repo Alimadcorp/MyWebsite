@@ -2,6 +2,8 @@ export default function subdomains() {
   return {
     campfire: { path: "/" },
     mail: { path: "/" },
+    falooda: { path: "/" },
+    meet: { path: "/" },
     "stats.github": { path: "/" },
     "312": { path: "/" },
     ws: { path: "/" },
@@ -21,6 +23,7 @@ export default function subdomains() {
     daydream: { path: "/" },
     hackclub: { path: "/" },
     live: { path: "/" },
+    webtools: { path: "/" },
     somps: { path: "/" },
     wordle: { path: "/" },
     server: { path: "/" },

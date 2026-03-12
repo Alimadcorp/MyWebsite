@@ -16,7 +16,7 @@ export async function GET(req) {
       client_secret: process.env.HKTIME_SECRET,
       code,
       grant_type: "authorization_code",
-      redirect_uri: "https://hackclub.com/api/hackatime/auth"
+      redirect_uri: "https://alimad.co/api/hackatime/auth"
     })
   })
 

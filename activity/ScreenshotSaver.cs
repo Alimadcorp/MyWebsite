@@ -52,7 +52,7 @@ public static class ScreenshotSaver
         PropertyItem prop = tmp.PropertyItems[0];
         prop.Id = id;
         prop.Type = 2; // ASCII
-        string str = value is DateTime dt ? dt.ToString("yyyy:MM:dd HH:mm:ss") : value.ToString();
+        string str = value is DateTime dt ? dt.ToString("yyyy:MM:dd HH:mm:ss") : (value?.ToString() ?? string.Empty);
         prop.Value = System.Text.Encoding.ASCII.GetBytes(str + '\0');
         prop.Len = prop.Value.Length;
         return prop;

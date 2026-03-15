@@ -34,7 +34,8 @@ public static class MouseCounter
                         _held.Remove(button);
                     }
                 }
-                Thread.Sleep(5);
+                // Reduce mouse polling frequency to lower CPU usage
+                Thread.Sleep(25);
             }
         })
         { IsBackground = true };

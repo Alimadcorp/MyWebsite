@@ -4,38 +4,23 @@ import { useEffect, useState, useRef, useMemo } from "react"
 import { motion } from "framer-motion"
 import DeviceMonitor from "@/components/pc";
 import StatusDot from "@/components/statusdot"
+import { SiDiscord, SiSlack } from "@icons-pack/react-simple-icons";
 
 const titleCase = (str) => str ? str[0].toUpperCase() + str.slice(1).toLowerCase() : "";
 
-function Emojix({ text, emoji }) {
-  if (!text && !emoji) return null
+function processLog(input) {
+  const delimiter = " BACKSPACE ";
+  const parts = input.split(delimiter);
 
-  const renderEmojiJSX = (text) => {
-    if (!text) return null
-    const parts = text.split(/(:[a-zA-Z0-9_+-]+:)/g)
-    return parts.map((part, i) => {
-      const match = part.match(/^:([a-zA-Z0-9_+-]+):$/)
-      if (match) {
-        return (
-          <img
-            key={i}
-            src={`https://e.alimad.co/${match[1]}`}
-            className="w-5 h-5 inline-block object-contain align-middle"
-            alt={match[1]}
-          />
-        )
-      }
-      return part
-    })
+  let result = parts[0];
+  for (let i = 1; i < parts.length; i++) {
+    result = result.slice(0, -1);
+    result += parts[i];
   }
-
-  return (
-    <div className="flex items-center gap-2 p-3 mt-3 rounded-xl dark:bg-white/5 bg-black/5">
-      {emoji && <span className="leading-none flex items-center justify-center">{renderEmojiJSX(emoji)}</span>}
-      {text && <span className="text-sm">{text}</span>}
-    </div>
-  )
+  return result;
 }
+
+
 
 export default function StatusViewer() {
   const [data, setData] = useState(null)
@@ -45,6 +30,8 @@ export default function StatusViewer() {
   const [screenshot, setScreenshot] = useState(null);
   const [scrMax, setScrMax] = useState(false);
   const [already, setAlready] = useState(false);
+  const [scrLoading, setScrLoading] = useState(false);
+  const scrTimeoutRef = useRef(null);
   const [spec, setSpec] = useState(0);
   const [openApps, setOpenApps] = useState({
     "slack": false,
@@ -83,7 +70,7 @@ export default function StatusViewer() {
         setLog((prev) => {
           let newLog = prev + nextChar;
           if (newLog.length > maxChar) newLog = newLog.slice(-maxChar);
-          return newLog;
+          return newLog
         });
       } else {
         bufferLenRef.current = 0;
@@ -97,6 +84,12 @@ export default function StatusViewer() {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify({ type: "request", device: "ALIMAD-PC" }));
       setAlready(true);
+      setScrLoading(true);
+      if (scrTimeoutRef.current) clearTimeout(scrTimeoutRef.current);
+      scrTimeoutRef.current = setTimeout(() => {
+        setScrLoading(false);
+        setAlready(false);
+      }, 10000);
     }
   }
   const connectWS = () => {
@@ -124,6 +117,8 @@ export default function StatusViewer() {
           if (data.data.icon && data.data.icon.trim() && data.data.icon !== "none") setAppIcon(data.data.icon)
         }
         if (data.type === "screenshot") {
+          setScrLoading(false);
+          if (scrTimeoutRef.current) clearTimeout(scrTimeoutRef.current);
           setAlready(true); setScrMax(true);
           setTimeout(() => { setAlready(false) }, 10000);
           setScreenshot({ time: data.time, data: data.data });
@@ -168,6 +163,11 @@ export default function StatusViewer() {
 
   const { discord, slack, meta } = data
 
+  const discordActivities = meta?.discord?.activities || [];
+  const slackActivities = meta?.slack?.status_text
+    ? [{ name: meta.slack.status_text, emoji: meta.slack.status_emoji, type: 4 }]
+    : [];
+
   return (
     <div className="w-full grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mt-8">
       <Card title="Discord" status={discord}
@@ -180,9 +180,10 @@ export default function StatusViewer() {
           tag={meta?.discord?.tag}
           platform={meta?.discord?.platform}
           url="https://discord.com/users/888954248199549030"
+          brandColor="#5865F2"
         />
-        <div className="space-y-2 mt-2">
-          {meta?.discord?.activities?.map((a, i) => <Activity key={i} a={a} />)}
+        <div className="mt-4 space-y-3">
+          {discordActivities.map((a, i) => <Activity key={i} a={a} brandColor="#7680eaff" />)}
         </div>
       </Card>
 
@@ -196,8 +197,11 @@ export default function StatusViewer() {
           tag={meta?.slack?.title}
           platform={meta?.slack?.pronouns}
           url="https://hackclub.enterprise.slack.com/team/U08LQFRBL6S"
+          brandColor="#4A154B"
         />
-        {meta?.slack?.status_text && <Emojix text={meta?.slack?.status_text} emoji={meta?.slack?.status_emoji} />}
+        <div className="mt-4 space-y-3">
+          {slackActivities.map((a, i) => <Activity key={i} a={a} brandColor="#fd7bffff" />)}
+        </div>
       </Card>
 
       {screenshot && scrMax && (
@@ -211,7 +215,7 @@ export default function StatusViewer() {
           </div>
         </div>
       )}
-      <DeviceMonitor deviceData={deviceData} disconnected={disconnected} appIcon={appIcon} connectWS={connectWS} log={log} openApps={openApps} offline={deviceOffline} scr={requestScrenshot} already={already} spec={spec} />
+      <DeviceMonitor deviceData={deviceData} disconnected={disconnected} appIcon={appIcon} connectWS={connectWS} log={processLog(log)} openApps={openApps} offline={deviceOffline} scr={requestScrenshot} already={already} scrLoading={scrLoading} spec={spec} />
     </div>
   )
 }
@@ -246,35 +250,66 @@ function Card({ title, status, children, open, active, typing }) {
   )
 }
 
-function UserRow({ user, avatar, tag, platform, url }) {
+function UserRow({ user, avatar, tag, platform, url, brandColor }) {
   return (
-    <div className="flex items-center gap-3">
-      {avatar && <img src={avatar} className="w-12 h-12 rounded-full" />}
-      <div className="text-sm text-left">
-        <div className="flex gap-1">
-          <a href={url} className="hover:underline"><div className="font-medium">{user}</div></a>
-          <Badge>{tag}</Badge>
+    <div className="flex items-center gap-3 group relative">
+      <div className="relative shrink-0">
+        {avatar && <img src={avatar} className="w-12 h-12 rounded-full border border-white/10 group-hover:border-white/20 transition-all shadow-sm" />}
+        <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-zinc-950 border border-white/10 shadow-xs scale-75">
+          {brandColor === "#5865F2" ? <SiDiscord className="w-3.5 h-3.5 text-[#5865F2]" /> : <SiSlack className="w-3.5 h-3.5 text-[#4A154B]" />}
         </div>
-        <div className="opacity-50 text-xs">{titleCase(platform)}</div>
+      </div>
+      <div className="text-sm text-left flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <a href={url} target="_blank" className="hover:underline truncate"><div className="font-bold text-md leading-tight">{user || "Offline"}</div></a>
+          {tag && <Badge>{tag}</Badge>}
+        </div>
+        <div className="opacity-40 text-[9px] font-bold tracking-tight">{titleCase(platform) || "Disconnected"}</div>
       </div>
     </div>
   )
 }
 
-function Activity({ a }) {
+function Activity({ a, brandColor }) {
   const large = a.assets?.large_image
   const showImage = large && /\.[a-zA-Z0-9]+$/.test(large)
   const img = showImage
     ? large.startsWith("mp:") ? `https://media.discordapp.net/${large.replace("mp:", "")}` : a.application_id ? `https://cdn.discordapp.com/app-assets/${a.application_id}/${large}` : null
     : null
 
+  const typeMap = { 0: "Playing", 1: "Streaming", 2: "Listening to", 3: "Watching", 4: "Status", 5: "Competing in" };
+  const type = typeMap[a.type] || "Doing";
+
+  const renderEmoji = (emoji) => {
+    if (!emoji) return null;
+    const match = emoji.match(/:([a-zA-Z0-9_+-]+):/);
+    if (match) {
+      return (
+        <img
+          src={`https://emoji.alimad.co/${match[1]}`}
+          className="w-6 h-6 object-contain"
+          alt={match[1]}
+        />
+      );
+    }
+    return <span className="text-xl">{emoji}</span>;
+  };
+
   return (
-    <div className="flex gap-2 items-center p-2 rounded-lg dark:bg-white/5 bg-black/5">
-      {a.emoji && <span className="text-lg">{a.emoji}</span>}
-      {img && <img src={img} className="w-10 h-10 rounded" />}
-      <div className="text-xs">
-        <div className="font-medium">{a.name || a.state}</div>
-        {a.details && <div className="opacity-70">{a.details}</div>}
+    <div className="flex gap-3 items-center group transition-opacity hover:opacity-100 opacity-90">
+      <div className="relative shrink-0">
+        {img ? (
+          <img src={img} className="w-10 h-10 rounded-lg border border-white/10 object-cover" />
+        ) : (
+          <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+            {a.emoji ? renderEmoji(a.emoji) : <div className="w-2 h-2 rounded-full" style={{ backgroundColor: brandColor }} />}
+          </div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0 flex flex-col justify-center">
+        <div className="text-[9px] font-black opacity-60 mb-0.5" style={{ color: brandColor }}>{type}</div>
+        <div className="font-bold text-xs truncate leading-tight">{a.name}</div>
+        {(a.details || a.state) && <div className="text-[10px] opacity-50 truncate mt-0.5">{a.details || a.state}</div>}
       </div>
     </div>
   )

@@ -47,7 +47,7 @@ export default function LiveStatus({ app = 'alimadhomepage' }) {
         animation: online ? 'pulse 4s infinite ease-in-out' : 'none',
         transition: "all"
       }} />
-      <span style={{ color: online ? 'lime' : 'red' }}>{online ? `Online: ${count}` : 'Offline'}</span>
+      <span className='md:inline hidden' style={{ color: online ? 'lime' : 'red' }}>{online ? `Online: ` : 'Offline'}</span><span>{count}</span>
       <style>{`
         @keyframes pulse {
           0% { opacity: 1; }

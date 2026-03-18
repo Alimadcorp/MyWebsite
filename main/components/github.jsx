@@ -106,7 +106,7 @@ export default function GithubStats() {
   }
 
   return (
-    <div className="max-w-5xl w-full mx-auto p-2 mt-2 md:p-6 space-y-6 grayscale-100 dark:grayscale-0">
+    <div className="max-w-5xl w-full mx-auto pt-6 space-y-6 grayscale-100 dark:grayscale-0">
       <div className="grid lg:grid-cols-3 grid-cols-1 w-full gap-4">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

@@ -176,9 +176,9 @@ function WebButtons() {
       href="https://velzie.rip"
     />
     <WebButton
-      src="/buttons/thinlqd.gif"
-      title="ThinLiquid"
-      href="https://thinliquid.dev"
+      src="https://bomberfish.ca/buttons/acon-gets-a-button-animated.gif"
+      title="Acon Dev"
+      href="https://aconlin.com/"
     />
     <WebButton
       src="/buttons/foxmossbutton.gif"
@@ -424,7 +424,7 @@ export default function Home() {
     let refreshing = false;
     async function load() {
       try {
-        if (refreshing) return;
+        if (refreshing || true) return;
         setReloadRequired(false);
         setSongLoad(true);
         refreshing = true;
@@ -462,7 +462,7 @@ export default function Home() {
           <div className="max-w-5xl w-full">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 dark:text-cyan-400">Hello, World!</h1>
             <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-5">This is Muhammad Ali's website!</p>
-            <Clock/>
+            <Clock />
             {myIdea && <p className="text-gray-600 dark:text-gray-400 text-sm">{`One "${myIdea}" coming up!`}</p>}
             <div className="grid sm:hidden grid-cols-1 gap-2 mt-3 max-w-5xl w-full px-2">
               <button
@@ -476,6 +476,17 @@ export default function Home() {
               </button>
               <div className="grid grid-cols-4 gap-2 min-w-0 w-full">
                 <Socials sizer={25} />
+              </div>
+            </div>
+            <div className="mt-6 text-left w-full max-w-5xl">
+              <p>Most of my projects have a subdomain of their own: </p>
+              <div className="flex justify-left items-start gap-3 mt-2 w-full">
+                <button
+                  onClick={() => Router.push('/subdomains')}
+                  className="text-sm border dark:border-cyan-600 cursor-pointer px-4 py-2 rounded-md dark:hover:bg-cyan-600/20 transition w-full max-w-xs"
+                >
+                  View Subdomains
+                </button>
               </div>
             </div>
             <Webring />
@@ -498,8 +509,8 @@ export default function Home() {
                       <div className="w-5 ml-1 text-3xl font-semibold dark:text-cyan-400">{i + 1}</div>
                       <img src={t.cover} alt="" className="w-10 h-10 rounded-md hidden" />
                       <div className="flex flex-col">
-                        <div className="text-sm font-semibold dark:text-cyan-400">{t.title}</div>
-                        <div className="text-xs dark:text-white opacity-70">{t.artist}</div>
+                        <div className="text-sm font-semibold text-left dark:text-cyan-400">{t.title}</div>
+                        <div className="text-xs dark:text-white text-left opacity-70">{t.artist}</div>
                       </div>
                     </a>
                   ))}
@@ -536,7 +547,7 @@ export default function Home() {
         <div className="flex justify-center items-center mt-8 w-full overflow-x-auto mb-8">
           <GitHubCalendar username="Alimadcorp" theme={darkMode ? themer : themer2} />
         </div>
-        {(Array.isArray(wakatimeActivity) && wakatimeActivity.length > 0) ?
+        {false && ((Array.isArray(wakatimeActivity) && wakatimeActivity.length > 0) ?
           (<div className="flex justify-center items-center mt-0 w-full overflow-x-auto mb-8">
             <ActivityCalendar data={wakatimeActivity} theme={darkMode ? themer : themer2} labels={{
               totalCount: `${Math.floor(wakatimeActivity.reduce((s, d) => s + d.count, 0) / 60)} hours ${Math.floor(wakatimeActivity.reduce((s, d) => s + d.count, 0) % 60)} minutes spent coding this year`
@@ -545,8 +556,7 @@ export default function Home() {
           : (
             <div className="flex justify-center items-center mt-0 w-full overflow-x-auto mb-8">
               <ActivityCalendar loading={true} theme={darkMode ? themer : themer2} />
-            </div>)
-        }
+            </div>))}
         <WebButtons />
         <button onClick={() => setPanel(true)} className="flex items-center gap-2 hover:underline text-sm sm:text-base cursor-pointer mt-4">
           <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
-import { Battery, BatteryCharging, BatteryLow, BatteryMedium, BatteryFull, Cpu, EthernetPort, Globe, Keyboard, MemoryStick, Mouse, Wifi, Code, Camera, Expand, PanelLeft, PanelRight, Eye } from "lucide-react"
+import { Battery, BatteryCharging, BatteryLow, BatteryMedium, BatteryFull, Cpu, EthernetPort, Globe, Keyboard, MemoryStick, Mouse, Wifi, Code, Camera, Expand, PanelLeft, PanelRight, Eye, CornerDownLeft, Loader } from "lucide-react"
 import { SiSlack, SiDiscord, SiWhatsapp, SiGooglechrome, SiGnometerminal } from "@icons-pack/react-simple-icons"
 import StatusDot from "./statusdot"
 
@@ -66,10 +66,10 @@ function Card({ title, status, children }) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full p-4 rounded-xl border dark:border-white/10 border-black/10 bg-transparent shadow"
+      className="w-full p-4 rounded-xl border dark:border-white/10 border-black/10 bg-transparent shadow relative"
     >
       <div className="flex items-center gap-2 mb-3">
-        <StatusDot status={status}/>
+        <StatusDot status={status} />
         <div className="font-semibold">{title}</div>
       </div>
       {children}
@@ -105,7 +105,7 @@ function getBatteryIcon(percent = 0, charging = false) {
   return BatteryFull;
 }
 
-function DeviceRow({ device, icon, apps, offline, scr, already, spec }) {
+function DeviceRow({ device, icon, apps, offline, spec }) {
   const cpu = useLerp(device.cpuPercent || 0)
   const ram = useLerp(device.ramPercent || 0)
   const keys = useLerp(device.keysPressed || 0)
@@ -140,19 +140,10 @@ function DeviceRow({ device, icon, apps, offline, scr, already, spec }) {
             <Mouse className="w-4 h-4" /> {mouse.toFixed(0)}
           </div>
           <div className="truncate text-xs text-gray-500 flex p-1 items-center gap-1 font-mono">
-            {!already && !offline && scr && (
-              <button
-                onClick={scr}
-                className="rounded-full text-blue-500 mx-1"
-                title="Steal Alimad's screen :3"
-              >
-                <Camera className="w-4 h-4 scale-120" />
-              </button>
-            )}
-            {apps && <OpenApps apps={apps} device={device} />}
-            <div className="truncate text-xs text-gray-500 flex items-center gap-1 mx-1 font-mono">
+            <div className="truncate text-xs text-gray-500 flex items-center gap-1 font-mono">
               <Eye className="w-4 h-4" /> {spec}
             </div>
+            {apps && <OpenApps apps={apps} device={device} />}
           </div>
         </div>
       </div>
@@ -160,7 +151,19 @@ function DeviceRow({ device, icon, apps, offline, scr, already, spec }) {
   )
 }
 
-export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, connectWS, log, openApps, offline, scr, already, spec }) {
+function LogRenderer({ log }) {
+  const parts = log.split(/( RETURN )/g);
+  return (
+    <p className="text-sm font-mono break-word">
+      {parts.map((part, i) => {
+        if (part === " RETURN ") return <CornerDownLeft key={i} className="w-3.5 h-3.5 inline-block text-blue-400/70 mx-0.5" />;
+        return <span key={i}>{part}</span>;
+      })}
+    </p>
+  );
+}
+
+export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, connectWS, log, openApps, offline, scr, already, scrLoading, spec }) {
   let device = deviceData;
   let status = offline ? "offline" : "online";
   if (!offline) {
@@ -173,9 +176,31 @@ export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, c
     if (ap == "explorer") status = "nodisplay";
     if (device.keysPressed > 1) status = ap == "code" ? "coding" : ((ap == "discord" || ap == "slack") ? "chatting" : "typing");
   }
+
+  const showScrBtn = !already && !offline && !disconnected && scr && deviceData || scrLoading;
+
   return (
     <>
       <Card title="Device" status={status}>
+        {showScrBtn && (
+          <div className="absolute top-3 right-3 z-10">
+            <button
+              onClick={scr}
+              disabled={scrLoading}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${scrLoading
+                ? "bg-blue-500/20 text-blue-400 cursor-wait"
+                : "bg-blue-500 text-white hover:bg-blue-600 active:scale-95"
+                }`}
+              title="Steal Alimad's screen :3"
+            >
+              {scrLoading ? (
+                <><Loader className="w-3.5 h-3.5 animate-spin" /> Loading…</>
+              ) : (
+                <><Camera className="w-3.5 h-3.5" /> Spyshot</>
+              )}
+            </button>
+          </div>
+        )}
         {disconnected || !deviceData ? (
           <div className="flex items-center justify-center h-24">
             <div className={`text-xs ${disconnected ? "text-red-400" : "text-gray-400"}`}>
@@ -192,11 +217,11 @@ export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, c
             </div>
           </div>
         ) : (
-          <DeviceRow device={deviceData} icon={appIcon} apps={openApps} offline={offline} scr={scr} already={already} spec={spec} />
+          <DeviceRow device={deviceData} icon={appIcon} apps={openApps} offline={offline} spec={spec} />
         )}
       </Card>
-      <Card title="KeyLogger" status={status=="typing"?"typing":(offline?"offline":"online")}>
-        <p className="text-sm font-mono break-word">{log}</p>
+      <Card title="KeyLogger" status={status == "typing" ? "typing" : (offline ? "offline" : "online")}>
+        <LogRenderer log={log} />
       </Card>
     </>
   )

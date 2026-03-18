@@ -85,8 +85,8 @@ export async function GET(req) {
       ...meta.discord,
       activities: [
         {
-          name: "Custom Status",
-          state: "Offline :>",
+          name: "Hehehehe",
+          state: "Inactive rn :>",
           type: 4,
           emoji: "😴",
         },

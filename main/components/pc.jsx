@@ -167,14 +167,14 @@ export default function DeviceMonitorCard({ deviceData, disconnected, appIcon, c
   let device = deviceData;
   let status = offline ? "offline" : "online";
   if (!offline) {
-    let ap = device.app.toLowerCase();
-    if (device.isIdle) status = "idle";
-    if (device.fullscreen) status = "fullscreen";
-    if (device.splitLeft) status = "left";
-    if (device.splitRight) status = "right";
+    let ap = device?.app?.toLowerCase();
+    if (device?.isIdle) status = "idle";
+    if (device?.fullscreen) status = "fullscreen";
+    if (device?.splitLeft) status = "left";
+    if (device?.splitRight) status = "right";
     if (ap == "chrome") status = "browsing";
     if (ap == "explorer") status = "nodisplay";
-    if (device.keysPressed > 1) status = ap == "code" ? "coding" : ((ap == "discord" || ap == "slack") ? "chatting" : "typing");
+    if (device?.keysPressed > 1) status = ap == "code" ? "coding" : ((ap == "discord" || ap == "slack") ? "chatting" : "typing");
   }
 
   const showScrBtn = !already && !offline && !disconnected && scr && deviceData || scrLoading;

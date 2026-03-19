@@ -5,7 +5,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import GitHubCalendar from "react-github-calendar";
 import { ActivityCalendar } from 'react-activity-calendar';
 import { Lightbulb, Phone, Send } from "lucide-react";
-import { SiDiscord, SiGithub, SiGmail, SiInstagram, SiItchdotio, SiSlack, SiYoutube } from "@icons-pack/react-simple-icons";
+import { SiDiscord, SiGithub, SiGmail, SiInstagram, SiItchdotio, SiSlack, SiYoutube, SiSnapchat } from "@icons-pack/react-simple-icons";
 import { useRouter } from "next/navigation";
 
 import GithubStats from "@/components/github";
@@ -13,6 +13,16 @@ import LiveStatus from "@/components/live";
 import Presence from "@/components/presence";
 import Spotify from '@/components/spotify';
 import Clock from '@/components/clock'
+import StyledComments from "@/components/comments";
+import IdeasModal from "@/components/ideas";
+
+function LinkedIn({ size }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" class="bi bi-linkedin" viewBox="0 0 16 16">
+      <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z" />
+    </svg>
+  );
+}
 
 function Socials({ sizer = 24 }) {
   return (<>
@@ -20,6 +30,8 @@ function Socials({ sizer = 24 }) {
     <a href="https://youtube.com/@alimadco" target="_blank" className="border-2 border-red-400 text-red-400 hover:bg-red-400/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiYoutube size={sizer} /></a>
     <a href="https://github.com/Alimadcorp" target="_blank" className="border-2 border-gray-400 text-gray-400 hover:bg-gray-700/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGithub size={sizer} /></a>
     <a href="https://discord.gg/fY4Q8rKsz4" target="_blank" className="border-2 border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiDiscord size={sizer} /></a>
+    <a href="https://linkedin.com/in/alimadco" target="_blank" className="border-2 border-[#58d3f2] text-[#58d3f2] hover:bg-[#58d3f2]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><LinkedIn size={sizer} /></a>
+    <a href="https://snapchat.com/@alimadco" target="_blank" className="border-2 border-[#ddf258] text-[#ddf258] hover:bg-[#ddf258]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiSnapchat size={sizer} /></a>
     <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-[#a248a3] text-[#a248a3] hover:bg-[#a248a3]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiSlack size={sizer} /></a>
     <a href="https://instagram.com/alimadco" target="_blank" className="border-2 border-[#ff62c0] text-[#ff62c0] hover:bg-[#ff62c0]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiInstagram size={sizer} /></a>
     <a href="mailto:alimad.co.ltd@gmail.com" target="_blank" className="border-2 border-[#4b63ff] text-[#4b63ff] hover:bg-[#4b63ff]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGmail size={sizer} /></a>
@@ -90,7 +102,7 @@ function Webring() {
     </div>
   );
 }
-function Counters() {
+function Counters({ openSecretUI }) {
   const [pageViews, setPageViews] = useState(0);
   const [pageVisitors, setPageVisitors] = useState(0);
   const [ideasCount, setIdeasCount] = useState(0);
@@ -125,7 +137,7 @@ function Counters() {
   ], [pageViews, pageVisitors, ideasCount]);
   return (<div className="flex flex-wrap gap-2 md:gap-4 justify-center sm:justify-start mt-6 w-full max-w-5xl">
     {counters.map((c, i) => (
-      <div key={i} className="flex flex-col items-center justify-center p-1 sm:p-3 rounded-lg border-2 dark:border-cyan-600 bg-white/20 dark:bg-black/20 dark:hover:bg-cyan-900/20 w-full h-18 sm:w-36 sm:h-24 transition-all">
+      <div key={i} onClick={() => openSecretUI(i)} className="flex flex-col items-center justify-center p-1 sm:p-3 rounded-lg border-2 dark:border-cyan-600 bg-white/20 dark:bg-black/20 dark:hover:bg-cyan-900/20 w-full h-18 sm:w-36 sm:h-24 transition-all">
         <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{c.label}</span>
         <span className="text-md sm:text-3xl font-bold text-black dark:text-white">{c.value}</span>
       </div>
@@ -354,9 +366,11 @@ export default function Home() {
   const [myIdea, setMyIdea] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [wakatimeActivity, setWakatimeActivity] = useState([]);
+  const [showIdeas, setShowIdeas] = useState(false);
   const themer = { light: ['#222', 'rgb(18,186,255)'], dark: ['#222', 'rgb(18,186,255)'] };
   const themer2 = { light: ['#ddd', '#000'], dark: ['#ddd', '#000'] };
   const Router = useRouter();
+  const openSecretUI = (i) => setShowIdeas(i == 2 ? true : false);
   useEffect(() => {
     const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     setDarkMode(isDark);
@@ -463,6 +477,10 @@ export default function Home() {
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 dark:text-cyan-400">Hello, World!</h1>
             <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-5">This is Muhammad Ali's website!</p>
             <Clock />
+            <button onClick={() => setPanel(true)} className="flex items-center gap-2 hover:underline text-sm sm:text-base cursor-pointer mt-4">
+              <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
+              Give an idea
+            </button>
             {myIdea && <p className="text-gray-600 dark:text-gray-400 text-sm">{`One "${myIdea}" coming up!`}</p>}
             <div className="grid sm:hidden grid-cols-1 gap-2 mt-3 max-w-5xl w-full px-2">
               <button
@@ -474,7 +492,7 @@ export default function Home() {
               >
                 Subdomains
               </button>
-              <div className="grid grid-cols-4 gap-2 min-w-0 w-full">
+              <div className="grid grid-cols-5 gap-2 min-w-0 w-full">
                 <Socials sizer={25} />
               </div>
             </div>
@@ -491,7 +509,7 @@ export default function Home() {
             </div>
             <Webring />
             <div className="sm:hidden mt-3 flex items-center gap-2 w-full text-center"><LiveStatus /></div>
-            <Counters />
+            <Counters openSecretUI={openSecretUI} />
             {songdata && songdata.title && (
               <Spotify songData={songdata} loading={songLoad} onEnd={reloadSpotify} />
             )}
@@ -544,6 +562,7 @@ export default function Home() {
         <Presence />
         <QuoteOfTheDay />
         <GithubStats />
+        <StyledComments />
         <div className="flex justify-center items-center mt-8 w-full overflow-x-auto mb-8">
           <GitHubCalendar username="Alimadcorp" theme={darkMode ? themer : themer2} />
         </div>
@@ -558,10 +577,6 @@ export default function Home() {
               <ActivityCalendar loading={true} theme={darkMode ? themer : themer2} />
             </div>))}
         <WebButtons />
-        <button onClick={() => setPanel(true)} className="flex items-center gap-2 hover:underline text-sm sm:text-base cursor-pointer mt-4">
-          <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
-          Give an idea
-        </button>
         <TheFooter />
       </main>
       {panel && (
@@ -577,6 +592,7 @@ export default function Home() {
           </div>
         </div>
       )}
+      <IdeasModal isOpen={showIdeas} onClose={() => setShowIdeas(false)} />
     </div>
   );
 }

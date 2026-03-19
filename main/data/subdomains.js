@@ -4,6 +4,7 @@ export default function subdomains() {
     mail: { path: "/", desc: "Alimad Mailing services", subtitle: "I use this to get read reciepts for physical mail P:" },
     falooda: { path: "/", desc: "Falooda Fanatics", subtitle: "Falooda Fanatics is a Hack Club Club in Faislabad", repo: "https://github.com/Alimadcorp/falooda" },
     meet: { path: "/", desc: "Schedule a meeting w/ me", subtitle: "hehehe" },
+    study: { path: "/", desc: "Study Resources", subtitle: "A bunch of stuff i wanted to share w/ fellow students" },
     "312": { path: "/", desc: "3121534312", subtitle: "If u know u know" },
     ws: { path: "/", desc: "WebSocket", subtitle: "Used in ChatMad and for LogWays", repo: "https://github.com/Alimadcorp/websocket" },
     up: { path: "/", desc: "F1nn CDN", subtitle: "Cloudflare R2 storage" },

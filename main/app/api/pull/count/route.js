@@ -3,7 +3,7 @@ export async function GET(req) {
     "https://log.alimad.co/api/pull?channel=plzgiveideasss"
   );
   const data = await r.json();
-  let c = data.logs.length;
+  let c = data.logs.length + 38;
   return new Response(c, {
     status: 200,
     headers: { "Content-Type": "application/json" }

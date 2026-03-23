@@ -5,7 +5,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import GitHubCalendar from "react-github-calendar";
 import { ActivityCalendar } from 'react-activity-calendar';
 import { Lightbulb, Phone, Send } from "lucide-react";
-import { SiDiscord, SiGithub, SiGmail, SiInstagram, SiItchdotio, SiSlack, SiYoutube, SiSnapchat } from "@icons-pack/react-simple-icons";
+import { SiDiscord, SiGithub, SiGmail, SiInstagram, SiItchdotio, SiSlack, SiYoutube, SiSnapchat, SiRoblox, SiReddit } from "@icons-pack/react-simple-icons";
 import { useRouter } from "next/navigation";
 
 import GithubStats from "@/components/github";
@@ -24,6 +24,12 @@ function LinkedIn({ size }) {
   );
 }
 
+function Miencraft({ size }) {
+  return (
+    <img src="https://icons.veryicon.com/png/System/Simply%20Styled/Minecraft.png" style={{width: size, height: size}} className="scale-120"></img>
+  );
+}
+
 function Socials({ sizer = 24 }) {
   return (<>
     <a href="https://alimad.itch.io" target="_blank" className="border-2 border-[#FA5C5C] text-[#FA5C5C] hover:bg-[#FA5C5C]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiItchdotio size={sizer} /></a>
@@ -31,9 +37,11 @@ function Socials({ sizer = 24 }) {
     <a href="https://github.com/Alimadcorp" target="_blank" className="border-2 border-gray-400 text-gray-400 hover:bg-gray-700/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGithub size={sizer} /></a>
     <a href="https://discord.gg/fY4Q8rKsz4" target="_blank" className="border-2 border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiDiscord size={sizer} /></a>
     <a href="https://linkedin.com/in/alimadco" target="_blank" className="border-2 border-[#58d3f2] text-[#58d3f2] hover:bg-[#58d3f2]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><LinkedIn size={sizer} /></a>
-    <a href="https://snapchat.com/@alimadco" target="_blank" className="border-2 border-[#ddf258] text-[#ddf258] hover:bg-[#ddf258]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiSnapchat size={sizer} /></a>
+    <a href="https://roblox.com/users/10698961932/profile" target="_blank" className="border-2 border-[#dadada] text-[#dadada] hover:bg-[#dadada]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiRoblox size={sizer} /></a>
     <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-[#a248a3] text-[#a248a3] hover:bg-[#a248a3]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiSlack size={sizer} /></a>
     <a href="https://instagram.com/alimadco" target="_blank" className="border-2 border-[#ff62c0] text-[#ff62c0] hover:bg-[#ff62c0]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiInstagram size={sizer} /></a>
+    <a href="https://reddit.com/user/False_Celebration_78" target="_blank" className="border-2 border-[#e1661f] text-[#e1661f] hover:bg-[#e1661f]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiReddit size={sizer} /></a>
+    <a href="https://alimad.co/mc/AlimadCo" target="_blank" className="border-2 border-[#b0ff93] text-[#b0ff93] hover:bg-[#b0ff93]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><Miencraft size={sizer} /></a>
     <a href="mailto:alimad.co.ltd@gmail.com" target="_blank" className="border-2 border-[#4b63ff] text-[#4b63ff] hover:bg-[#4b63ff]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGmail size={sizer} /></a>
     <a href="tel:+923124503700" target="_blank" className="border-2 border-[#64dfd2] text-[#64dfd2] hover:bg-[#64dfd2]/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><Phone size={sizer} /></a>
   </>);
@@ -492,7 +500,7 @@ export default function Home() {
               >
                 Subdomains
               </button>
-              <div className="grid grid-cols-5 gap-2 min-w-0 w-full">
+              <div className="grid grid-cols-6 gap-2 min-w-0 w-full">
                 <Socials sizer={25} />
               </div>
             </div>

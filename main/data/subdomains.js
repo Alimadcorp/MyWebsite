@@ -2,6 +2,7 @@ export default function subdomains() {
   return {
     campfire: { path: "/", desc: "Campfire dashboard", subtitle: "Depracated, you will get redirected to campfire.hackclub.com instead", repo: "https://github.com/Alimadcorp/Campfire" },
     mail: { path: "/", desc: "Alimad Mailing services", subtitle: "I use this to get read reciepts for physical mail P:" },
+    count: { path: "/", desc: "CountMad", subtitle: "Based on SpacetimeDB", repo: "https://github.com/Alimadcorp/Count" },
     falooda: { path: "/", desc: "Falooda Fanatics", subtitle: "Falooda Fanatics is a Hack Club Club in Faislabad", repo: "https://github.com/Alimadcorp/falooda" },
     meet: { path: "/", desc: "Schedule a meeting w/ me", subtitle: "hehehe" },
     study: { path: "/", desc: "Study Resources", subtitle: "A bunch of stuff i wanted to share w/ fellow students" },

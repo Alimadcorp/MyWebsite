@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState, useMemo, useRef } from "react";
-
+import { Ripple } from '@/components/ripple'
 import GitHubCalendar from "react-github-calendar";
 import { ActivityCalendar } from 'react-activity-calendar';
 import { Lightbulb, Phone, Send } from "lucide-react";
@@ -489,6 +489,7 @@ export default function Home() {
               <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
               Give an idea
             </button>
+            <Ripple />
             {myIdea && <p className="text-gray-600 dark:text-gray-400 text-sm">{`One "${myIdea}" coming up!`}</p>}
             <div className="grid sm:hidden grid-cols-1 gap-2 mt-3 max-w-5xl w-full px-2">
               <button

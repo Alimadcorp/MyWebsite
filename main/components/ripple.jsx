@@ -1,37 +1,22 @@
 "use client";
-
 import { useEffect, useState } from "react";
-
-function TimeAgo({ dateStr }) {
+import { AlertTriangle, ChevronDown } from "lucide-react";
+function DATE({ dateStr }) {
   const date = new Date(dateStr);
-  const diff = Date.now() - date.getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const mins = Math.floor(diff / (1000 * 60));
-
-  let label;
-  if (days > 365) label = `${Math.floor(days / 365)}y ago`;
-  else if (days > 30) label = `${Math.floor(days / 30)}mo ago`;
-  else if (days > 0) label = `${days}d ago`;
-  else if (hours > 0) label = `${hours}h ago`;
-  else label = `${mins}m ago`;
-
   return (
     <time
       dateTime={date.toISOString()}
       title={date.toLocaleString()}
-      style={{ opacity: 0.45, fontSize: "0.78rem", letterSpacing: "0.03em" }}
+      className="text-[10px] text-gray-500 font-mono"
     >
-      {label}
+      {date.toLocaleString()}
     </time>
   );
 }
-
 export default function Ripple() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     fetch("/api/me")
       .then((r) => r.json())
@@ -39,284 +24,92 @@ export default function Ripple() {
       .catch(() => setError("Could not reach status endpoint."))
       .finally(() => setLoading(false));
   }, []);
-
   return (
     <>
-      <style>{`
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-          --bg: #ffffff;
-          --fg: #111111;
-          --muted: #777777;
-          --border: rgba(0,0,0,0.09);
-          --card: rgba(0,0,0,0.025);
-          --accent-green: #16a34a;
-          --accent-red: #dc2626;
-          --accent-amber: #d97706;
-          --radius: 10px;
-          --font: 'Georgia', 'Times New Roman', serif;
-          --mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Courier New', monospace;
-        }
-        @media (prefers-color-scheme: dark) {
-          :root {
-            --bg: #0a0a0a;
-            --fg: #e8e8e8;
-            --muted: #666666;
-            --border: rgba(255,255,255,0.07);
-            --card: rgba(255,255,255,0.03);
-            --accent-green: #22c55e;
-            --accent-red: #f87171;
-            --accent-amber: #fbbf24;
-          }
-        }
-
-        body {
-          background: var(--bg);
-          color: var(--fg);
-          font-family: var(--font);
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 2rem 1rem;
-          -webkit-font-smoothing: antialiased;
-        }
-
-        .shell {
-          width: 100%;
-          max-width: 540px;
-        }
-
-        .header {
-          margin-bottom: 2.5rem;
-        }
-        .header-eyebrow {
-          font-family: var(--mono);
-          font-size: 0.7rem;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
-          color: var(--muted);
-          margin-bottom: 0.55rem;
-        }
-        .header-name {
-          font-size: 1.55rem;
-          font-weight: 400;
-          letter-spacing: -0.01em;
-          line-height: 1.2;
-        }
-
-        .status-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          border: 1px solid var(--border);
-          border-radius: 999px;
-          padding: 0.35rem 0.85rem 0.35rem 0.6rem;
-          font-family: var(--mono);
-          font-size: 0.75rem;
-          letter-spacing: 0.04em;
-          margin-top: 1.6rem;
-          background: var(--card);
-        }
-        .dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          flex-shrink: 0;
-        }
-        .dot-green { background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
-        .dot-red   { background: var(--accent-red);   box-shadow: 0 0 6px var(--accent-red); }
-
-        .divider {
-          border: none;
-          border-top: 1px solid var(--border);
-          margin: 2rem 0;
-        }
-
-        .section-label {
-          font-family: var(--mono);
-          font-size: 0.65rem;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: var(--muted);
-          margin-bottom: 1rem;
-        }
-
-        .card {
-          border: 1px solid var(--border);
-          border-radius: var(--radius);
-          padding: 1.1rem 1.25rem;
-          background: var(--card);
-          margin-bottom: 0.65rem;
-        }
-        .card:last-child { margin-bottom: 0; }
-
-        .note-text {
-          font-size: 0.95rem;
-          line-height: 1.65;
-          color: var(--fg);
-        }
-        .note-footer {
-          margin-top: 0.6rem;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .alert-card {
-          border-color: color-mix(in srgb, var(--accent-amber) 35%, transparent);
-        }
-        .alert-icon {
-          font-size: 0.8rem;
-          color: var(--accent-amber);
-          font-family: var(--mono);
-          letter-spacing: 0.04em;
-          margin-bottom: 0.4rem;
-        }
-        .alert-link {
-          display: inline-block;
-          margin-top: 0.55rem;
-          font-family: var(--mono);
-          font-size: 0.72rem;
-          color: var(--muted);
-          text-decoration: underline;
-          text-underline-offset: 3px;
-        }
-
-        .ip-row {
-          font-family: var(--mono);
-          font-size: 0.78rem;
-          color: var(--muted);
-          letter-spacing: 0.03em;
-        }
-
-        .loading-line {
-          font-family: var(--mono);
-          font-size: 0.8rem;
-          color: var(--muted);
-          letter-spacing: 0.06em;
-          animation: pulse 1.4s ease-in-out infinite;
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 0.4; }
-          50%       { opacity: 1; }
-        }
-
-        .present-msg {
-          font-size: 0.9rem;
-          color: var(--muted);
-          line-height: 1.6;
-          margin-top: 1rem;
-        }
-
-        .footer {
-          margin-top: 3rem;
-          font-family: var(--mono);
-          font-size: 0.65rem;
-          color: var(--muted);
-          letter-spacing: 0.06em;
-          opacity: 0.5;
-        }
-      `}</style>
-
-      <main className="shell">
-        <div className="header">
-          <p className="header-eyebrow">status page</p>
-          <h1 className="header-name">Ali Madani</h1>
-
-          {loading && (
-            <div className="status-badge" style={{ marginTop: "1.6rem" }}>
-              <div className="dot" style={{ background: "var(--muted)" }} />
-              <span className="loading-line">checking in…</span>
-            </div>
-          )}
-
-          {!loading && !error && data?.present && (
-            <div className="status-badge">
-              <div className="dot dot-green" />
-              <span>active · checked in recently</span>
-            </div>
-          )}
-
-          {!loading && !error && data && !data.present && (
-            <div className="status-badge">
-              <div className="dot dot-red" />
-              <span>no recent check-in</span>
-            </div>
-          )}
-        </div>
-
-        {error && (
-          <p style={{ color: "var(--accent-red)", fontFamily: "var(--mono)", fontSize: "0.8rem" }}>
-            {error}
-          </p>
-        )}
-
-        {data?.present && (
-          <p className="present-msg">
-            Everything looks fine. This page updates automatically.
-          </p>
-        )}
-
-        {data && !data.present && (
-          <>
-            {data.ip && (
+      {!loading && !error && !data?.present && (
+        <main className="min-h-screen bg-black text-white flex items-center font-sans justify-center px-3">
+          <div className="w-full max-w-md">
+            {(data?.notes?.length > 0 || data?.alerts?.length > 0) && (
               <>
-                <hr className="divider" />
-                <p className="section-label">last known</p>
-                <p className="ip-row">ip · {data.ip}</p>
-              </>
-            )}
-
-            {data.notes?.length > 0 && (
-              <>
-                <hr className="divider" />
-                <p className="section-label">notes left behind</p>
-                {data.notes.map((note, i) => (
-                  <div className="card" key={i}>
-                    <p className="note-text">{note.text}</p>
-                    <div className="note-footer">
-                      <TimeAgo dateStr={note.time} />
+              <div className="space-y-2 mb-4">
+                  {data.alerts?.map((alert, i) => (
+                    <div key={i} className="border border-yellow-500/30 bg-yellow-500/5 rounded-md px-2 py-1.5">
+                      <div className="flex items-center gap-1 text-yellow-400 text-[10px] font-mono">
+                        <AlertTriangle className="w-3 h-3" />
+                        alert
+                      </div>
+                      <p className="text-xs">{alert.text}</p>
+                      {alert.url && (
+                        <a
+                          href={alert.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] text-gray-400 underline"
+                        >
+                          {alert.url.startsWith("mailto:")
+                            ? alert.url.split("@")[1].split("?")[0]
+                            : new URL(alert.url).hostname}
+                        </a>
+                      )}
                     </div>
+                  ))}</div>
+                <details className="group">
+                  <summary className="flex items-center justify-between cursor-pointer text-[11px] font-mono text-gray-400 mb-2">
+                    <span>view notes he left behind</span>
+                    <ChevronDown className="w-3 h-3 transition group-open:rotate-180" />
+                  </summary>
+                  <div className="space-y-2">
+                    {data.notes?.map((note, i) => {
+                      const isNull = note.text === "null";
+                      const isLast = note.last;
+                      const date = new Date(note.time);
+                      if (isNull) {
+                        return (
+                          <div key={i} className="flex items-center gap-2 text-[10px] text-gray-600 font-mono">
+                            <div className="flex-1 h-px bg-white/10" />
+                            <span>
+                              checked in on {date.toLocaleDateString()}
+                            </span>
+                            <div className="flex-1 h-px bg-white/10" />
+                          </div>
+                        );
+                      }
+                      return (
+                        <>
+                          <div key={i} className="border border-white/10 bg-white/5 rounded-md px-2 py-1.5">
+                            <p className="text-xs">{note.text}</p>
+                            < DATE dateStr={note.time} />
+                          </div>
+                          {isLast && (
+                            <div key={i + 1} className="flex items-center gap-2 text-[10px] text-gray-600 font-mono mb-1">
+                              <div className="flex-1 h-px bg-white/10" />
+                              <span>
+                                that's it folks!
+                              </span>
+                              <div className="flex-1 h-px bg-white/10" />
+                            </div>)}
+                        </>
+                      );
+                    })}
                   </div>
-                ))}
-              </>
+                </details></>
             )}
-
-            {data.alerts?.length > 0 && (
-              <>
-                <hr className="divider" />
-                <p className="section-label">alerts</p>
-                {data.alerts.map((alert, i) => (
-                  <div className="card alert-card" key={i}>
-                    <p className="alert-icon">⚠ alert</p>
-                    <p className="note-text">{alert.text}</p>
-                    {alert.url && (
-                      <a
-                        className="alert-link"
-                        href={alert.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {alert.url}
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </>
-            )}
-
-            {!data.notes?.length && !data.alerts?.length && (
-              <p className="present-msg" style={{ marginTop: "1.5rem" }}>
-                No notes or alerts are visible for your location yet.
+            {!data?.notes?.length && !data?.alerts?.length && (
+              <p className="text-xs text-gray-500 mt-4">
+                nothing here
               </p>
             )}
-          </>
-        )}
-
-        <p className="footer">auto · {new Date().getFullYear()}</p>
-      </main>
+            {data?.ip && (
+              <p className="text-[10px] text-gray-500 font-mono">
+                last seen on {new Date(data?.last).toLocaleString()} with ip {data.ip}
+              </p>
+            )}
+            <p className="mt-1 text-[10px] text-gray-600 font-mono">
+              Ripple · Alimad Interlligence · © 2026
+            </p>
+          </div>
+        </main>
+      )}
     </>
   );
 }

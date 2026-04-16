@@ -1,7 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState, useMemo, useRef } from "react";
-import { Ripple } from '@/components/ripple'
 import GitHubCalendar from "react-github-calendar";
 import { ActivityCalendar } from 'react-activity-calendar';
 import { Lightbulb, Phone, Send } from "lucide-react";
@@ -15,6 +14,7 @@ import Spotify from '@/components/spotify';
 import Clock from '@/components/clock'
 import StyledComments from "@/components/comments";
 import IdeasModal from "@/components/ideas";
+import Ripple from "@/components/ripple";
 
 function LinkedIn({ size }) {
   return (

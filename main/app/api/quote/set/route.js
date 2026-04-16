@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { notFound } from "next/navigation";
 
-const PASSWORD = "PASSWORDISBANANA";
+const PASSWORD = process.env.PWD;
 const KVDB_BUCKET = process.env.KVDB_BUCKET+"/quote";
 
 export async function GET(req) {
@@ -67,7 +67,7 @@ export async function GET(req) {
       <body>
         <h2>Set Quote of the Day</h2>
         <form method="get">
-          <input type="password" name="password" placeholder="Password" value="PASSWORDISBANANA" hidden />
+          <input type="password" name="password" placeholder="Password" />
           <textarea name="quote" placeholder="Your quote..." rows="3" required></textarea>
           <input type="text" name="writer" placeholder="Writer" required />
           <button type="submit">Set Quote</button>

@@ -5,7 +5,7 @@ const PAGE_SIZE = 50;
 async function fetchAllLogs() {
   const params = new URLSearchParams({
     channel: "all",
-    pwd: "PASSWORDISBANANA"
+    pwd: process.env.PWD
   });
   const res = await fetch(`https://log.alimad.co/api/pull?${params}`, {
     cache: "force-cache"

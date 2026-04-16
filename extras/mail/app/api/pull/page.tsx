@@ -21,7 +21,7 @@ type Props = {
 export default async function AdminPage({ searchParams }: Props) {
   searchParams = await searchParams;
   const password = searchParams.pwd;
-  if (password !== 'PASSWORDISBANANA') {
+  if (password !== process.env.PWD) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black text-gray-900 dark:text-white font-sans">
         <p className="text-lg">Invalid password.</p>
@@ -29,7 +29,7 @@ export default async function AdminPage({ searchParams }: Props) {
     );
   }
 
-  const res = await fetch(`https://log.alimad.co/api/pull?channel=mail-alimad-co-read-2&pwd=PASSWORDISBANANA`, {
+  const res = await fetch(`https://log.alimad.co/api/pull?channel=mail-alimad-co-read-2&pwd=${process.env.PWD}`, {
     cache: 'no-store',
   });
   const data = await res.json();

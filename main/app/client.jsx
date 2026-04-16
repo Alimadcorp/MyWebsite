@@ -319,7 +319,7 @@ function TheFooter() {
   ];
   function log(t) {
     t.clientId = localStorage.getItem("clientId");
-    fetch(`/api/post?t=${encodeURIComponent(JSON.stringify(t))}`);
+    fetch(`https://log.alimad.co/api/log?channel=alimad-co-visit-2&text=${encodeURIComponent(JSON.stringify(t))}`);
   }
   const [count, setCount] = useState(0);
   const [revealed, setRevealed] = useState([]);
@@ -392,7 +392,7 @@ export default function Home() {
     const host = location.host;
     const referer = document.referrer;
     if (!(userAgent.includes('Googlebot') || userAgent.includes('Bingbot') || userAgent.includes('vercel') || userAgent.includes('OpenStatus') || userAgent.includes('UptimeRobot'))) {
-      fetch(`/api/post?t=${encodeURIComponent(JSON.stringify({ client: userAgent, referer, host, clientId: localStorage.getItem("clientId") }))}`);
+      fetch(`https://log.alimad.co/api/log?channel=alimad-co-visit-2&text=${encodeURIComponent(JSON.stringify({ client: userAgent, referer, host, clientId: localStorage.getItem("clientId") }))}`);
     }
   }, []);
   useEffect(() => {
@@ -413,7 +413,7 @@ export default function Home() {
         localStorage.setItem("clientId", event.data)
         iframe.remove()
         window.removeEventListener("message", handleMessage)
-        fetch(`/api/post?t=${encodeURIComponent(JSON.stringify({ type: "client", clientId: event.data }))}`);
+        fetch(`https://log.alimad.co/api/log?channel=alimad-co-visit-2&text=${encodeURIComponent(JSON.stringify({ type: "client", clientId: event.data }))}`);
       } catch (err) {
         console.error("Error handling message:", err)
       }

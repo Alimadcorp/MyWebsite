@@ -83,9 +83,9 @@ function Webring() {
   }
   const current = members[index];
   return (
-    <div className="mt-6 text-left w-full max-w-5xl">
+    <div className="mt-6 sm:text-left w-full max-w-5xl text-center">
       <p>Check out my friends' cool websites:</p>
-      <div className="flex justify-left items-start gap-3 mt-2 w-full">
+      <div className="flex max-sm:justify-center items-center sm:items-start gap-3 mt-2 w-full">
         <button
           onClick={prev}
           className="text-4xl font-bold dark:text-cyan-500 dark:hover:text-cyan-300 transition cursor-pointer"
@@ -483,13 +483,13 @@ export default function Home() {
         <div className="max-w-5xl w-full flex">
           <div className="max-w-5xl w-full">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 dark:text-cyan-400">Hello, World!</h1>
-            <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-5">This is Muhammad Ali's website!</p>
+            <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
+            <Ripple />
             <Clock />
-            <button onClick={() => setPanel(true)} className="flex items-center gap-2 hover:underline text-sm sm:text-base cursor-pointer mt-4">
+            <button onClick={() => setPanel(true)} className="flex items-center gap-2 hover:underline text-sm sm:text-base justify-center text-center sm:justify-start cursor-pointer mt-4 mx-auto sm:mx-1">
               <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
               Give an idea
             </button>
-            <Ripple />
             {myIdea && <p className="text-gray-600 dark:text-gray-400 text-sm">{`One "${myIdea}" coming up!`}</p>}
             <div className="grid sm:hidden grid-cols-1 gap-2 mt-3 max-w-5xl w-full px-2">
               <button
@@ -505,9 +505,9 @@ export default function Home() {
                 <Socials sizer={25} />
               </div>
             </div>
-            <div className="mt-6 text-left w-full max-w-5xl">
+            <div className="mt-3 sm:text-left w-full max-w-5xl text-center">
               <p>Most of my projects have a subdomain of their own: </p>
-              <div className="flex justify-left items-start gap-3 mt-2 w-full">
+              <div className="flex sm:justify-left items-start gap-3 mt-2 w-full max-sm:justify-center">
                 <button
                   onClick={() => Router.push('/subdomains')}
                   className="text-sm border dark:border-cyan-600 cursor-pointer px-4 py-2 rounded-md dark:hover:bg-cyan-600/20 transition w-full max-w-xs"
@@ -517,7 +517,7 @@ export default function Home() {
               </div>
             </div>
             <Webring />
-            <div className="sm:hidden mt-3 flex items-center gap-2 w-full text-center"><LiveStatus /></div>
+            <div className="sm:hidden mt-3 flex items-center gap-2 w-full max-sm:justify-center text-center"><LiveStatus /></div>
             <Counters openSecretUI={openSecretUI} />
             {songdata && songdata.title && (
               <Spotify songData={songdata} loading={songLoad} onEnd={reloadSpotify} />
@@ -568,7 +568,7 @@ export default function Home() {
             </div>
           )}
         </div>
-        <Presence />
+        {(new Date("2026-05-12") < new Date()) && <Presence />}
         <QuoteOfTheDay />
         <GithubStats />
         <StyledComments />

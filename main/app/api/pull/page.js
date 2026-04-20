@@ -1,11 +1,9 @@
 
-"use client";
-import { useEffect, useState } from "react";
 import { format } from "timeago.js";
 
 async function fetchLogs() {
   const res = await fetch(
-    "https://log.alimad.co/api/pull?channel=alimad-co-visit-2&pwd="+process.env.NEXT_PUBLIC_PWD,
+    "https://log.alimad.co/api/pull?channel=alimad-co-visit-2&pwd=" + process.env.NEXT_PUBLIC_PWD,
     { cache: "no-store" }
   );
   if (!res.ok) return [];
@@ -13,18 +11,15 @@ async function fetchLogs() {
   return data?.logs || [];
 }
 
-export default function UserActionMonitor({ searchParams }) {
-  const [logs, setLogs] = useState([]);
-  const [search, setSearch] = useState("");
+export default async function UserActionMonitor({ searchParams }) {
+  let logs = [];
 
-  useEffect(() => {
-    async function g() {
-      let pwd = (await searchParams).password;
-      if (pwd !== process.env.NEXT_PUBLIC_PWD) return;
-      fetchLogs().then(setLogs);
-    }
-    g();
-  }, [searchParams]);
+  async function g() {
+    let pwd = (await searchParams).password;
+    if (pwd !== process.env.NEXT_PUBLIC_PWD) return;
+    logs = await fetchLogs();
+  }
+  await g();
 
   const parsed = logs.map((l) => {
     let obj = {};
@@ -95,21 +90,12 @@ export default function UserActionMonitor({ searchParams }) {
         Visitor Logs
       </h1>
 
-      <input
-        placeholder="Search IP (e.g. 39.63)"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-6 w-full sm:w-80 px-3 py-2 rounded-lg bg-zinc-900 border border-gray-700 text-sm outline-none focus:border-pink-400"
-      />
-
       <div className="flex flex-col gap-4">
         {sortedClients.map((clientId) => {
           const ipGroups = grouped[clientId];
 
-          const visibleIPs = Object.keys(ipGroups).filter((ip) =>
-            ip.includes(search)
-          );
-          if (search && visibleIPs.length === 0) return null;
+          const visibleIPs = Object.keys(ipGroups);
+          if (visibleIPs.length === 0) return null;
 
           return (
             <details
@@ -122,7 +108,11 @@ export default function UserActionMonitor({ searchParams }) {
               </summary>
 
               <div className="flex flex-col divide-y divide-gray-800">
-                {visibleIPs.reverse().map((ip) => {
+                {visibleIPs.sort((a, b) => {
+                  const latestA = Math.max(...ipGroups[a].map(l => new Date(l.time)));
+                  const latestB = Math.max(...ipGroups[b].map(l => new Date(l.time)));
+                  return latestB - latestA;
+                }).map((ip) => {
                   const logs = ipGroups[ip].sort(
                     (a, b) => new Date(b.time) - new Date(a.time)
                   );
@@ -152,7 +142,8 @@ export default function UserActionMonitor({ searchParams }) {
                       ))}
                     </div>
                   );
-                })}
+                })
+                }
               </div>
             </details>
           );

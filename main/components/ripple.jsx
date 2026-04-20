@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { AlertTriangle, ChevronDown } from "lucide-react";
+import { format } from "timeago.js";
 function DATE({ dateStr }) {
   const date = new Date(dateStr);
   return (
@@ -13,6 +14,13 @@ function DATE({ dateStr }) {
     </time>
   );
 }
+
+function formatDistanceToNow(date) {
+  const now = new Date();
+  const t = format(date, "en_US");
+  return t.replace(" ago", "");
+}
+
 export default function Ripple() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -26,12 +34,12 @@ export default function Ripple() {
   }, []);
   return (
     <>
-      {!loading && !error && !data?.present && (
-        <main className="min-h-screen bg-black text-white flex items-center font-sans justify-center px-3">
+      {!loading && !error && (!data?.present ? (
+        <main className="min-h-screen bg-black text-white flex items-center font-sans justify-center mt-0 mb-3">
           <div className="w-full max-w-md">
             {(data?.notes?.length > 0 || data?.alerts?.length > 0) && (
               <>
-              <div className="space-y-2 mb-4">
+                <div className="space-y-2 mb-4">
                   {data.alerts?.map((alert, i) => (
                     <div key={i} className="border border-yellow-500/30 bg-yellow-500/5 rounded-md px-2 py-1.5">
                       <div className="flex items-center gap-1 text-yellow-400 text-[10px] font-mono">
@@ -105,11 +113,26 @@ export default function Ripple() {
               </p>
             )}
             <p className="mt-1 text-[10px] text-gray-600 font-mono">
-              Ripple · Alimad Interlligence · © 2026
+              <a href="/ripple" className="hover:underline">Ripple</a> · Alimad Intelligence · © 2026
             </p>
           </div>
         </main>
-      )}
+      ) : (new Date() - new Date(data.last)) > 1000 * 60 * 60 * 24 * 2 ? (<div className="font-sans mt-0 mb-3 text-center sm:text-left">
+        <span className="flex items-center justify-center sm:justify-start gap-2">
+          <AlertTriangle className="w-4 h-4 text-gray-500" />
+          <p className="text-gray-500 text-sm">Has not been seen for {formatDistanceToNow(new Date(data.last))}.</p>
+        </span>
+        <time
+          dateTime={new Date(data.last).toISOString()}
+          title={new Date(data.last).toLocaleString()}
+          className="text-[10px] text-gray-500 font-mono"
+        >
+          Last seen on {new Date(data.last).toLocaleString()}
+        </time>
+        <p className="mt-1 text-[10px] text-gray-600 font-mono">
+          <a href="/ripple" className="hover:underline">Ripple</a> · Alimad Intelligence · © 2026
+        </p>
+      </div>) : <></>)}
     </>
   );
 }

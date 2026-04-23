@@ -33,11 +33,13 @@ function formatDate(d) {
 }
 
 function BlogCard({ blog }) {
+  const isNew = new Date() - new Date(blog.modified) < 1000 * 60 * 60 * 24 * 7;
   return (
     <a
       href={`/${blog.href}`}
-      className="flex items-start gap-2 bg-zinc-900 text-zinc-100 p-3 rounded-xl font-sans shadow hover:shadow-lg transition-all border border-transparent hover:border-zinc-700 group"
+      className="flex items-start relative gap-2 bg-zinc-900 text-zinc-100 p-3 rounded-xl font-sans shadow hover:shadow-lg transition-all border border-transparent hover:border-zinc-700 group"
     >
+      {isNew && <p className="rounded-full border-0 p-1 bg-red-500 text-black absolute top-0 right-0">New</p>}
       {blog.private ? (
         <FileLock className="w-5 h-5 text-zinc-400 group-hover:text-red-400 transition-colors shrink-0 mt-0.5" />
       ) : (

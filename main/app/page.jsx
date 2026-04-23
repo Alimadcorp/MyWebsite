@@ -13,6 +13,11 @@ async function getLatestProdDeployment() {
     }
   );
 
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Vercel API error: ${res.status} ${text}`);
+  }
+
   const data = await res.json();
   const d = data.deployments?.[0];
   if (!d) return null;

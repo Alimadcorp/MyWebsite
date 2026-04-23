@@ -308,7 +308,7 @@ function WebButtons() {
     />
   </span>);
 }
-function TheFooter({dpl}) {
+function TheFooter({ dpl }) {
   const secrets = [
     { clicks: 50, message: { text: "Is there anyone out there?" } },
     { clicks: 100, message: { text: "The search for life elsewhere is remarkable in out age." } },
@@ -325,6 +325,7 @@ function TheFooter({dpl}) {
   const [count, setCount] = useState(0);
   const [revealed, setRevealed] = useState([]);
   const clickLock = useRef(false);
+  console.log(dpl);
   function handleClick() {
     if (clickLock.current) return;
     clickLock.current = true;
@@ -345,30 +346,30 @@ function TheFooter({dpl}) {
   return (
     <div className="flex flex-col items-center justify-center my-0 px-4">
       <div className="mt-10 text-sm text-center text-gray-500 select-none">
-      <p>{dpl.state} from commit <a className="hover:underline text-gray-200" href={`https://github.com/Alimadcorp/MyWebsite/commit/${dpl.sha}`}>{dpl.sha.slice(0, 6)}</a> from {dpl.source}, <span className="text-gray-200" title={dpl.time.toLocaleString()}>{format(dpl.time)}</span>{dpl.duration && <span> in {dpl.duration}</span>}</p>
+        {dpl && <p>{dpl.state} from commit <a className="hover:underline text-gray-200" href={`https://github.com/Alimadcorp/MyWebsite/commit/${dpl.sha}`}>{dpl.sha.slice(0, 6)}</a> from {dpl.source}, <span className="text-gray-200" title={dpl.time.toLocaleString()}>{format(dpl.time)}</span>{dpl.duration && <span> in {dpl.duration}</span>}</p>}
         Made with{" "}
         <span
           onClick={handleClick}
           className="animate-pulse text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-pink-500 to-rose-500 cursor-pointer transition-transform"
-        title={
-          count < 315
-            ? `${315 - count} clicks left...`
-            : "I don’t care how you define it, but I love you. You deserve love, and you are love."
-        }
-      >
-        ❤️
-      </span>{" "}
-      by
-      <span className="ml-1 font-semibold text-transparent bg-clip-text dark:bg-gradient-to-r dark:from-cyan-500 dark:to-cyan-300 bg-black">
-        Muhammad Ali
-      </span>
-      {revealed.map((msg, i) => (
-        <div key={msg.text} className="mt-2 animate-fadeIn">
-          <p className="dark:text-gray-200 text-gray-800 text-sm">“{msg.text}”</p>
-          {msg.author && <p className="text-gray-400 text-xs mt-1">-{msg.author}</p>}
-        </div>
-      ))}
-    </div>
+          title={
+            count < 315
+              ? `${315 - count} clicks left...`
+              : "I don’t care how you define it, but I love you. You deserve love, and you are love."
+          }
+        >
+          ❤️
+        </span>{" "}
+        by
+        <span className="ml-1 font-semibold text-transparent bg-clip-text dark:bg-gradient-to-r dark:from-cyan-500 dark:to-cyan-300 bg-black">
+          Muhammad Ali
+        </span>
+        {revealed.map((msg, i) => (
+          <div key={msg.text} className="mt-2 animate-fadeIn">
+            <p className="dark:text-gray-200 text-gray-800 text-sm">“{msg.text}”</p>
+            {msg.author && <p className="text-gray-400 text-xs mt-1">-{msg.author}</p>}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -508,7 +509,7 @@ export default function Home({ IP, deployment }) {
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 dark:text-cyan-400">Hello, World!</h1>
             <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
             <Ripple />
-            <Clock target={IP}/>
+            <Clock target={IP} />
             <Note target={IP} />
             <button onClick={() => setPanel(true)} className="flex items-center gap-2 hover:underline text-sm sm:text-base justify-center text-center sm:justify-start cursor-pointer mt-4 mx-auto sm:mx-1">
               <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />

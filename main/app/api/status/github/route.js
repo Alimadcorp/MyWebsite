@@ -212,6 +212,7 @@ export async function GET() {
     if(wakatime?.total_today.startsWith("Start")){
       wakatime.total_today = "0m";
     }
+    values = { ...values, repos: 100 };
     const payload = { username, rank, ...values, langs, wakatime };
     if (errors.length) payload._warnings = errors;
     return Response.json(payload);

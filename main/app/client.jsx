@@ -26,7 +26,7 @@ function LinkedIn({ size }) {
 
 function Miencraft({ size }) {
   return (
-    <img src="https://icons.veryicon.com/png/System/Simply%20Styled/Minecraft.png" style={{width: size, height: size}} className="scale-120"></img>
+    <img src="https://icons.veryicon.com/png/System/Simply%20Styled/Minecraft.png" style={{ width: size, height: size }} className="scale-120"></img>
   );
 }
 
@@ -369,7 +369,24 @@ function TheFooter() {
   );
 }
 
-export default function Home() {
+function Note({ target }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    function run() {
+      let today = new Date();
+      let match = today.getMonth() === 5 && today.getDate() === 15;
+      setVisible(match && target.startsWith("39.63"));
+    }
+    run();
+    const timer = setInterval(run, 60000);
+    return () => clearInterval(timer);
+  }, [target]);
+  return (<>
+    {visible && <p className="font-sans font-bold text-pink-950 dark:text-pink-300 text-2xl mt-3">Happy Birthday!</p>}
+  </>);
+}
+
+export default function Home({ IP }) {
   const [panel, setPanel] = useState(false);
   const [myIdea, setMyIdea] = useState("");
   const [darkMode, setDarkMode] = useState(false);
@@ -432,6 +449,7 @@ export default function Home() {
     setMyIdea(idea);
     daButton.disabled = false;
   }
+  /* SPOTIFY SECTION
   const [songdata, setsongData] = useState(null)
   const [songLoad, setSongLoad] = useState(true)
   const [songTop, setSongTop] = useState([])
@@ -467,6 +485,7 @@ export default function Home() {
       clearInterval(syncInterval);
     };
   }, []);
+  */
   return (
     <div className="text-black bg-gray-50 dark:bg-zinc-950 dark:text-white flex flex-col min-h-screen w-full font-[family-name:var(--font-geist-sans)] overflow-x-hidden">
       <header className="fixed top-0 w-full h-12 dark:grayscale-0 dark:brightness-100 grayscale-100 brightness-200 bg-black/90 dark:bg-black/50 backdrop-blur-sm border-b border-gray-800 hidden sm:flex items-center justify-between px-3 sm:px-6 z-50">
@@ -485,7 +504,8 @@ export default function Home() {
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 dark:text-cyan-400">Hello, World!</h1>
             <p className="text-gray-700 dark:text-gray-300 text-base sm:text-lg mb-3">This is Muhammad Ali's website!</p>
             <Ripple />
-            <Clock />
+            <Clock target={IP}/>
+            <Note target={IP} />
             <button onClick={() => setPanel(true)} className="flex items-center gap-2 hover:underline text-sm sm:text-base justify-center text-center sm:justify-start cursor-pointer mt-4 mx-auto sm:mx-1">
               <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
               Give an idea
@@ -519,7 +539,7 @@ export default function Home() {
             <Webring />
             <div className="sm:hidden mt-3 flex items-center gap-2 w-full max-sm:justify-center text-center"><LiveStatus /></div>
             <Counters openSecretUI={openSecretUI} />
-            {songdata && songdata.title && (
+            {/*{songdata && songdata.title && (
               <Spotify songData={songdata} loading={songLoad} onEnd={reloadSpotify} />
             )}
             {(songdata && !songdata.title) && (
@@ -543,9 +563,9 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-            )}
+            )}*/}
           </div>
-          {(songdata && !songdata.title) && (
+          {/*{(songdata && !songdata.title) && (
             <div className="hidden md:flex flex-col gap-3 p-3 rounded-xl dark:bg-black/20 border border-white/10 w-full max-w-sm">
               <div className="font-semibold text-lg">Favourite Tracks</div>
               <div className="flex flex-col gap-2">
@@ -566,7 +586,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          )}
+          )}*/}
         </div>
         {(new Date("2026-05-12") < new Date()) && <Presence />}
         <QuoteOfTheDay />

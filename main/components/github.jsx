@@ -127,7 +127,7 @@ export default function GithubStats() {
                 <div className="text-sm opacity-70 mt-1">Rank</div>
               </div>
               <div className="text-center p-4 rounded-xl dark:bg-white/5 bg-black/5">
-                <div className="text-3xl font-bold dark:text-emerald-300">{data.contributed_to}</div>
+                <div className="text-3xl font-bold dark:text-emerald-300">{data.repos}</div>
                 <div className="text-sm opacity-70 mt-1">Repositories</div>
               </div>
               <div className="text-center p-4 rounded-xl dark:bg-white/5 bg-black/5">

@@ -1,7 +1,19 @@
 'use client'
 import { useEffect, useState } from 'react'
 
-export default function Clock() {
+export default function Clock({ target }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    function run() {
+      let today = new Date();
+      let match = today.getMonth() === 5 && today.getDate() === 15;
+      setVisible(match && target.startsWith("39.63"));
+    }
+    run();
+    const timer = setInterval(run, 60000);
+    return () => clearInterval(timer);
+  }, [target]);
+
   const [time, setTime] = useState("Loading");
 
   function timer() {
@@ -29,5 +41,5 @@ export default function Clock() {
     return () => clearInterval(id);
   }, []);
 
-  return <div className='font-mono'>It's {time} for me</div>
+  return <div className='font-mono'>It's {time} for me {visible && "and you"}</div>
 }

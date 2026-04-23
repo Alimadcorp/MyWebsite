@@ -347,7 +347,7 @@ function TheFooter({ dpl }) {
   return (
     <div className="flex flex-col items-center justify-center my-0 px-4">
       <div className="mt-10 text-sm text-center text-gray-500 select-none">
-        {dpl && <p>{dpl.state} from commit <a className="hover:underline text-gray-200" href={`https://github.com/Alimadcorp/MyWebsite/commit/${dpl.sha}`}>{dpl.sha.slice(0, 6)}</a> by {dpl.source}, <span className="text-gray-200" title={dpl.time.toLocaleString()}>{format(dpl.time)}</span>{dpl.duration && <span> in {dpl.duration}</span>}</p>}
+        {dpl && <p>{dpl.state} from commit <a className="hover:underline text-gray-200" href={`https://github.com/Alimadcorp/MyWebsite/commit/${dpl.sha}`}>{dpl.sha.slice(0, 6)}</a> by {dpl.source}, <span className="text-gray-200" title={dpl.time.toLocaleString()}>{format(dpl.time)}</span>{dpl.duration != "0s" && <span> in {dpl.duration}</span>}</p>}
         Made with{" "}
         <span
           onClick={handleClick}

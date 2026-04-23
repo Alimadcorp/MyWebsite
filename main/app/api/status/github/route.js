@@ -5,6 +5,7 @@ export async function GET() {
   const base = `https://stats.github.alimad.co/api`;
   const url = `https://hackatime.hackclub.com/api/v1/users/U08LQFRBL6S/projects/details`;
   const url2 = `https://hackatime.hackclub.com/api/hackatime/v1/users/current/stats/last_7_days`;
+  
   async function latestCommit() {
     const res = await fetch(`https://api.github.com/users/${username}/events/public`);
     const events = await res.json();
@@ -17,7 +18,8 @@ export async function GET() {
     return {
       message: commitData.commit.message,
       time: commitData.commit.author.date,
-      repo
+      repo,
+      sha
     };
   }
 

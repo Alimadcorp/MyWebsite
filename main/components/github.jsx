@@ -7,6 +7,7 @@ import {
   LucideFlame
 } from "lucide-react"
 import { SiGithub, SiWakatime } from "@icons-pack/react-simple-icons"
+import { format } from "timeago.js"
 
 function ProgressBar({ label, value, color, index }) {
   const numericValue = parseFloat(value)
@@ -93,7 +94,7 @@ export default function GithubStats() {
   const [data, setData] = useState(null)
 
   useEffect(() => {
-    let r = () => fetch("/api/status/github").then((res) => res.json()).then((jsonData) => { setData(jsonData) });
+    let r = () => fetch("/api/status/github").then((res) => res.json()).then((jsonData) => { console.log(jsonData); setData(jsonData) });
     r();
   }, [])
 
@@ -121,7 +122,7 @@ export default function GithubStats() {
               </h2>
             </a>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 w-full">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 w-full">
               <div className="text-center p-4 rounded-xl dark:bg-white/5 bg-black/5">
                 <div className="text-3xl font-bold dark:text-cyan-300">{data.rank}</div>
                 <div className="text-sm opacity-70 mt-1">Rank</div>
@@ -139,7 +140,7 @@ export default function GithubStats() {
                 <div className="text-sm opacity-70 mt-1">Stars Earned</div>
               </div>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 mb-4">
               <h3 className="text-xl font-semibold">Language Distribution</h3>
               <div className="space-y-3">
                 {Object.entries(data.langs).map(([lang, pct], index) => (
@@ -154,6 +155,15 @@ export default function GithubStats() {
                     index={index}
                   />
                 ))}
+              </div>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold">Recent activity</h3>
+              <div className="space-y-3 text-gray-500 font-sans">
+                <p>Committed{" "}
+                  <a href={`https://github.com/${data.latest.repo}/commit/${data.latest.sha}`} className="text-white hover:underline cursor-pointer">{data.latest.message.replaceAll("\n", " ").replaceAll(/\s+/g, " ")}</a> to{" "}
+                  <a href={`https://github.com/${data.latest.repo}`} className="text-gray-200 hover:underline cursor-pointer">{data.latest.repo}</a>{", "}
+                  <span title={new Date(data.latest.time).toLocaleString()}>{format(data.latest.time)}</span></p>
               </div>
             </div>
           </div>

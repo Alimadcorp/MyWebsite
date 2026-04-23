@@ -30,7 +30,7 @@ export async function GET(request) {
     });
     let r = await Promise.all(commitPromises);
 
-    }
+    
 
     return r.slice(0, 5);
   }

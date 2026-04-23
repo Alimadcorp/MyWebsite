@@ -139,6 +139,7 @@ web_modules/
 **/me/route.js
 **/me
 
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
@@ -195,3 +196,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 activity/Passwords.cs
+main/app/api/status/github/route.js

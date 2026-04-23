@@ -37,9 +37,13 @@ function BlogCard({ blog }) {
   return (
     <a
       href={`/${blog.href}`}
-      className="flex items-start relative gap-2 bg-zinc-900 text-zinc-100 p-3 rounded-xl font-sans shadow hover:shadow-lg transition-all border border-transparent hover:border-zinc-700 group"
+      className="flex items-start gap-2 bg-zinc-900 text-zinc-100 p-3 rounded-xl font-sans shadow hover:shadow-lg transition-all border border-transparent hover:border-zinc-700 group"
     >
-      {isNew && <p className="rounded-full border-0 p-1 bg-red-500 text-black absolute top-0 right-0">New</p>}
+      {isNew && (
+        <span className="inline-block mt-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-red-500 text-white rounded-md w-fit">
+          New
+        </span>
+      )}
       {blog.private ? (
         <FileLock className="w-5 h-5 text-zinc-400 group-hover:text-red-400 transition-colors shrink-0 mt-0.5" />
       ) : (
@@ -47,9 +51,8 @@ function BlogCard({ blog }) {
       )}
       <div className="flex-1">
         <h2
-          className={`text-base font-bold truncate group-hover:text-${
-            blog.private ? "red" : "blue"
-          }-400 transition-colors`}
+          className={`text-base font-bold truncate group-hover:text-${blog.private ? "red" : "blue"
+            }-400 transition-colors`}
         >
           {blog.title}
         </h2>
@@ -137,9 +140,8 @@ function Folder({ path, name, root = false }) {
       )}
 
       <div
-        className={`pl-4 mt-2 border-l border-zinc-700 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out ${
-          open || root ? "max-h-[9999px] opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`pl-4 mt-2 border-l border-zinc-700 overflow-y-auto overflow-x-hidden transition-all duration-300 ease-in-out ${open || root ? "max-h-[9999px] opacity-100" : "max-h-0 opacity-0"
+          }`}
       >
         {blogs.length > 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
@@ -199,7 +201,7 @@ export default function Home() {
       `https://log.alimad.co/api/log?text=${encodeURIComponent(
         str
       )}&channel=blog-alimad-co-prod-3`
-    ).catch(() => {});
+    ).catch(() => { });
   }
   useEffect(() => {
     log({ read: "/" });

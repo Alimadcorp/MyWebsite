@@ -1,6 +1,11 @@
 import { XMLParser } from "fast-xml-parser";
 import * as cheerio from "cheerio";
-export async function GET() {
+
+export async function GET(request) {
+  const forwarded = request.headers.get('x-forwarded-for');
+  const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip');
+
+
   const username = "Alimadcorp";
   const base = `https://stats.github.alimad.co/api`;
   const url = `https://hackatime.hackclub.com/api/v1/users/U08LQFRBL6S/projects/details`;
@@ -9,22 +14,25 @@ export async function GET() {
   async function latestCommits() {
     const res = await fetch(`https://api.github.com/users/${username}/events/public`);
     const events = await res.json();
-    const push = events.filter(e => e.type === "PushEvent").slice(0, 5);
-    if (!push.length) return null;
-    let r = [];
-    for (const p of push) {
+    const pushEvents = events.filter(e => e.type === "PushEvent").slice(0, 10);
+    if (!pushEvents.length) return null;
+    const commitPromises = pushEvents.map(async (p) => {
       const repo = p.repo.name;
       const sha = p.payload.head;
       const commitRes = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`);
       const commitData = await commitRes.json();
-      r.push({
+      return {
         message: commitData.commit.message,
         time: commitData.commit.author.date,
         repo,
         sha
-      });
+      };
+    });
+    let r = await Promise.all(commitPromises);
+
     }
-    return r;
+
+    return r.slice(0, 5);
   }
 
   const errors = [];

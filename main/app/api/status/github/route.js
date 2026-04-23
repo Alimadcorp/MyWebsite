@@ -5,22 +5,26 @@ export async function GET() {
   const base = `https://stats.github.alimad.co/api`;
   const url = `https://hackatime.hackclub.com/api/v1/users/U08LQFRBL6S/projects/details`;
   const url2 = `https://hackatime.hackclub.com/api/hackatime/v1/users/current/stats/last_7_days`;
-  
-  async function latestCommit() {
+
+  async function latestCommits() {
     const res = await fetch(`https://api.github.com/users/${username}/events/public`);
     const events = await res.json();
-    const push = events.find(e => e.type === "PushEvent");
-    if (!push) return null;
-    const repo = push.repo.name;
-    const sha = push.payload.head;
-    const commitRes = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`);
-    const commitData = await commitRes.json();
-    return {
-      message: commitData.commit.message,
-      time: commitData.commit.author.date,
-      repo,
-      sha
-    };
+    const push = events.filter(e => e.type === "PushEvent").slice(0, 5);
+    if (!push.length) return null;
+    let r = [];
+    for (const p of push) {
+      const repo = p.repo.name;
+      const sha = p.payload.head;
+      const commitRes = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`);
+      const commitData = await commitRes.json();
+      r.push({
+        message: commitData.commit.message,
+        time: commitData.commit.author.date,
+        repo,
+        sha
+      });
+    }
+    return r;
   }
 
   const errors = [];
@@ -229,7 +233,7 @@ export async function GET() {
     if (wakatime?.total_today.startsWith("Start")) {
       wakatime.total_today = "0m";
     }
-    const latest = await latestCommit();
+    const latest = await latestCommits();
     values = { ...values, repos: 100 };
     const payload = { username, rank, ...values, langs, wakatime, latest };
     if (errors.length) payload._warnings = errors;

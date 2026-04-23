@@ -159,11 +159,14 @@ export default function GithubStats() {
             </div>
             <div className="space-y-4">
               <h3 className="text-xl font-semibold">Recent activity</h3>
-              <div className="space-y-3 text-gray-500 font-sans">
-                <p>Committed{" "}
-                  <a href={`https://github.com/${data.latest.repo}/commit/${data.latest.sha}`} className="text-white hover:underline cursor-pointer">{data.latest.message.replaceAll("\n", " ").replaceAll(/\s+/g, " ")}</a> to{" "}
-                  <a href={`https://github.com/${data.latest.repo}`} className="text-gray-200 hover:underline cursor-pointer">{data.latest.repo}</a>{", "}
-                  <span title={new Date(data.latest.time).toLocaleString()}>{format(data.latest.time)}</span></p>
+              <div className="space-y-2 text-gray-500 font-sans">
+                {!data.latest && <p>No recent activity found.</p>}
+                {data.latest && data.latest.map(e => (
+                  <p>Committed{" "}
+                    <a href={`https://github.com/${e.repo}/commit/${e.sha}`} className="text-white hover:underline cursor-pointer">{e.message.replaceAll("\n", " ").replaceAll(/\s+/g, " ")}</a> to{" "}
+                    <a href={`https://github.com/${e.repo}`} className="text-gray-200 hover:underline cursor-pointer">{e.repo.split("/")[1]}</a>{", "}
+                    <span title={new Date(e.time).toLocaleString()}>{format(e.time)}</span></p>
+                ))}
               </div>
             </div>
           </div>

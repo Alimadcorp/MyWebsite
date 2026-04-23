@@ -47,7 +47,6 @@ export default function IdeasModal({ isOpen, onClose }: { isOpen: boolean; onClo
           {loading ? (
             <div className="flex flex-col gap-3 animate-pulse">
               <div className="h-20 bg-white/5 rounded-lg w-full" />
-              Loading...
               <div className="h-20 bg-white/5 rounded-lg w-full" />
             </div>
           ) : (

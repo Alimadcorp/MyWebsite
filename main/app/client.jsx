@@ -15,6 +15,7 @@ import Clock from '@/components/clock'
 import StyledComments from "@/components/comments";
 import IdeasModal from "@/components/ideas";
 import Ripple from "@/components/ripple";
+import { format } from "timeago.js";
 
 function LinkedIn({ size }) {
   return (
@@ -307,7 +308,7 @@ function WebButtons() {
     />
   </span>);
 }
-function TheFooter() {
+function TheFooter({dpl}) {
   const secrets = [
     { clicks: 50, message: { text: "Is there anyone out there?" } },
     { clicks: 100, message: { text: "The search for life elsewhere is remarkable in out age." } },
@@ -342,11 +343,13 @@ function TheFooter() {
     setTimeout(() => (clickLock.current = false), 30);
   }
   return (
-    <div className="mt-10 text-sm text-center text-gray-500 select-none">
-      Made with{" "}
-      <span
-        onClick={handleClick}
-        className="animate-pulse text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-pink-500 to-rose-500 cursor-pointer transition-transform"
+    <div className="flex flex-col items-center justify-center my-0 px-4">
+      <div className="mt-10 text-sm text-center text-gray-500 select-none">
+      <p>{dpl.state} from commit <a className="hover:underline text-gray-200" href={`https://github.com/Alimadcorp/MyWebsite/commit/${dpl.sha}`}>{dpl.sha.slice(0, 6)}</a> from {dpl.source}, <span className="text-gray-200" title={dpl.time.toLocaleString()}>{format(dpl.time)}</span>{dpl.duration && <span> in {dpl.duration}</span>}</p>
+        Made with{" "}
+        <span
+          onClick={handleClick}
+          className="animate-pulse text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-pink-500 to-rose-500 cursor-pointer transition-transform"
         title={
           count < 315
             ? `${315 - count} clicks left...`
@@ -365,6 +368,7 @@ function TheFooter() {
           {msg.author && <p className="text-gray-400 text-xs mt-1">-{msg.author}</p>}
         </div>
       ))}
+    </div>
     </div>
   );
 }
@@ -386,7 +390,7 @@ function Note({ target }) {
   </>);
 }
 
-export default function Home({ IP }) {
+export default function Home({ IP, deployment }) {
   const [panel, setPanel] = useState(false);
   const [myIdea, setMyIdea] = useState("");
   const [darkMode, setDarkMode] = useState(false);
@@ -606,7 +610,7 @@ export default function Home({ IP }) {
               <ActivityCalendar loading={true} theme={darkMode ? themer : themer2} />
             </div>))}
         <WebButtons />
-        <TheFooter />
+        <TheFooter dpl={deployment} />
       </main>
       {panel && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">

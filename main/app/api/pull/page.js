@@ -134,7 +134,7 @@ export default async function UserActionMonitor({ searchParams }) {
                           <div className="flex justify-between text-[10px] text-gray-500 mb-1">
                             <span>{format(log.time)}</span>
                             <span>
-                              {new Date(log.time).toLocaleTimeString()}
+                              {new Date(log.time).toLocaleTimeString('en-PK', { timeZone: 'Asia/Karachi' })}
                             </span>
                           </div>
                           {renderObj(log.parsed)}

@@ -5,6 +5,21 @@ export async function GET() {
   const base = `https://stats.github.alimad.co/api`;
   const url = `https://hackatime.hackclub.com/api/v1/users/U08LQFRBL6S/projects/details`;
   const url2 = `https://hackatime.hackclub.com/api/hackatime/v1/users/current/stats/last_7_days`;
+  async function latestCommit() {
+    const res = await fetch(`https://api.github.com/users/${username}/events/public`);
+    const events = await res.json();
+    const push = events.find(e => e.type === "PushEvent");
+    if (!push) return null;
+    const repo = push.repo.name;
+    const sha = push.payload.head;
+    const commitRes = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`);
+    const commitData = await commitRes.json();
+    return {
+      message: commitData.commit.message,
+      time: commitData.commit.author.date,
+      repo
+    };
+  }
 
   const errors = [];
   const safeText = async (res, name) => {
@@ -48,7 +63,7 @@ export async function GET() {
       fetch("https://hackatime.hackclub.com/api/v1/users/U08LQFRBL6S/stats"),
       fetch(
         "https://hackatime.hackclub.com/api/hackatime/v1/users/U08LQFRBL6S/statusbar/today?api_key=" +
-          process.env.HACKATIME_API_KEY
+        process.env.HACKATIME_API_KEY
       ),
       fetch(url, {
         headers: {
@@ -209,11 +224,12 @@ export async function GET() {
     } catch (e) {
       errors.push(`leaderboard parse error: ${e?.message || e}`);
     }
-    if(wakatime?.total_today.startsWith("Start")){
+    if (wakatime?.total_today.startsWith("Start")) {
       wakatime.total_today = "0m";
     }
+    const latest = await latestCommit();
     values = { ...values, repos: 100 };
-    const payload = { username, rank, ...values, langs, wakatime };
+    const payload = { username, rank, ...values, langs, wakatime, latest };
     if (errors.length) payload._warnings = errors;
     return Response.json(payload);
   } catch (e) {

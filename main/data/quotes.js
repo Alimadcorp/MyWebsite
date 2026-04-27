@@ -802,6 +802,15 @@ export const quotes = [
   },
   {
     _id: {
+      $oid: "2b2c89f4fc716e0009372f56",
+    },
+    text: "Everyone becomes a poet at the touch of love.",
+    author: "Rohan Ghalib",
+    numberOfVotes: 1,
+    rating: 5,
+  },
+  {
+    _id: {
       $oid: "5a82c90cfc716e0004373f55",
     },
     text: "People under pressure don’t work better; they just work faster.",

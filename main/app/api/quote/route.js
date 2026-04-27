@@ -10,8 +10,10 @@ export async function GET() {
     const raw = quotes[day - 1];
     const data = {
       quote: raw.text,
-      writer: `${raw.author}, ${raw.source}`,
-      date: new Date().setHours(0, 0, 0, 0)
+      writer: `${raw.author}`,
+      source: raw.source || raw["_id"]["$oid"].slice(0, 8),
+      date: new Date().setHours(0, 0, 0, 0),
+      rating: raw.rating || 0,
     }
     return NextResponse.json(data);
   } catch {

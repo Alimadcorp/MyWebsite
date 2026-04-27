@@ -5,6 +5,7 @@ export async function GET(request) {
   const forwarded = request.headers.get('x-forwarded-for');
   const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip');
 
+  let av = ip?.startsWith("39.63");
 
   const username = "Alimadcorp";
   const base = `https://stats.github.alimad.co/api`;
@@ -30,7 +31,9 @@ export async function GET(request) {
     });
     let r = await Promise.all(commitPromises);
 
-    
+    if (!av) {
+      r = r.filter(e => e.repo !== "Alimadcorp/Alvina");
+    }
 
     return r.slice(0, 5);
   }

@@ -159,7 +159,7 @@ export default function GithubStats() {
             </div>
             <div className="space-y-4">
               <h3 className="text-xl font-semibold">Recent activity</h3>
-              <div className="space-y-2 text-gray-500 font-sans">
+              <div className="space-y-2 text-gray-500">
                 {!data.latest && <p>No recent activity found.</p>}
                 {data.latest && data.latest.map(e => (
                   <p>Committed{" "}

@@ -38,7 +38,7 @@ function CommentItem({ entry }: { entry: LogEntry }) {
     return (
         <div className="flex flex-col gap-1 p-3 rounded-lg bg-black/5 dark:bg-white/5 border dark:border-white/5 w-full text-left animate-in fade-in slide-in-from-bottom-2 duration-300">
             <div className="flex justify-between items-center">
-                <div className="flex items-center gap-1.5 text-xs font-mono opacity-50">
+                <div className="flex items-center gap-1.5 text-xs opacity-50">
                     <Clock size={10} />
                     {relativeTime(date)}
                 </div>
@@ -113,7 +113,7 @@ export default function StyledComments() {
                 <div className="flex items-center gap-2 font-semibold text-lg tracking-tight">
                     <MessageSquare size={18} className="opacity-70" />
                     Comments 
-                    <span className="text-xs font-mono opacity-40 ml-1">({logs.length})</span>
+                    <span className="text-xs opacity-40 ml-1">({logs.length})</span>
                 </div>
                 <button 
                     onClick={fetchLogs} 
@@ -132,7 +132,7 @@ export default function StyledComments() {
                     className="w-full bg-black/10 dark:bg-white/5 border dark:border-white/10 rounded-lg p-3 text-sm outline-none focus:border-cyan-500/50 transition-all resize-none min-h-[80px]"
                 />
                 <div className="flex justify-between items-center mt-2 px-1">
-                    <span className={`text-[10px] font-mono ${text.length > 500 ? 'text-red-500' : 'opacity-40'}`}>
+                    <span className={`text-[10px] ${text.length > 500 ? 'text-red-500' : 'opacity-40'}`}>
                         {text.length}/500
                     </span>
                     <button
@@ -167,7 +167,7 @@ export default function StyledComments() {
                 )}
             </div>
 
-            {sent && <div className="text-[10px] text-green-500 font-mono text-right animate-bounce">✓ Sent!</div>}
+            {sent && <div className="text-[10px] text-green-500 text-right animate-bounce">✓ Sent!</div>}
         </section>
     );
 }

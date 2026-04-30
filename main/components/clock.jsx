@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 
-export default function Clock({ target }) {
+export default function Clock({ target, font }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     function run() {
@@ -41,5 +41,5 @@ export default function Clock({ target }) {
     return () => clearInterval(id);
   }, []);
 
-  return <div className='font-mono'>It's {time} for me {visible && "and you"}</div>
+  return <div className={font}>It's {time} for me {visible && "and you"}</div>
 }

@@ -55,7 +55,7 @@ export default function IdeasModal({ isOpen, onClose }: { isOpen: boolean; onClo
                 key={i} 
                 className="p-4 rounded-lg bg-white/[0.03] border border-white/5 flex flex-col gap-2 hover:bg-white/[0.05] transition-colors"
               >
-                <div className="flex items-center gap-1.5 text-[10px] font-mono text-white/40 uppercase tracking-widest">
+                <div className="flex items-center gap-1.5 text-[10px] font-semibold text-white/40 uppercase tracking-widest">
                   <Clock size={10} />
                   {new Date(idea.time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                 </div>

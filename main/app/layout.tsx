@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { excaliFont } from './fonts'
+import { relativeDate } from './client'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +32,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased p-0 m-0 w-[100vw] overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} ${excaliFont.className} ${excaliFont.variable} antialiased p-0 m-0 w-[100vw] overflow-x-hidden`}
         suppressHydrationWarning
       >
         {children}

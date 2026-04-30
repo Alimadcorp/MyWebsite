@@ -34,7 +34,6 @@ export default function LiveStatus({ app = 'alimadhomepage' }) {
     <span style={{
       display: 'inline-flex',
       alignItems: 'center',
-      fontFamily: 'monospace',
       color: '#0f0',
       gap: '6px',
       transition: "all"

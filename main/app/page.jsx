@@ -1,7 +1,14 @@
 import { Suspense } from "react";
-import Home from "./client";
 import Loading from "@/components/loading";
 import { headers } from "next/headers";
+import Home from "./client";
+
+function relativeDate() {
+  const now = new Date();
+  const day = now.toLocaleString("en-US", { day: "2-digit", timeZone: "Asia/Karachi" });
+  const month = now.toLocaleString("en-US", { month: "2-digit", timeZone: "Asia/Karachi" });
+  return day === "15" && month === "06";
+};
 
 async function getLatestProdDeployment() {
   try {
@@ -55,7 +62,7 @@ export default async function App() {
 
   return (
     <Suspense fallback={<Loading />}>
-      <Home IP={ip} deployment={dpl} />
+      <Home IP={ip} deployment={dpl} font={relativeDate() ? "font-hand" : "font-sans"} themeColor={relativeDate() ? "purple" : "cyan"}/>
     </Suspense>
   );
 }

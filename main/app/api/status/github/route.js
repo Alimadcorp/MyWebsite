@@ -13,14 +13,14 @@ export async function GET(request) {
   const url2 = `https://hackatime.hackclub.com/api/hackatime/v1/users/current/stats/last_7_days`;
 
   async function latestCommits() {
-    const res = await fetch(`https://api.github.com/users/${username}/events/public`);
+    const res = await fetch(`https://api.github.com/users/${username}/events/public`, {headers: { "Authorization": process.env.GITHUB_TOKEN ? `token ${process.env.GITHUB_TOKEN}` : undefined }});
     const events = await res.json();
     const pushEvents = events.filter(e => e.type === "PushEvent").slice(0, 10);
     if (!pushEvents.length) return null;
     const commitPromises = pushEvents.map(async (p) => {
       const repo = p.repo.name;
       const sha = p.payload.head;
-      const commitRes = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`);
+      const commitRes = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`, {headers: { "Authorization": process.env.GITHUB_TOKEN ? `token ${process.env.GITHUB_TOKEN}` : undefined }});
       const commitData = await commitRes.json();
       return {
         message: commitData.commit.message,

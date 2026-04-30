@@ -13,14 +13,14 @@ export async function GET(request) {
   const url2 = `https://hackatime.hackclub.com/api/hackatime/v1/users/current/stats/last_7_days`;
 
   async function latestCommits() {
-    const res = await fetch(`https://api.github.com/users/${username}/events/public`, {headers: { "Authorization": process.env.GITHUB_TOKEN ? `token ${process.env.GITHUB_TOKEN}` : undefined }});
+    const res = await fetch(`https://api.github.com/users/${username}/events/public`, { headers: { "Authorization": process.env.GITHUB_TOKEN ? `token ${process.env.GITHUB_TOKEN}` : undefined } });
     const events = await res.json();
     const pushEvents = events.filter(e => e.type === "PushEvent").slice(0, 10);
     if (!pushEvents.length) return null;
     const commitPromises = pushEvents.map(async (p) => {
       const repo = p.repo.name;
       const sha = p.payload.head;
-      const commitRes = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`, {headers: { "Authorization": process.env.GITHUB_TOKEN ? `token ${process.env.GITHUB_TOKEN}` : undefined }});
+      const commitRes = await fetch(`https://api.github.com/repos/${repo}/commits/${sha}`, { headers: { "Authorization": process.env.GITHUB_TOKEN ? `token ${process.env.GITHUB_TOKEN}` : undefined } });
       const commitData = await commitRes.json();
       return {
         message: commitData.commit.message,
@@ -91,12 +91,7 @@ export async function GET(request) {
         headers: {
           Authorization: `Bearer ${process.env.HACKATIME_API_KEY}`,
         },
-      }),
-      fetch("https://hackatime.hackclub.com/static_pages/mini_leaderboard", {
-        headers: {
-          Cookie: `${process.env.HACKATIME_COOKIE}`,
-        },
-      }),
+      })
     ];
 
     const settled = await Promise.allSettled(fetchPromises);
@@ -106,10 +101,10 @@ export async function GET(request) {
       return null;
     });
 
-    const [mainSvgRes, langSvgRes, wakatimeRes, statusRes, res, res2, lb] =
+    const [mainSvgRes, langSvgRes, wakatimeRes, statusRes, res, res2] =
       responses;
 
-    const [mainSvg, langSvg, wakatimeJson, statusJson, data, data2, lbr] =
+    const [mainSvg, langSvg, wakatimeJson, statusJson, data, data2] =
       await Promise.all([
         safeText(mainSvgRes, "mainSvg"),
         safeText(langSvgRes, "langSvg"),
@@ -117,7 +112,6 @@ export async function GET(request) {
         safeJson(statusRes, "status"),
         safeJson(res, "projects"),
         safeJson(res2, "last7"),
-        safeText(lb, "leaderboard"),
       ]);
     const langs = {};
     let values = {};
@@ -215,31 +209,6 @@ export async function GET(request) {
       };
     } catch (e) {
       errors.push(`wakatime processing error: ${e?.message || e}`);
-    }
-    try {
-      if (lbr) {
-        const $ = cheerio.load(lbr);
-        let found = null;
-        $(".flex.items-center.p-3").each((_, el) => {
-          if (found) return;
-          const position = $(el).find(".w-8.text-center.text-lg").text().trim();
-          const userSpan = $(el).find(".user-info span").first().text().trim();
-          if (!userSpan || !userSpan.toLowerCase().includes("alimadco")) return;
-          let streak = null;
-          const streakBox = $(el).find(".super span.text-md");
-          if (streakBox.length) streak = streakBox.text().trim();
-          found = {
-            username: userSpan,
-            position,
-            streak,
-          };
-        });
-        if (found) {
-          wakatime = { ...found, ...wakatime };
-        }
-      }
-    } catch (e) {
-      errors.push(`leaderboard parse error: ${e?.message || e}`);
     }
     if (wakatime?.total_today.startsWith("Start")) {
       wakatime.total_today = "0m";

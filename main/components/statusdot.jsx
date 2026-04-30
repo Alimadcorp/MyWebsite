@@ -20,7 +20,7 @@ const modes = {
   dnd:          { icon: CircleMinus, color: "text-red-500" },
   nodisplay:    { icon: LucideMinusSquare, color: "text-gray-500" },
   fullscreen:   { icon: LucideFullscreen, color: "text-white" },
-  left:         { icon: LucidePanelLeft, color: "text-cyan-100" },
+  left:         { icon: LucidePanelLeft, color: "text-accent-light" },
   right:        { icon: LucidePanelRight, color: "text-purple-100" },
   offline:      { icon: Circle, color: "text-zinc-500" },
   browsing:     { icon: Globe, color: "text-blue-500" },

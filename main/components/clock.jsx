@@ -41,5 +41,5 @@ export default function Clock({ target, font }) {
     return () => clearInterval(id);
   }, []);
 
-  return <div className={font}>It's {time} for me {visible && "and you"}</div>
+  return <div className={font == "font-sans" ? "font-mono" : font}>It's {time} for me {visible && "and you"}</div>
 }

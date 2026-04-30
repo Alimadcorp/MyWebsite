@@ -59,10 +59,15 @@ export default async function App() {
   const headerList = await headers();
   const dpl = await getLatestProdDeployment();
   const ip = headerList.get("x-forwarded-for")?.split(',')[0] || "127.0.0.1";
-
+  const accent = { h: 0, s: "100%", l: "100%" };
   return (
     <Suspense fallback={<Loading />}>
-      <Home IP={ip} deployment={dpl} font={relativeDate() ? "font-hand" : "font-sans"} themeColor={relativeDate() ? "purple" : "cyan"}/>
+      <Home IP={ip} deployment={dpl} font={relativeDate() ? "font-hand" : "font-sans"} theme={
+        {
+          "--accent-h": accent.h,
+          "--accent-s": accent.s,
+          "--accent-l": accent.l,
+        }} />
     </Suspense>
   );
 }

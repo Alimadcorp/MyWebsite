@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { excaliFont } from './fonts'
-import { relativeDate } from './client'
+import { excaliFont } from './fonts';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,11 +35,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${excaliFont.className} ${excaliFont.variable} antialiased p-0 m-0 w-[100vw] overflow-x-hidden`}
         suppressHydrationWarning
       >
-        {children}
-        <Analytics />
-        <SpeedInsights />
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5272041308290617" crossOrigin="anonymous"></script>
-        <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+        <AppRouterCacheProvider>
+          {children}
+          <Analytics />
+          <SpeedInsights />
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5272041308290617" crossOrigin="anonymous"></script>
+          <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

@@ -9,8 +9,8 @@ function parseActivity(html) {
 
   const data = JSON.parse(script);
   if (!data) return null;
+  let streak = data.props.layout.nav.current_user?.streak_days || 0;
   const activity = data.props.dashboard_stats.activity_graph.duration_by_date;
-  // { start_date, end_date, duration_by_date: { date, duration (in seconds) } }
   let k = Object.keys(activity);
   let max = 0;
   for(let i = 0; i < k.length; i++) {
@@ -20,7 +20,7 @@ function parseActivity(html) {
     days.push({ date: k[i], count: activity[k[i]] / 60, level: toLevel(activity[k[i]], max) });
   }
 
-  return days;
+  return { days, streak };
 }
 
 function toLevel(minutes, max) {

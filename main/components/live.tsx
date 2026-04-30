@@ -9,7 +9,7 @@ export default function LiveStatus({ app = 'alimadhomepage' }) {
     let mounted = true
     async function ping() {
       try {
-        const res = await fetch(`https://live.alimad.xyz/ping?app=${app}`)
+        const res = await fetch(`https://live.alimad.co/ping?app=${app}`)
         const text = await res.text()
         if (res.ok && mounted) {
           setOnline(true)
@@ -31,29 +31,14 @@ export default function LiveStatus({ app = 'alimadhomepage' }) {
   }, [app])
 
   return (
-    <span style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      color: '#0f0',
-      gap: '6px',
-      transition: "all"
-    }}>
-      <span style={{
-        width: 8,
-        height: 8,
-        borderRadius: '50%',
-        background: online ? 'lime' : 'red',
-        animation: online ? 'pulse 4s infinite ease-in-out' : 'none',
+    <>
+      {online && <span className='font-semibold' style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '6px',
         transition: "all"
-      }} />
-      <span className='md:inline hidden' style={{ color: online ? 'lime' : 'red' }}>{online ? `Online: ` : 'Offline'}</span><span>{count}</span>
-      <style>{`
-        @keyframes pulse {
-          0% { opacity: 1; }
-          50% { opacity: 0.4; }
-          100% { opacity: 1; }
-        }
-      `}</style>
-    </span>
+      }}>
+        <span className='md:inline hidden'>{online ? `Online: ` : 'Offline'}</span><span>{count}</span>
+      </span>}</>
   )
 }

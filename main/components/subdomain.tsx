@@ -19,8 +19,6 @@ interface SubdomainProps {
 export default function Subdomain({
   domainName = "domain",
   suffix = "",
-  visited = false,
-  live = false,
   data = { path: "/" },
 }: SubdomainProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -33,21 +31,15 @@ export default function Subdomain({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative flex flex-col items-start gap-1 p-4 rounded-xl transition-all duration-300 hover:bg-gray-100/50 dark:hover:bg-gray-800/50 h-full w-full"
+      className="relative flex flex-col items-start gap-1 p-4 rounded-xl transition-all duration-300 h-full w-full"
     >
       <div className="flex items-center justify-between w-full gap-2">
         <a
           href={`https://${domainName}${suffix}${data.path}`}
           target="_blank"
           onClick={handleClick}
-          className={`cursor-pointer text-left text-lg transition-all duration-300 flex-1 truncate
-            hover:text-cyan-600 dark:hover:text-cyan-400
-            ${live
-              ? "text-lime-600 dark:text-lime-400 font-bold"
-              : visited
-                ? "text-green-600 dark:text-green-400"
-                : "text-black dark:text-white"
-            }`}
+          className="cursor-pointer text-left text-lg transition-all duration-300 flex-1 truncate
+            hover:text-accent dark:hover:text-accent"
         >
           <span className="font-semibold">{domainName}</span>
           <span className="opacity-40">{suffix}</span>
@@ -66,13 +58,13 @@ export default function Subdomain({
         )}
       </div>
 
-      {data.path !== "/" && (
+      {false && data.path !== "/" && (
         <p className="text-[10px] text-orange-500/80 dark:text-orange-400/80 mt-1 italic font-mono">
           {data.path}
         </p>
       )}
 
-      {data.desc && (
+      {false && data.desc && (
         <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 max-w-[200px]">
           {data.desc}
         </p>
@@ -86,8 +78,8 @@ export default function Subdomain({
             scale: isHovered ? 1 : 0.95,
             y: isHovered ? 0 : 10,
           }}
-          transition={{ duration: 0.2 }}
-          className="absolute -top-6 left-0 z-50 px-3 py-2 bg-black/80 dark:bg-white/90 text-white dark:text-black text-xs rounded-lg shadow-xl backdrop-blur-md border border-white/20 dark:border-black/10 whitespace-nowrap pointer-events-none"
+          transition={{ duration: 0.1 }}
+          className="absolute -top-2 left-2 z-50 px-2 py-1 bg-transparent text-xs rounded-lg  whitespace-nowrap pointer-events-none text-shadow-md text-shadow-accent-light/20 dark:text-shadow-accent/20"
         >
           {data.subtitle}
         </motion.div>

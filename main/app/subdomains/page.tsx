@@ -19,7 +19,6 @@ export default function Subdomains() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Check initial theme
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     const initialTheme = savedTheme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     setTheme(initialTheme);
@@ -133,13 +132,13 @@ export default function Subdomains() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1">
           {Object.keys(subs).map(renderSubdomain)}
         </div>
       </main>
 
       <footer className="py-12 text-center text-sm text-gray-500 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 mt-20">
-        <p>&copy; {new Date().getFullYear()} Alimadcorp. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Alimad Corporations. All rights reserved.</p>
       </footer>
     </div>
   );

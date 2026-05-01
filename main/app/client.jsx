@@ -13,6 +13,7 @@ import Clock from '@/components/clock'
 import StyledComments from "@/components/comments";
 import IdeasModal from "@/components/ideas";
 import Ripple from "@/components/ripple";
+import Skills from "@/components/skills";
 
 import { QuoteOfTheDay, TheFooter, Note } from "./util";
 import { Webring, Socials, WebButtons } from "./social";
@@ -225,6 +226,7 @@ export default function Home({ IP, deployment, font, theme }) {
           </div>
         </div>
         <WebButtons />
+        <Skills />
         <TheFooter dpl={deployment} />
       </main>
       {panel && (

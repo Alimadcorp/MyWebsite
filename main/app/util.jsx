@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { format } from "timeago.js";
 
-export function QuoteOfTheDay() {
+function QuoteOfTheDay() {
     const [quote, setQuote] = useState(null);
     useEffect(() => {
         async function load() {
@@ -25,7 +25,7 @@ export function QuoteOfTheDay() {
     );
 }
 
-export function TheFooter({ dpl }) {
+function TheFooter({ dpl }) {
     const secrets = [
         { clicks: 50, message: { text: "Is there anyone out there?" } },
         { clicks: 100, message: { text: "The search for life elsewhere is remarkable in our age." } },
@@ -90,7 +90,51 @@ export function TheFooter({ dpl }) {
     );
 }
 
-export function Note({ target, font }) {
+const Chart = () => {
+  const [d, sD] = useState(null);
+  function p(t) {
+    const pings = t.pings;
+    const keys = Object.keys(pings).sort();
+    if (keys.length === 0) return [];
+    const pstart = new Date(keys[0]);
+    const pend = new Date(keys[keys.length - 1]);
+    const dailyMap = {};
+    let current = new Date(pstart);
+    while (current <= pend) {
+      const iso = current.toISOString().split("T")[0];
+      dailyMap[iso] = 0;
+      current.setDate(current.getDate() + 1);
+    }
+    keys.forEach(key => {
+      const day = key.split("T")[0];
+      if (dailyMap.hasOwnProperty(day)) {
+        dailyMap[day] += pings[key];
+      }
+    });
+    const dailyValues = Object.values(dailyMap);
+    const weeklyData = [];
+
+    for (let i = 0; i < dailyValues.length; i += 7) {
+      const weekChunk = dailyValues.slice(i, i + 7);
+      const weekSum = weekChunk.reduce((acc, val) => acc + val, 0);
+      weeklyData.push(weekSum);
+    }
+
+    return weeklyData;
+  }
+  useEffect(() => { fetch("https://live.alimad.co/stats?app=alimadhomepage").then(r => r.json()).then(_d => sD(p(_d))) }, []);
+  return (
+    <>
+      {d && <ModrinthAnalytics
+        label="Visits"
+        data={d}
+        className="flex flex-col items-center justify-center p-1 sm:p-3 rounded-lg border-2 dark:border-accent bg-white/20 dark:bg-black/20 dark:hover:bg-accent-dark/20 w-full mt-2 h-36 sm:w-112 sm:h-36 transition-all"
+      />}
+    </>
+  );
+}
+
+function Note({ target, font }) {
     const [visible, setVisible] = useState(false);
     useEffect(() => {
         function run() {
@@ -101,6 +145,8 @@ export function Note({ target, font }) {
         return () => clearInterval(timer);
     }, [target]);
     return (<>
-        {visible && <p className={font + " font-bold text-pink-950 dark:text-pink-300 text-2xl mt-3"}>Happy Birthday!</p>}
+        {visible && <p className={font + " font-bold text-pink-950 dark:text-pink-300 text-2xl mt-2"}>Happy Birthday!</p>}
     </>);
 }
+
+export { Note, TheFooter, QuoteOfTheDay };

@@ -3,8 +3,8 @@
 @import "tailwindcss";
 
 :root {
-  --accent-h: 200;
-  --accent-s: 100%;
+  --accent-h: 190;
+  --accent-s: 80%;
   --accent-l: 50%;
 
   --accent-light-l: min(95%, calc(var(--accent-l) + 15%));

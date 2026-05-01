@@ -197,3 +197,5 @@ dist
 .pnp.*
 activity/Passwords.cs
 main/app/api/status/github/route.js
+
+local.json

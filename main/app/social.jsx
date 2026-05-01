@@ -1,12 +1,27 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
-import { SiDiscord, SiGithub, SiGmail, SiInstagram, SiItchdotio, SiSlack, SiYoutube, SiSnapchat, SiRoblox, SiReddit } from "@icons-pack/react-simple-icons";
+import { SiDiscord, SiGithub, SiGmail, SiInstagram, SiItchdotio, SiYoutube, SiSnapchat, SiRoblox, SiReddit } from "@icons-pack/react-simple-icons";
 
 function LinkedIn({ size }) {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" className="bi bi-linkedin" viewBox="0 0 16 16">
             <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z" />
+        </svg>
+    );
+}
+
+function Slack({ size }) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} fill="currentColor" viewBox="0 0 127 127">
+            <path d="M27.2,80c0,7.5-6.1,13.6-13.6,13.6S0,87.5,0,80c0-7.5,6.1-13.6,13.6-13.6h13.6V80z" />
+            <path d="M34.2,80c0-7.5,6.1-13.6,13.6-13.6c7.5,0,13.6,6.1,13.6,13.6v34c0,7.5-6.1,13.6-13.6,13.6c-7.5,0-13.6-6.1-13.6-13.6V80z" />
+            <path d="M47,27.2c-7.5,0-13.6-6.1-13.6-13.6S39.5,0,47,0c7.5,0,13.6,6.1,13.6,13.6v13.6H47z" />
+            <path d="M47,34.2c7.5,0,13.6,6.1,13.6,13.6c0,7.5-6.1,13.6-13.6,13.6H13c-7.5,0-13.6-6.1-13.6-13.6c0-7.5,6.1-13.6,13.6-13.6H47z" />
+            <path d="M99.8,47c0-7.5,6.1-13.6,13.6-13.6c7.5,0,13.6,6.1,13.6,13.6s-6.1,13.6-13.6,13.6H99.8V47z" />
+            <path d="M92.8,47c0,7.5-6.1,13.6-13.6,13.6c-7.5,0-13.6-6.1-13.6-13.6V13c0-7.5,6.1-13.6,13.6-13.6c7.5,0,13.6,6.1,13.6,13.6V47z" />
+            <path d="M80,99.8c7.5,0,13.6,6.1,13.6,13.6c0,7.5-6.1,13.6-13.6,13.6c-7.5,0-13.6-6.1-13.6-13.6V99.8H80z" />
+            <path d="M80,92.8c-7.5,0-13.6-6.1-13.6-13.6c0-7.5,6.1-13.6,13.6-13.6h34c7.5,0,13.6,6.1,13.6,13.6c0,7.5-6.1,13.6-13.6,13.6H80z" />
         </svg>
     );
 }
@@ -28,7 +43,7 @@ export function Socials({ sizer = 24 }) {
         <a href="https://discord.gg/fY4Q8rKsz4" target="_blank" className="border-2 border-accent text-accent hover:bg-accent/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiDiscord size={sizer} /></a>
         <a href="https://linkedin.com/in/alimadco" target="_blank" className="border-2 border-accent text-accent hover:bg-accent/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><LinkedIn size={sizer} /></a>
         <a href="https://roblox.com/users/10698961932/profile" target="_blank" className="border-2 border-accent text-accent hover:bg-accent/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiRoblox size={sizer} /></a>
-        <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-accent text-accent hover:bg-accent/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiSlack size={sizer} /></a>
+        <a href="https://hackclub.slack.com/team/U08LQFRBL6S" target="_blank" className="border-2 border-accent text-accent hover:bg-accent/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><Slack size={sizer} /></a>
         <a href="https://instagram.com/alimadco" target="_blank" className="border-2 border-accent text-accent hover:bg-accent/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiInstagram size={sizer} /></a>
         <a href="mailto:alimad.co.ltd@gmail.com" target="_blank" className="border-2 border-accent text-accent hover:bg-accent/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><SiGmail size={sizer} /></a>
         <a href="tel:+923124503700" target="_blank" className="border-2 border-accent text-accent hover:bg-accent/30 rounded-full p-1 px-2 text-center items-center flex justify-center"><Phone size={sizer} /></a>

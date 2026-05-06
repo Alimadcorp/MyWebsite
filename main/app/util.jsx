@@ -36,8 +36,7 @@ function TheFooter({ dpl }) {
         { clicks: 314, message: { text: "Are we alone?" } },
     ];
     function log(t) {
-        t.clientId = localStorage.getItem("clientId");
-        fetch(`https://log.alimad.co/api/log?channel=alimad-co-visit-2&text=${encodeURIComponent(JSON.stringify(t))}`);
+        return;    
     }
     const [count, setCount] = useState(0);
     const [revealed, setRevealed] = useState([]);

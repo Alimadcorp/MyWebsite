@@ -342,24 +342,7 @@ export default function BlogClient({ initialRaw, id, password, metadata }) {
   }
 
   function log(entry) {
-    if (typeof window === "undefined") return
-    if (typeof entry === "string") entry = { text: entry };
-    entry.client = true;
-    let readPassEntry = false;
-    if (entry.read && entry.client && !entry.success) {
-      readPassEntry = true;
-    }
-    entry.clientId = getClientId();
-    const str = JSON.stringify(entry);
-    if ((lastLog || 0) === str || (readPassEntry && readPassLog)) return;
-
-    setLastLog(str);
-    fetch(
-      `https://log.alimad.co/api/log?text=${encodeURIComponent(
-        str
-      )}&channel=blog-alimad-co-prod-3`
-    ).catch(() => {});
-    if (readPassEntry) setReadPassLog(true);
+    return;
   }
   useEffect(() => {
     if (!isPrivate) load();

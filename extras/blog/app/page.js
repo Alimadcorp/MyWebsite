@@ -189,19 +189,7 @@ export default function Home() {
   }
 
   function log(entry) {
-    if (typeof window === "undefined") return;
-    if (typeof entry === "string") entry = { text: entry };
-    entry.client = true;
-    entry.clientId = getClientId();
-    const str = JSON.stringify(entry);
-    if ((lastLog || 0) === str) return;
-
-    setLastLog(str);
-    fetch(
-      `https://log.alimad.co/api/log?text=${encodeURIComponent(
-        str
-      )}&channel=blog-alimad-co-prod-3`
-    ).catch(() => { });
+    return;
   }
   useEffect(() => {
     log({ read: "/" });

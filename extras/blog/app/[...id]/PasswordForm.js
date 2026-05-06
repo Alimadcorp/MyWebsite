@@ -29,23 +29,7 @@ export default function PasswordForm({ id, wrong }) {
   }
 
   function log(entry) {
-    if (typeof entry === "string") entry = { text: entry };
-    entry.client = true;
-    let readPassEntry = false;
-    if (entry.read && entry.client && !entry.success) {
-      readPassEntry = true;
-    }
-    entry.clientId = getClientId();
-    const str = JSON.stringify(entry);
-    if (lastLog === str || (readPassEntry && readPassLog)) return;
-
-    setLastLog(str);
-    fetch(
-      `https://log.alimad.co/api/log?text=${encodeURIComponent(
-        str
-      )}&channel=blog-alimad-co-prod-3`
-    ).catch(() => {});
-    if (readPassEntry) setReadPassLog(true);
+    return;
   }
   useEffect(() => {
     let logC = { read: id };

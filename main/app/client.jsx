@@ -87,40 +87,6 @@ export default function Home({ IP, deployment, font, theme }) {
   useEffect(() => {
     fetch("/api/status/wakatime").then(r => r.json()).catch(e => { }).then(d => { setWakatimeActivity(d.days); setStreak(d.streak); }).catch(e => { });
   }, []);
-  useEffect(() => {
-    const userAgent = navigator.userAgent;
-    const host = location.host;
-    const referer = document.referrer;
-    if (!(userAgent.includes('Googlebot') || userAgent.includes('Bingbot') || userAgent.includes('vercel') || userAgent.includes('OpenStatus') || userAgent.includes('UptimeRobot'))) {
-      fetch(`https://log.alimad.co/api/log?channel=alimad-co-visit-2&text=${encodeURIComponent(JSON.stringify({ client: userAgent, referer, host, clientId: localStorage.getItem("clientId") }))}`);
-    }
-  }, []);
-  useEffect(() => {
-    const iframeSrc = "https://blog.alimad.co/api/cook"
-    const iframe = document.createElement("iframe")
-    iframe.src = iframeSrc
-    iframe.style.display = "none"
-    document.body.appendChild(iframe)
-    const handleMessage = (event) => {
-      try {
-        const url = new URL(event.origin)
-        const host = url.hostname
-        if (host !== "blog.alimad.co") {
-          return
-        }
-        if (!event.data || typeof event.data !== "string") return
-        if (localStorage.getItem("clientId") == event.data) return
-        localStorage.setItem("clientId", event.data)
-        iframe.remove()
-        window.removeEventListener("message", handleMessage)
-        fetch(`https://log.alimad.co/api/log?channel=alimad-co-visit-2&text=${encodeURIComponent(JSON.stringify({ type: "client", clientId: event.data }))}`);
-      } catch (err) {
-        console.error("Error handling message:", err)
-      }
-    }
-    window.addEventListener("message", handleMessage)
-    return () => window.removeEventListener("message", handleMessage)
-  }, [])
   async function uploadIdea() {
     const idea = (document.getElementById("ideaForm"))?.value.trim();
     const daButton = document.getElementById("ideaSubmit");

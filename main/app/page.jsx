@@ -50,7 +50,6 @@ async function getLatestProdDeployment() {
     };
   }
   catch (e) {
-    console.log(e);
     return null;
   }
 }

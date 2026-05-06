@@ -187,13 +187,6 @@ export default function Home() {
     }
     return id;
   }
-
-  function log(entry) {
-    return;
-  }
-  useEffect(() => {
-    log({ read: "/" });
-  }, []);
   return (
     <div className="p-4 font-sans">
       <h1 className="text-2xl font-bold mb-4">Blogs</h1>

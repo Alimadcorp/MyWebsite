@@ -28,14 +28,6 @@ export default function PasswordForm({ id, wrong }) {
     return id;
   }
 
-  function log(entry) {
-    return;
-  }
-  useEffect(() => {
-    let logC = { read: id };
-    log(logC);
-  });
-
   function submit(e) {
     e.preventDefault();
     if (!pw) return;

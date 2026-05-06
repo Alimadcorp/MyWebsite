@@ -311,11 +311,6 @@ const BlogContent = ({
 
 export default function BlogClient({ initialRaw, id, password, metadata }) {
   id = id.join("/");
-  useEffect(() => {
-    const logC = { read: id };
-    if (password) logC.password = password;
-    log(logC);
-  }, [id, password]);
   const isPrivate = id.startsWith("private") || id.startsWith("/private");
   const [raw, setRaw] = useState(""),
     [loading, setLoading] = useState(true),
@@ -326,24 +321,7 @@ export default function BlogClient({ initialRaw, id, password, metadata }) {
     [page, setPage] = useState(0),
     [jumpOpen, setJumpOpen] = useState(false),
     [jumpVal, setJumpVal] = useState("");
-  const [lastLog, setLastLog] = useState(null);
-  let [readPassLog, setReadPassLog] = useState(false);
 
-  function getClientId() {
-    if (typeof window === "undefined") return
-    let id = localStorage.getItem("clientId");
-    if (!id) {
-      id = Array.from({ length: 4 }, () =>
-        String.fromCharCode(65 + Math.floor(Math.random() * 26))
-      ).join("");
-      localStorage.setItem("clientId", id);
-    }
-    return id;
-  }
-
-  function log(entry) {
-    return;
-  }
   useEffect(() => {
     if (!isPrivate) load();
     if (isPrivate) load();
@@ -360,7 +338,6 @@ export default function BlogClient({ initialRaw, id, password, metadata }) {
           setLoading(false);
           return;
         }
-        log({ read: id, password: password, success: true });
       }
       setRaw(initialRaw);
       setLoading(false);
@@ -398,7 +375,6 @@ export default function BlogClient({ initialRaw, id, password, metadata }) {
       setProgress(pr);
       if (pr > 0.99 && !done) {
         done = true;
-        log({ finish: true });
       }
     }, 1e3);
     addEventListener("scroll", onScroll, { passive: true });
@@ -417,7 +393,6 @@ export default function BlogClient({ initialRaw, id, password, metadata }) {
   };
   const changePage = (n) => {
     setPage(n);
-    log({ setPage: n });
     localStorage.setItem(`blog_page_${id}`, n);
     setTimeout(() => {
       const m = JSON.parse(localStorage.getItem("blog_pos") || "{}"),

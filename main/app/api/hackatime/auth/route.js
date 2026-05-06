@@ -22,8 +22,8 @@ export async function GET(req) {
 
   const data = await res.json()
 
-  console.log("OAuth response:", data)
-  console.log("Access Token:", data.access_token)
+  console.warn("OAuth response:", data)
+  console.warn("Access Token:", data.access_token)
 
   return Response.json(data)
 }

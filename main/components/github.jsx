@@ -97,7 +97,7 @@ export default function GithubStats({ streak }) {
   const [data, setData] = useState(null)
 
   useEffect(() => {
-    let r = () => fetch("/api/status/github").then((res) => res.json()).then((jsonData) => { console.log(jsonData); setData(jsonData) });
+    let r = () => fetch("/api/status/github").then((res) => res.json()).then((jsonData) => { setData(jsonData) });
     r();
   }, [])
 

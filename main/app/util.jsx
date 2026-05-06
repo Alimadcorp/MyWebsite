@@ -35,16 +35,12 @@ function TheFooter({ dpl }) {
         { clicks: 300, message: { text: "And it is something that touches the deepest of human concerns;" } },
         { clicks: 314, message: { text: "Are we alone?" } },
     ];
-    function log(t) {
-        return;    
-    }
     const [count, setCount] = useState(0);
     const [revealed, setRevealed] = useState([]);
     const clickLock = useRef(false);
     function handleClick() {
         if (clickLock.current) return;
         clickLock.current = true;
-        if (count % 10 == 0) log({ type: "heart-click", count });
         setCount(prev => {
             const newCount = prev + 1;
             setRevealed(prevRevealed => {

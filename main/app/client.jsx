@@ -11,9 +11,8 @@ import LiveStatus from "@/components/live";
 import Presence from "@/components/presence";
 import Clock from '@/components/clock'
 import StyledComments from "@/components/comments";
-import IdeasModal from "@/components/ideas";
+import IdeasModal from "@/components/idea";
 import Ripple from "@/components/ripple";
-import ModrinthAnalytics from "@/components/chart";
 import Skills from "@/components/skills";
 
 import { QuoteOfTheDay, TheFooter, Note } from "./util";

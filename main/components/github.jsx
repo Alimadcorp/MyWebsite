@@ -170,8 +170,8 @@ export default function GithubStats({ streak }) {
                 {!data.latest && <p>No recent activity found.</p>}
                 {data.latest && data.latest.map(e => (
                   <p>Commit{" "}
-                    "<a href={`https://alimad.co/api/r?u=${encodeURIComponent(`https://github.com/${e.repo}/commit/${e.sha}`)}`} className="text-white hover:underline cursor-pointer">{e.message.replaceAll("\n", " ").replaceAll(/\s+/g, " ").split(" ").slice(0, 10).join(" ")}</a>" to{" "}
-                    <a href={`https://alimad.co/api/r?u=${encodeURIComponent(`https://github.com/${e.repo}`)}`} className="text-white hover:underline cursor-pointer">{e.repo.replace("Alimadcorp/", "")}</a>{", "}
+                    <a href={`https://github.com/${e.repo}/commit/${e.sha}`} className="text-white hover:underline cursor-pointer">{e.message.replaceAll("\n", " ").replaceAll(/\s+/g, " ").split(" ").slice(0, 10).join(" ")}</a> to{" "}
+                    <a href={`https://github.com/${e.repo}`} className="text-white hover:underline cursor-pointer">{e.repo.replace("Alimadcorp/", "")}</a>{", "}
                     <span title={new Date(e.time).toLocaleString()}>{format(e.time)}</span></p>
                 ))}
               </div>

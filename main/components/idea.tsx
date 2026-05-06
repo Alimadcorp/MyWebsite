@@ -35,6 +35,7 @@ export default function IdeasModal({ isOpen, onClose }: { isOpen: boolean; onClo
           <div className="flex items-center gap-2 font-semibold text-lg tracking-tight text-white">
             The Last Two Ideas
           </div>
+          {/* From suggestion in ideas */}
           <button 
             onClick={onClose}
             className="p-1 hover:bg-white/10 rounded-full transition-colors text-white/50 hover:text-white"

@@ -95,7 +95,7 @@ export async function GET(req) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(quoteData),
-  }).then(async e => await e.text().then(t => console.log("KVDB response:", t)).catch(() => console.log("KVDB response: <non-text>"))).catch(err => console.error("Error saving quote to KVDB:", err));
+  }).then(async e => await e.text().catch(err => console.error("Error saving quote to KVDB:", err)));
 
   return NextResponse.json({ success: true, quoteData });
 }

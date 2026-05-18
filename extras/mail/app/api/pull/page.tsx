@@ -29,7 +29,7 @@ export default async function AdminPage({ searchParams }: Props) {
     );
   }
 
-  const res = await fetch(`https://log.alimad.co/api/pull?channel=mail-alimad-co-read-2&pwd=${process.env.PWD}`, {
+  const res = await fetch(`https://log.alimad.co/api/pull?channel=mail-alimad-co&pwd=${process.env.PWD}`, {
     cache: 'no-store',
   });
   const data = await res.json();
@@ -48,7 +48,7 @@ export default async function AdminPage({ searchParams }: Props) {
             let parsed: ParsedLog = { id: '', ip: '' };
             try {
               parsed = JSON.parse(decodeURIComponent(log.text));
-              parsed.ip = log.ip;
+              parsed.ip = parsed.ip ? parsed.ip : log.ip;
             } catch {
               return null;
             }
@@ -59,22 +59,20 @@ export default async function AdminPage({ searchParams }: Props) {
             return (
               <div
                 key={idx}
-                className={`border rounded p-4 shadow transition-colors ${
-                  log.status === 'Tampered' || isMissing
-                    ? 'border-red-500 bg-linear-to-br from-red-950 to-black'
-                    : 'border-green-400 bg-linear-to-br from-green-900 to-black'
-                }`}
+                className={`border rounded p-4 shadow transition-colors ${log.status === 'Tampered' || isMissing
+                  ? 'border-red-500 bg-linear-to-br from-red-950 to-black'
+                  : 'border-green-400 bg-linear-to-br from-green-900 to-black'
+                  }`}
               >
                 <div className="flex justify-between items-center mb-2">
                   <h2 className="font-semibold text-lg">
                     {parsed.name || <span className="text-red-500">Missing Name</span>}
                   </h2>
                   <span
-                    className={`text-sm font-medium px-2 py-1 rounded ${
-                      log.status === 'Tampered'
-                        ? 'bg-red-500 text-white'
-                        : 'bg-green-500 text-white'
-                    }`}
+                    className={`text-sm font-medium px-2 py-1 rounded ${log.status === 'Tampered'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-green-500 text-white'
+                      }`}
                   >
                     {log.status}
                   </span>

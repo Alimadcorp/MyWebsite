@@ -8,15 +8,10 @@ import { useRouter } from "next/navigation";
 
 import GithubStats from "@/components/github";
 import LiveStatus from "@/components/live";
-import Presence from "@/components/presence";
 import Clock from '@/components/clock'
 import StyledComments from "@/components/comments";
 import IdeasModal from "@/components/idea";
-import Ripple from "@/components/ripple";
 import Skills from "@/components/skills";
-
-import { QuoteOfTheDay, TheFooter, Note } from "./util";
-import { Socials, WebButtons } from "./social";
 
 function Counters({ openSecretUI }) {
   const [pageViews, setPageViews] = useState(0);
@@ -66,11 +61,10 @@ function Counters({ openSecretUI }) {
   );
 }
 
-export default function Home({ IP, deployment, font, theme }) {
+export default function Home({ deployment, font }) {
   const [panel, setPanel] = useState(false);
   const [myIdea, setMyIdea] = useState("");
   const [darkMode, setDarkMode] = useState(false);
-  const [domainExpiry, setDomainExpiry] = useState("2027-07-19");
   const [wakatimeActivity, setWakatimeActivity] = useState([]);
   const [showIdeas, setShowIdeas] = useState(false);
   const [streak, setStreak] = useState(0);
@@ -99,31 +93,18 @@ export default function Home({ IP, deployment, font, theme }) {
   }
   return (
     <div className={font + " text-black bg-white dark:bg-black dark:text-white flex flex-col min-h-screen w-full overflow-x-hidden"}>
-      <header className="fixed top-0 w-full h-12 dark:grayscale-0 dark:brightness-100 grayscale-100 brightness-200 bg-black/90 dark:bg-black/50 backdrop-blur-sm border-b border-gray-800 hidden sm:flex items-center justify-between px-3 sm:px-6 z-50">
-        <nav className="flex items-center gap-2">
-          <button onClick={() => Router.push('/subdomains')} className="border-2 font-semibold hover:underline hover:text-accent-light rounded-full border-accent text-accent hover:bg-accent-light/20 px-2 py-1 text-sm transition cursor-pointer">Subdomains</button>
-          <div className="hidden sm:flex gap-1"><Socials sizer={20} />
-          </div>
-        </nav>
-        <div className="flex items-center gap-2">
-          <LiveStatus />
-        </div>
-      </header>
-      <main className="flex flex-col flex-grow mt-0 sm:mt-12 px-6 overflow-x-hidden sm:px-8 py-10 sm:py-14 items-center text-center sm:text-left bg-transparent w-full">
+      <main className="flex flex-col grow mt-0 sm:mt-12 px-6 overflow-x-hidden sm:px-8 py-10 sm:py-14 items-center text-center sm:text-left bg-transparent w-full">
         <div className="max-w-5xl w-full flex">
           <div className="max-w-5xl w-full">
             <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold mb-3 dark:text-accent">Hello, World!</h1>
             <p className="text-black dark:text-white text-base sm:text-lg mb-1">I'm Muhammad Ali.</p>
             <p className="text-gray-800 dark:text-gray-300 text-base sm:text-md mb-3">I like programming. Since I first came into contact with it around six/seven years ago, I have been fascinated by the possibilities it opens up. So, I decided to study computer science to become a developer.</p>
-            <Clock target={IP} font={font} />
-            <Note target={IP} font={font} />
+            <Clock />
             <button onClick={() => setPanel(true)} className="flex items-center gap-2 hover:underline text-sm sm:text-base justify-center text-center sm:justify-start cursor-pointer mt-2 mb-2 mx-auto sm:mx-1">
               <Lightbulb className="w-4 h-4 sm:w-5 sm:h-5" />
               Give an idea
             </button>
-            <Skills font={font} />
-            <Ripple />
-            {new Date(domainExpiry) - new Date() < 14 * 24 * 3600 * 1000 && <p className="text-red-500 text-2xl mt-3">This domain will expire in {Math.ceil((new Date(domainExpiry) - new Date()) / (1000 * 60 * 60 * 24))} days. Switch to <a className="underline" href="https://alimad.vercel.app">alimad.vercel.app</a></p>}
+            <Skills />
             {myIdea && <p className="text-gray-600 dark:text-gray-400 text-sm">{`One "${myIdea}" coming up!`}</p>}
             <div className="grid sm:hidden grid-cols-1 gap-2 mt-3 max-w-5xl w-full px-2">
               <button
@@ -134,17 +115,12 @@ export default function Home({ IP, deployment, font, theme }) {
               >
                 Subdomains
               </button>
-              <div className="grid grid-cols-5 gap-2 min-w-0 w-full">
-                <Socials sizer={25} />
-              </div>
             </div>
             <div className="sm:hidden mt-3 flex items-center gap-2 w-full max-sm:justify-center text-center"><LiveStatus /></div>
             <Counters openSecretUI={openSecretUI} />
           </div>
         </div>
-        {(new Date("2026-05-12") < new Date()) && <Presence />}
-        <QuoteOfTheDay />
-        <GithubStats streak={streak} />
+      {false&&<GithubStats streak={streak} />}
         <StyledComments />
         <div className="flex flex-col -mt-8 ml-30 items-end w-full md:-rotate-20">
           <div className="relative flex flex-col items-start">
@@ -183,8 +159,6 @@ export default function Home({ IP, deployment, font, theme }) {
             />
           </div>
         </div>
-        <WebButtons />
-        <TheFooter dpl={deployment} />
       </main>
       {panel && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">

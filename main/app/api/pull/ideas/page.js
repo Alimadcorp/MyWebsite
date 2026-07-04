@@ -1,7 +1,7 @@
 import { format } from "timeago.js";
 
 async function fetchIdeas() {
-  const res = await fetch("https://log.alimad.co/api/pull?channel=plzgiveideasss&pwd="+process.env.PWD, { cache: "no-store" });
+  const res = await fetch("https://log.alimad.co/api/pull?channel=plzgiveideasss&pwd=" + process.env.PWD, { cache: "no-store" });
   if (!res.ok) return [];
   const data = await res.json();
   return data?.logs || [];

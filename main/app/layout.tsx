@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Alimad Co",
-  description: "Hi! My name is Muhammad Ali, I'm a game, web and app developer, a CGI artist, and a student. I have been working on stuff like this since 2018. I just find fun and value in helping and solving other people's problems through software. I also find happiness in being able to help my friends.",
+  title: "Muhammad Ali",
+  description: "Assalamualaikum, I am a muslim, based in Lahore, Pakistan. I often write program a lot!",
 };
 
 export default function RootLayout({
@@ -39,8 +39,6 @@ export default function RootLayout({
           {children}
           <Analytics />
           <SpeedInsights />
-          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5272041308290617" crossOrigin="anonymous"></script>
-          <script async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
         </AppRouterCacheProvider>
       </body>
     </html>

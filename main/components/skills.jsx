@@ -23,6 +23,7 @@ import {
   SiYoutube,
   SiDavinciresolve
 } from "@icons-pack/react-simple-icons";
+import { Fragment } from "react";
 
 const Processing = () => {
   return <><img src="http://up.alimad.co/f/processing.png" width={19}></img></>
@@ -228,7 +229,8 @@ function ScrollingText({ font }) {
         }}
       >
         {items.map((item, idx) => (
-          <>{!item.link && <p
+          <Fragment key={idx}>
+            {!item.link && <p
             key={idx}
             className="group relative inline-block px-8 py-2 decoration-accent decoration-2"
           >
@@ -249,7 +251,7 @@ function ScrollingText({ font }) {
                 {item.name}
               </span>
             </a>}
-          </>
+          </Fragment>
         ))}
       </motion.div>
     </div>

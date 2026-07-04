@@ -198,3 +198,4 @@ activity/Passwords.cs
 main/app/api/status/github/route.js
 
 local.json
+main/bun.lock

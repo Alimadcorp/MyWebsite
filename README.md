@@ -1,5 +1,8 @@
 # MyWebsite
-This is my main [**alimad.co**](https://alimad.co) homepage!!!
+This is my depracated [**alt.alimad.co**](https://alt.alimad.co) homepage!!!
+
+New work on the website was continued on [Site](https://github.com/Alimadcorp/Site) which is deployed at [alimad.co](https://alimad.co)
+
 
 There are a couple of subdomains of the site that I've worked on; The extra folder contains some small extra sites that im too lazy to create a separate repo for. Open a folder to view the deployment instructions.
 
